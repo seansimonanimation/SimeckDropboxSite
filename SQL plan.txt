@@ -1,0 +1,20 @@
+Database: simeckdb
+----Employee table: artists 
+--------username (firstInitalLastName),
+--------fullname
+--------firstname 
+--------lastname
+--------password 
+--------active
+--------role
+----client table: clients
+--------email
+--------name
+--------password
+--------active
+----logging table: logs
+-------- name (human name)
+-------- user_role
+-------- user_action
+-------- ip_address
+-------- extraData
