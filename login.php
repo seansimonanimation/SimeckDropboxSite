@@ -6,7 +6,8 @@
 // Auth sequence:
 // 1) Try artist/admin against simeckdb.artists table (sha512-crypt)
 // 2) On failure, assume client and try against simeckdb.clients table (sha512-crypt)
-// 3) On success, set session and redirect to index.php
+// 3) On client table failure, redirect back to login.php with error message
+// 4) On success, set session and redirect to index.php
 //
 
 require_once __DIR__ . '/libraries/db.php';
