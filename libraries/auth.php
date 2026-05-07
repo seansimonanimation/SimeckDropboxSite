@@ -14,8 +14,8 @@
 // ensure_client_upload_folders() - Ensures that client upload folders exist on the filesystem, creating them if necessary.
 //
 
-
-
+include_once __DIR__ . '/db.php';
+$username = $_SESSION['login_user'];
 
 
 ?>
