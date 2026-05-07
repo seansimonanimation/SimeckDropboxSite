@@ -18,4 +18,5 @@ Database: simeckdb
 -------- user_role
 -------- user_action
 -------- ip_address
+-------- active
 -------- extraData

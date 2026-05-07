@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <?php
-   include('login.conf.php');
    session_start();
+   include('login.conf.php');
 
-   $user_check = $_SESSION['login_user'];
+   if(!isset($_SESSION['login_user'])){
+     header("location: index.php");
+   }
+
+   //get user data from $_SESSION.
+   //$username = $_SESSION['login_user'];
+
+
+   $username = $_SESSION['login_user'];
+   //Pull the live user data from the db each time we load the page. This way if the user changes their name, it will be reflected here without them having to log out and back in again.
+$artistAdminSQL = "Select * from artists where username = ?";
+$clientSQL = "Select * from clients where email = ?";
+
+   $ArtistAdminData = mysqli_query($db, "Select * from artists where username = '" . $username . "'");
+
+
+  
+
+
 
    $ses_sql = mysqli_query($db,"select name from mailbox where name = '$user_check' ");
    $row = mysqli_fetch_array($ses_sql, MYSQLI_ASSOC);
