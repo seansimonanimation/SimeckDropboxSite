@@ -4,7 +4,8 @@ Database: simeckdb
 --------fullname
 --------firstname 
 --------lastname
---------password 
+--------password
+--------userID
 --------active
 --------role
 ----client table: clients
