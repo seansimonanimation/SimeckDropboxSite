@@ -9,6 +9,10 @@
 // 3) On success, set session and redirect to index.php
 //
 
+require_once __DIR__ . '/libraries/db.php';
+require_once __DIR__ . '/libraries/auth.php';
+require_once __DIR__ . '/libraries/logging.php';
+require_once __DIR__ . '/libraries/helpers.php';
 
 
 $sdb1 = array();
@@ -17,4 +21,14 @@ $error = '';
 
 include("login.conf.php");
 session_start();
+
+if($_SERVER["REQUEST_METHOD"] == "POST") {
+csrf_validate($_POST['_csrf_token'] ?? '');
+post_func(trim($_POST['username'] ?? ''), $_POST['password'] ?? '');
+}
+
+function post_func(string $username, string $password){
+
+}
+
 ?>
