@@ -1,10 +1,10 @@
 Database: simeckdb
 ----Employee table: artists 
 --------username (firstInitalLastName),
---------fullname
 --------firstname 
 --------lastname
---------password 
+--------password
+--------userID
 --------active
 --------role
 ----client table: clients
@@ -12,9 +12,10 @@ Database: simeckdb
 --------name
 --------password
 --------active
+--------outstandingBalance
 ----logging table: logs
 -------- name (human name)
--------- user_role
+-------- time
 -------- user_action
 -------- ip_address
 -------- extraData

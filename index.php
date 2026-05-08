@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <?php
-   include('login.conf.php');
-   session_start();
+   //Necessary to begin the session.
+   include_once __DIR__ . '/libraries/session.php';
 
-   $user_check = $_SESSION['login_user'];
-
-   $ses_sql = mysqli_query($db,"select name from mailbox where name = '$user_check' ");
-   $row = mysqli_fetch_array($ses_sql, MYSQLI_ASSOC);
-   $login_session = $row['name'];
-
-   if (!isset($_SESSION['login_user'])) {
-      header("location:login.php");
+   //Sends the user back to the login page if there is no session.
+   if(!isset($_SESSION['username'])){
+     header("location: login.php");
    }
+
+
+
 ?>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 </head>
