@@ -10,7 +10,7 @@ function attempt_login($username, $password){
 //This function attemps to log an artist user in first. If that fails, it attempts to log a client user in. If both fail, it returns false.
     $artistAdminData = pull_artistAdmin_data($username);
     if($artistAdminData && password_verify($password, $artistAdminData['password'])){ 
-        PutClientDataInSession($artistAdminData);
+        PutArtistDataInSession($artistAdminData);
         return true;
     }
     $clientData = pull_client_data($username);

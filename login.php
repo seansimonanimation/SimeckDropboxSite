@@ -24,8 +24,10 @@ function execute_login(){
     }
     if(isset($_SESSION['username'])){
         header("location: index.php");
+        exit;
     } else {
         header("location: login.php?error=Invalid%20username%20or%20password");
+        exit;
     }
 }
 ?>
