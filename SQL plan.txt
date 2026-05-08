@@ -13,6 +13,7 @@ Database: simeckdb
 --------name
 --------password
 --------active
+--------outstandingBalance
 ----logging table: logs
 -------- name (human name)
 -------- user_role
