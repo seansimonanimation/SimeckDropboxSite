@@ -136,8 +136,25 @@ body {
          color: #5a6480;
          margin-bottom: 6px;
       }
+
+
+      input[type="username"] {
+         width: 80%;
+         background: #f4f7fb;
+         border: 2px solid #dde3f0;
+         border-radius: 50px;
+         color: #2d3651;
+         font-family: 'Nunito', sans-serif;
+         font-size: 0.95rem;
+         font-weight: 600;
+         padding: 10px 18px;
+         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+         appearance: none;
+         -webkit-appearance: none;
+         outline: none;
+      }
       select, input[type="password"] {
-         width: 100%;
+         width: 80%;
          background: #f4f7fb;
          border: 2px solid #dde3f0;
          border-radius: 50px;
@@ -165,7 +182,7 @@ body {
          background: #fff;
       }
 
-      .btn {
+      .loginButton {
          width: 100%;
          padding: 12px;
          margin-top: 6px;
@@ -181,11 +198,11 @@ body {
          transition: transform 0.15s, box-shadow 0.2s;
          box-shadow: 0 4px 16px rgba(23,160,176,0.38);
       }
-      .btn:hover {
+      .loginButton:hover {
          transform: translateY(-2px);
          box-shadow: 0 8px 24px rgba(23,160,176,0.45);
       }
-      .btn:active { transform: translateY(0); }
+      .loginButton:active { transform: translateY(0); }
 
       .forgot {
          text-align: center;
