@@ -28,11 +28,13 @@
             "This is where you can access and download your project files.",
             "If you have any questions or need assistance, please reach out to your Project lead or contact Randy/Carl.",
             "Remember to check back regularly for updates on your project files.",
-            "We appreciate your partnership and look forward to delivering great work for you!",
+            "We appreciate your patronage and look forward to delivering great work for you!",
             "Proudly hand-coded by a human."
         ];
         switch(GetRole()){
-            case 'artist' || 'admin':
+            case 'admin':
+                return GetRandomPhrase($topbarArtistPhrases);
+            case 'artist':
                 return GetRandomPhrase($topbarArtistPhrases);
             case 'client':
                 return GetRandomPhrase($topbarClientPhrases);
