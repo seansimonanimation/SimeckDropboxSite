@@ -177,7 +177,7 @@ body.page-full {
 }
 
 #sidebar .sidebar-header {
-  padding:     20px 18px 14px;
+  padding:     20px 30px 17px;
   border-bottom: 1px solid var(--color-border);
   font-size:   0.70rem;
   font-weight: 800;
