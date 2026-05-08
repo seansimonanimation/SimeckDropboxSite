@@ -3,6 +3,7 @@
    //Necessary to begin the session.
    include_once __DIR__ . '/libraries/session.php';
    include_once __DIR__ . '/libraries/auth.php';
+   include_once __DIR__ . '/libraries/topBarPhrases.php';
 
    //Sends the user back to the login page if there is no session.
    if(!isset($_SESSION['username'])){
@@ -59,6 +60,7 @@
    </aside>
    <header id="topbar" role="banner">
 <div class="topbar-title"> Hi, <?php echo GetHumanName('first'); ?>!</div>
+<div class="topbar-right"><?php echo DisplayRandomTopbarPhrase(); ?></div>
 </header>
 
 

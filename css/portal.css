@@ -36,7 +36,7 @@
 
   /* Layout dimensions */
   --sidebar-width:        240px;
-  --topbar-height:        60px;
+  --topbar-height:        80px;
   --content-padding:      28px;
 
   /* Radius */
@@ -255,7 +255,7 @@ body.page-full {
   z-index:         2;
 }
 
-#topbar .topbar-left {
+#topbar .topbar-right {
   display:     flex;
   align-items: center;
   gap:         14px;
