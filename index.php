@@ -14,8 +14,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <link rel="stylesheet" href="css/portal.css">
+   <title>Simeck Entertainment <?php echo GetRole(); ?> Portal</title>
 </head>
-<body>
+<body class="portal-layout">
+   <aside id="sidebar" role="navigation">
+      <div class="sidebar-header"><?php echo $_SESSION['role']; ?> portal</div>
+   <nav>
+</nav>
     derps.
 </body>
 </html>
