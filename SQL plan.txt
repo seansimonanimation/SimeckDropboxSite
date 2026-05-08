@@ -8,11 +8,12 @@ Database: simeckdb
 --------active
 --------role
 ----client table: clients
---------email
---------name
---------password
---------active
---------outstandingBalance
+-------- email
+-------- firstname
+-------- lastname
+-------- password
+-------- active
+-------- outstandingBalance
 ----logging table: logs
 -------- name (human name)
 -------- time
