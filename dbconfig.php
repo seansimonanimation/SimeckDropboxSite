@@ -14,24 +14,12 @@ return [
  
     // ── Simeck Portal DB (simeckdb, 192.168.1.243) ──────────────────────────
     // Stores client accounts, projects, access rules, logs, modules
-    'portal' => [
-        'host'    => '192.168.1.243',
+    'simeckdb' => [
+        'host'    => 'localhost',
         'port'    => 3306,
-        'dbname'  => 'simeck_portal',
-        'user'    => 'portal_user',       // replace with actual credentials
-        'pass'    => 'CHANGEME',
+        'dbname'  => 'simeckdb',
+        'user'    => 'root',       // replace with actual credentials
+        'pass'    => '',
         'charset' => 'utf8mb4',
-    ],
- 
-    // ── Vimbadmin DB (simeckdb, 192.168.1.243) ──────────────────────────────
-    // Read-only access to artist/admin accounts
-    'vimbadmin' => [
-        'host'    => '192.168.1.243',
-        'port'    => 3306,
-        'dbname'  => 'vimbadmin',
-        'user'    => 'vimbadmin_ro',      // replace with actual read-only credentials
-        'pass'    => 'CHANGEME',
-        'charset' => 'utf8mb4',
-    ],
- 
+    ]
 ];

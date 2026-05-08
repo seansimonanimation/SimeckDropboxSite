@@ -2,20 +2,24 @@
 //
 //libraries/auth.php - Authentication library for Simeck Entertainment's Dropbox as well as session helpers.
 //
-//provides:
-// auth_require() - Middleware to require authentication on a page. Redirects to login.php if not authenticated.
-// auth_user() - Returns the currently authenticated user array, or null if not authenticated.
-// auth_login_artist - Attempt to auth against the artists table. Returns user array on success, false on failure.
-// auth_login_client - Attempt to auth against the clients table. Returns user array on success, false on failure.
-// auth_logout() - Logs the user out by clearing the session.
-// csrf_token() - Get or Generate a CSRF token for forms.
-// csrf_validate($token) - Validate a CSRF token from a form submission.
-// ensure_artist_dropbox() - Ensures that artist dropboxes exist on the filesystem, creating them if necessary.
-// ensure_client_upload_folders() - Ensures that client upload folders exist on the filesystem, creating them if necessary.
-//
 
 include_once __DIR__ . '/db.php';
 $username = $_SESSION['login_user'];
 
-
+function attempt_login($username, $password){
+//This function attemps to log an artist user in first. If that fails, it attempts to log a client user in. If both fail, it returns false.
+    $artistAdminData = pull_artistAdmin_data($username);
+    if($artistAdminData && password_verify($password, $artistAdminData['password'])){
+        return $artistAdminData;
+    }
+    $clientData = pull_client_data($username);
+    if($clientData && password_verify($password, $clientData['password'])){
+        return $clientData;
+    }
+    return false;
+}
+    function logout(){
+        session_unset();
+        session_destroy();
+}
 ?>

@@ -1,7 +1,6 @@
 Database: simeckdb
 ----Employee table: artists 
 --------username (firstInitalLastName),
---------fullname
 --------firstname 
 --------lastname
 --------password
@@ -16,8 +15,7 @@ Database: simeckdb
 --------outstandingBalance
 ----logging table: logs
 -------- name (human name)
--------- user_role
+-------- time
 -------- user_action
 -------- ip_address
--------- active
 -------- extraData

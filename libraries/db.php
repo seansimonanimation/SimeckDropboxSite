@@ -9,13 +9,15 @@
 // connection; subsequent calls in the same request return the cached instance.
 //
 
+$DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
+// $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
 $clientSQL = "Select * from clients where email = ? AND active = 1";
 
 function pull_artistAdmin_data($username){
     global $artistAdminSQL;
-    $pdo = db();
+    $pdo = DBConnect();
     $stmt = $pdo->prepare($artistAdminSQL);
     $stmt->execute([$username]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -23,15 +25,14 @@ function pull_artistAdmin_data($username){
 
 function pull_client_data($email){
     global $clientSQL;
-    $pdo = db();
+    $pdo = DBConnect();
     $stmt = $pdo->prepare($clientSQL);
     $stmt->execute([$email]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-
-function GetUserName(){
-    return $_SESSION['login_user'];
+function SetArtistPassword($currentPass){
+    //TODO: implement this function. It should take the current password, verify it, and if correct, prompt the user for a new password and update the database with the new password hash.
 }
 
 ?>
