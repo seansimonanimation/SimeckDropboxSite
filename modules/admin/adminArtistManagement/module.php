@@ -3,12 +3,12 @@
 // yep
 
 /**
- * @module adminDashboard
- * @name Dashboard
+ * @module adminArtistManagement
+ * @name Artist Management
  * @role admin
- * @nav-text Admin Dashboard
- * @nav-icon dashboard
- * @nav-order 1
+ * @nav-text Artist Management
+ * @nav-icon settings
+ * @nav-order 80
  */
 include_once __ROOT__ . '/libraries/session.php';
 

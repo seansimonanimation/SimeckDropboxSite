@@ -46,4 +46,5 @@ function GetRole(){
 function GetTempRole(){
     return $_SESSION['tempRole'];
 }
+
 ?>

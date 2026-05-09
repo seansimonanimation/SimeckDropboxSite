@@ -3,12 +3,12 @@
 // yep
 
 /**
- * @module adminDashboard
- * @name Dashboard
+ * @module adminProjectManagement
+ * @name Project Management
  * @role admin
- * @nav-text Admin Dashboard
- * @nav-icon dashboard
- * @nav-order 1
+ * @nav-text Project Management
+ * @nav-icon settings
+ * @nav-order 70
  */
 include_once __ROOT__ . '/libraries/session.php';
 

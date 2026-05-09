@@ -3,12 +3,12 @@
 // yep
 
 /**
- * @module adminDashboard
- * @name Dashboard
+ * @module adminFileBrowser
+ * @name File Browser
  * @role admin
- * @nav-text Admin Dashboard
- * @nav-icon dashboard
- * @nav-order 1
+ * @nav-text Full File Browser
+ * @nav-icon Files
+ * @nav-order 10
  */
 include_once __ROOT__ . '/libraries/session.php';
 

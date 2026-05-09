@@ -6,6 +6,7 @@
  * @module artistSettings
  * @name Settings
  * @role artist
+ * @nav-text Artist Settings
  * @nav-icon settings
  * @nav-order 99
  */

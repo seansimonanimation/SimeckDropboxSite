@@ -51,6 +51,10 @@ function LoadNavbarContent(){
                 if (preg_match('/@role\s+(.+)/', $fileContent, $matches)) {
                     $metadata['role'] = trim($matches[1]);
                 }
+                // Match @nav-text
+                if (preg_match('/@nav-text\s+(.+)/', $fileContent, $matches)) {
+                    $metadata['nav-text'] = trim($matches[1]);
+                }
                 
                 // Match @nav-icon
                 if (preg_match('/@nav-icon\s+(.+)/', $fileContent, $matches)) {
@@ -67,6 +71,7 @@ function LoadNavbarContent(){
                 $moduleInfo['name'] = $metadata['name'] ?? 'Unnamed Module';
                 $moduleInfo['module'] = $metadata['module'] ?? '';
                 $moduleInfo['role'] = $metadata['role'] ?? '';
+                $moduleInfo['nav-text'] = $metadata['nav-text'] ?? '';
                 $moduleInfo['nav-icon'] = $metadata['nav-icon'] ?? '';
                 $moduleInfo['nav-order'] = $metadata['nav-order'] ?? 0;
                 $moduleInfo['path'] = $file->getPathname();
@@ -93,11 +98,20 @@ function LoadNavbarContent(){
 function SidebarHTMLGenerator($activeModuleArray){
     $html = '';
     foreach($activeModuleArray as $module){
-        $html .= '<a href="' . $module['nav-icon'] . '">' . $module['name'] . '</a>';
+        $html .= '<a href="index.php?module=' . urlencode($module['name']) . '">' . $module['nav-text'] . '</a>';
+
     }
     return $html;
 }
 
+function SetActiveModule($moduleName){
+    $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+    header("Location: index.php");
+}
+
+function DisplayActiveModuleContent(){
+    return $_SESSION['ActiveModule'];
+}
 ?>
 
 

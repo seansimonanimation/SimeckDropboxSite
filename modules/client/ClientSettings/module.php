@@ -6,6 +6,7 @@
  * @module clientSettings
  * @name Settings
  * @role client
+ * @nav-text Client Settings
  * @nav-icon settings
  * @nav-order 99
  */

@@ -4,8 +4,9 @@
 
 /**
  * @module adminSettings
- * @name Admin Settings
+ * @name Settings
  * @role admin
+ * @nav-text Platform Settings
  * @nav-icon settings
  * @nav-order 99
  */

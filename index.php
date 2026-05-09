@@ -23,11 +23,24 @@
       exit;
    }
 
+if (isset($_GET['module'])) {
+    $moduleName = $_GET['module'];
+    // Set the active module in session
+    $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+}
+
+
    function adminViewToggle(){
       if(GetRole() == 'admin' && GetTempRole() == 'admin'){
          $_SESSION['tempRole'] = 'artist';
       } else if(GetRole() == 'admin' && GetTempRole() == 'artist'){
          $_SESSION['tempRole'] = 'admin';
+      }
+      try {
+         SetActiveModule($_SESSION['ActiveModule']);
+      } catch (Exception $e) {
+         // Handle the case where ActiveModule is not set or invalid
+         SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
       }
    }
    function adminSwitchViewButtonActivation(){
@@ -58,5 +71,8 @@
 <div class="topbar-title"> Hi, <?php echo GetHumanName('first'); ?>!</div>
 <div class="topbar-right"><?php echo DisplayRandomTopbarPhrase(); ?></div>
 </header>
+<main id="content">
+   <?php echo DisplayActiveModuleContent(); ?>
+</main>
    </body>
 </html>

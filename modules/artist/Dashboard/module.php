@@ -6,6 +6,7 @@
  * @module artistDashboard
  * @name Dashboard
  * @role artist
+ * @nav-text Artist Dashboard
  * @nav-icon dashboard
  * @nav-order 1
  */
