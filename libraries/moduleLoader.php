@@ -106,11 +106,19 @@ function SidebarHTMLGenerator($activeModuleArray){
 
 function SetActiveModule($moduleName){
     $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+    $_SESSION['ActiveModulePath'] = __ROOT__ . '/modules/' . $_SESSION['tempRole'] . '/' . $_SESSION['ActiveModule'] . '/module.php';
     header("Location: index.php");
 }
 
 function DisplayActiveModuleContent(){
-    return $_SESSION['ActiveModule'];
+    if(isset($_SESSION['ActiveModulePath'])){
+        ob_start();
+        include $_SESSION["ActiveModulePath"];
+        return ob_get_clean();
+    } else {
+        return '';
+    }
+
 }
 ?>
 

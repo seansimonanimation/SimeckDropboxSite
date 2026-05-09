@@ -11,6 +11,7 @@ function PutArtistDataInSession($artistData){
     $_SESSION['lastname'] = $artistData['lastname'];
     $_SESSION['role'] = $artistData['role'];
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
+    $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
 
 function PutClientDataInSession($clientData){
@@ -19,6 +20,7 @@ function PutClientDataInSession($clientData){
     $_SESSION['lastname'] = $clientData['lastname'];
     $_SESSION['role'] = 'client';
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
+    $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
 
 function GetUserName(){
