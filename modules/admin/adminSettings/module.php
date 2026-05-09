@@ -3,11 +3,11 @@
 // yep
 
 /**
- * @module adminDashboard
- * @name Admin Dashboard
+ * @module adminSettings
+ * @name Admin Settings
  * @role admin
- * @nav-icon dashboard
- * @nav-order 1
+ * @nav-icon settings
+ * @nav-order 99
  */
 include_once __ROOT__ . '/libraries/session.php';
 

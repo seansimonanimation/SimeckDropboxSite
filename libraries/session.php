@@ -2,6 +2,7 @@
 //
 //libraries/session.php - Session helpers for Simeck Entertainment's Dropbox.
 //
+
 session_start();
 function PutArtistDataInSession($artistData){
     $_SESSION['username'] = $artistData['username'];

@@ -10,8 +10,8 @@
 // 4) On success, set session and redirect to index.php
 //
 
-    include_once __DIR__ . '/libraries/session.php';
-    include_once __DIR__ . '/libraries/auth.php';
+    include_once __ROOT__ . '/libraries/session.php';
+    include_once __ROOT__ . '/libraries/auth.php';
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         execute_login();
     }
