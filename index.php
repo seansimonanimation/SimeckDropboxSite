@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <?php
-   //Let's throw any defines we need right here.
-   define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 
    //Necessary to begin the session.
 
-   include_once __ROOT__ . '/libraries/session.php';
+   include_once __DIR__ . '/libraries/session.php'; //One of only 2 __DIR__s in the entire codebase, since session.php needs to be included before we can use __ROOT__.
    include_once __ROOT__ . '/libraries/auth.php';
    include_once __ROOT__ . '/libraries/topBarPhrases.php';
    include_once __ROOT__ . '/libraries/moduleLoader.php';

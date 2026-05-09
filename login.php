@@ -10,7 +10,7 @@
 // 4) On success, set session and redirect to index.php
 //
 
-    include_once __ROOT__ . '/libraries/session.php';
+    include_once __DIR__ . '/libraries/session.php'; //the only __DIR__ in the whole codebase, because this is the only file that needs to be included from a non-root location. All other files are included from index.php, which is in the root.
     include_once __ROOT__ . '/libraries/auth.php';
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         execute_login();
