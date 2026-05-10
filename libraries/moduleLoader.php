@@ -76,6 +76,9 @@ function LoadNavbarContent(){
                 $moduleInfo['nav-order'] = $metadata['nav-order'] ?? 0;
                 $moduleInfo['path'] = $file->getPathname();
                 
+
+                //Set the session module data
+                SetCurrentModuleSessionData($moduleInfo);
                 // Only include modules that match the current role
                 if (empty($metadata['role']) || $metadata['role'] == $_SESSION['tempRole']) {
                     $activeModules[] = $moduleInfo;
@@ -105,10 +108,20 @@ function SidebarHTMLGenerator($activeModuleArray){
 }
 
 function SetActiveModule($moduleName){
-    $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+    // Make sure we don't double-prefix the module name
+    $role = $_SESSION['tempRole'];
+    
+    // If the module name already starts with the current role, don't prefix it again
+    if (strpos($moduleName, $role) === 0) {
+        $_SESSION['ActiveModule'] = $moduleName;
+    } else {
+        $_SESSION['ActiveModule'] = $role . $moduleName;
+    }
+    
     $_SESSION['ActiveModulePath'] = __ROOT__ . '/modules/' . $_SESSION['tempRole'] . '/' . $_SESSION['ActiveModule'] . '/module.php';
     header("Location: index.php");
 }
+
 
 function DisplayActiveModuleContent(){
     if(isset($_SESSION['ActiveModulePath'])){
@@ -119,6 +132,15 @@ function DisplayActiveModuleContent(){
         return '';
     }
 
+}
+
+function SetCurrentModuleSessionData($moduleData){
+    $_SESSION['CurrentModuleModule'] = $moduleData['module'];
+    $_SESSION['CurrentModulePath'] = $moduleData['path'];
+    $_SESSION['CurrentModuleRole'] = $moduleData['role'];
+    $_SESSION['CurrentModuleNavText'] = $moduleData['nav-text'];
+    $_SESSION['CurrentModuleNavIcon'] = $moduleData['nav-icon'];
+    $_SESSION['CurrentModuleNavOrder'] = $moduleData['nav-order'];
 }
 ?>
 

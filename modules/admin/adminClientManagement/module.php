@@ -4,7 +4,7 @@
 
 /**
  * @module adminClientManagement
- * @name Client Management
+ * @name ClientManagement
  * @role admin
  * @nav-text Client Management
  * @nav-icon users

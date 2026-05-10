@@ -4,7 +4,7 @@
 
 /**
  * @module artistClientManagement
- * @name Client Management
+ * @name ClientManagement
  * @role admin
  * @nav-text Clients
  * @nav-icon users

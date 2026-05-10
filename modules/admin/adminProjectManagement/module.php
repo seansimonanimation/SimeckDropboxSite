@@ -4,7 +4,7 @@
 
 /**
  * @module adminProjectManagement
- * @name Project Management
+ * @name ProjectManagement
  * @role admin
  * @nav-text Project Management
  * @nav-icon settings

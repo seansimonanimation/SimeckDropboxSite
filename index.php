@@ -27,22 +27,38 @@ if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];
     // Set the active module in session
     $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+    
+    // Set the active module path and redirect to refresh page with new content
+    $_SESSION['ActiveModulePath'] = __ROOT__ . '/modules/' . $_SESSION['tempRole'] . '/' . $_SESSION['ActiveModule'] . '/module.php';
+    
+    // Redirect to refresh the page with new content
+    header("Location: index.php");
+    exit;
+} else {
+    // Initialize default module if none is set
+    if (!isset($_SESSION['ActiveModule']) || empty($_SESSION['ActiveModule'])) {
+        SetActiveModule('Dashboard');
+    }
 }
 
 
-   function adminViewToggle(){
-      if(GetRole() == 'admin' && GetTempRole() == 'admin'){
-         $_SESSION['tempRole'] = 'artist';
-      } else if(GetRole() == 'admin' && GetTempRole() == 'artist'){
-         $_SESSION['tempRole'] = 'admin';
-      }
-      try {
-         SetActiveModule($_SESSION['ActiveModule']);
-      } catch (Exception $e) {
-         // Handle the case where ActiveModule is not set or invalid
-         SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
-      }
-   }
+function adminViewToggle(){
+    if(GetRole() == 'admin' && GetTempRole() == 'admin'){
+        $_SESSION['tempRole'] = 'artist';
+    } else if(GetRole() == 'admin' && GetTempRole() == 'artist'){
+        $_SESSION['tempRole'] = 'admin';
+    }
+   $moduleName = $_SESSION['CurrentModuleName'] ?? 'Dashboard'; // Default to Dashboard if not set
+    
+    try {
+        SetActiveModule($moduleName);
+    } catch (Exception $e) {
+        // Handle the case where ActiveModule is not set or invalid
+        SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
+    }
+}
+
+
    function adminSwitchViewButtonActivation(){
       if(GetRole() == 'admin'){
          return '<a href="index.php?action=switch_role">Switch Role</a>';

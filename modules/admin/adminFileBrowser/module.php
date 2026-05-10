@@ -4,7 +4,7 @@
 
 /**
  * @module adminFileBrowser
- * @name File Browser
+ * @name FileBrowser
  * @role admin
  * @nav-text Full File Browser
  * @nav-icon Files

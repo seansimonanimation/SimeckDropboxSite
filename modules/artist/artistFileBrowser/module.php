@@ -4,7 +4,7 @@
 
 /**
  * @module artistFileBrowser
- * @name File Browser
+ * @name FileBrowser
  * @role artist
  * @nav-text File Browser
  * @nav-icon Files

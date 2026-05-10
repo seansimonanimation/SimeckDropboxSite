@@ -4,7 +4,7 @@
 
 /**
  * @module adminArtistManagement
- * @name Artist Management
+ * @name ArtistManagement
  * @role admin
  * @nav-text Artist Management
  * @nav-icon settings
