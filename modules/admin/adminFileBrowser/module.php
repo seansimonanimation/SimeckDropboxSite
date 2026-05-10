@@ -18,3 +18,5 @@ include_once __ROOT__ . '/libraries/session.php';
 
 
 ?>
+
+WE BEGIN
