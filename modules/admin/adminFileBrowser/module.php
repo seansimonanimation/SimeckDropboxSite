@@ -1,6 +1,5 @@
 <?php
 //The module responsible for displaying the file browser to admins. This is a wrapper for elFinder, which is included in the libraries folder.
-// yep
 
 /**
  * @module adminFileBrowser
@@ -13,56 +12,78 @@
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/elfinderlib.php';
 
+// Absolute root-relative path to elFinder
+define('EF_ROOT', 'libraries/elfinder');
 
+// Helper to load a glob of CSS files
+function loadElfinderCss($dir) {
+    $html = '';
+    $files = glob($dir . '/*.css');
+    if (!$files) return '';
+    sort($files);
+    foreach ($files as $file) {
+        $html .= '<link rel="stylesheet" href="' . $file . '" type="text/css">' . "\n";
+    }
+    return $html;
+}
 
+// Helper to load a glob of JS files
+function loadElfinderJs($dir) {
+    $html = '';
+    $files = glob($dir . '/*.js');
+    if (!$files) return '';
+    sort($files);
+    foreach ($files as $file) {
+        $html .= '<script src="' . $file . '" type="text/javascript" charset="utf-8"></script>' . "\n";
+    }
+    return $html;
+}
 ?>
+<!-- elFinder CSS -->
+<?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
 
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-		<title>elFinder 2.1.x source version with PHP connector</title>
+<!-- jQuery and jQuery UI (REQUIRED) -->
+<script src="https://code.jquery.com/jquery-4.0.0.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://code.jquery.com/ui/1.14.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 
-		<!-- Require JS (REQUIRED) -->
-		<!-- Rename "main.default.js" to "main.js" and edit it if you need configure elFInder options or any things -->
-		<script data-main="libraries/elfinder/js/main-minimal.default.js" src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
-		<script>
-			define('elFinderConfig', {
-				// elFinder options (REQUIRED)
-				// Documentation for client options:
-				// https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
-				defaultOpts : {
-					url : 'modules/admin/adminFileBrowser/adminConnector.php' // connector URL (REQUIRED)
-					// bootCalback calls at before elFinder boot up 
-					,bootCallback : function(fm, extraObj) {
-						/* any bind functions etc. */
-						fm.bind('init', function() {
-							// any your code
-						});
-						// for example set document.title dynamically.
-						var title = document.title;
-						fm.bind('open', function() {
-							var path = '',
-								cwd  = fm.cwd();
-							if (cwd) {
-								path = fm.path(cwd.hash) || null;
-							}
-							document.title = path? path + ':' + title : title;
-						}).bind('destroy', function() {
-							document.title = title;
-						});
-					}
-				},
-				managers : {
-					// 'DOM Element ID': { /* elFinder options of this DOM Element */ }
-					'elfinder': {}
-				}
-			});
-		</script>
-	</head>
-	<body>
+<!-- elfinder core (load in specific order) -->
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.version.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.options.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.command.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/elFinder.resources.js"></script>
 
-		<!-- Element where elFinder will be created (REQUIRED) -->
-		<div id="elfinder"></div>
+<!-- elfinder dialog -->
+<script src="<?php echo EF_ROOT; ?>/js/jquery.dialogelfinder.js"></script>
 
-	</body>
+<!-- elfinder default lang -->
+<script src="<?php echo EF_ROOT; ?>/js/i18n/elfinder.en.js"></script>
+
+<!-- elfinder ui -->
+<?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
+
+<!-- elfinder commands -->
+<?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
+
+<!-- elfinder extras & proxy -->
+<script src="<?php echo EF_ROOT; ?>/js/proxy/elFinderSupportVer1.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>
+<script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
+
+<!-- elfinder initialization -->
+<script>
+    $(function() {
+        $('#elfinder').elfinder({
+            cssAutoLoad : false,
+            baseUrl : '<?php echo EF_ROOT; ?>/',
+            url : 'modules/admin/adminFileBrowser/adminConnector.php',
+        });
+    });
+</script>
+
+<!-- Element where elFinder will be created -->
+<div id="elfinder" style="height: 600px;"></div>
