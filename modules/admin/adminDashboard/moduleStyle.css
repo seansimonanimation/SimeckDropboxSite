@@ -1,9 +1,10 @@
 /* Admin dashboard module styles */
 .admin-dashboard {
   padding: 24px;
+  
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f5f7fa;
-  color: #20232a;
+  background: var(--color-bg);
+  color: var(--color-text);
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -50,17 +51,17 @@
   grid-column: 1 / -1;
 }
 .dashboard-card {
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 22px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 12px 30px var(--shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 18px 36px var(--shadow-md);
 }
 
 .dashboard-card__header {
@@ -77,14 +78,14 @@
 }
 
 .dashboard-card__meta {
-  color: #7d8694;
+  color: var(--color-text);
   font-size: 0.88rem;
 }
 
 .dashboard-card__content {
   font-size: 0.96rem;
   line-height: 1.65;
-  color: #333842;
+  color: var(--color-text);
 }
 
 .dashboard-card--accent {
