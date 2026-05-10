@@ -18,20 +18,23 @@ include_once __ROOT__ . '/libraries/db.php';
 
 
 ?>
-<link rel="stylesheet" href=<?php echo __ROOT__ . '/modules/admin/adminDashboard/moduleStyle.css'?> />
-<div class="dashboard-container">
-    <h1>Admin Dashboard</h1>
-    <div class="dashboard-content">
-        <div class="dashboard-section">
-            <h2>Welcome, <?php echo $_SESSION['username']; ?>!</h2>
-            <p>This is your admin dashboard where you can manage artists, clients, and view analytics.</p>
-        </div>
-        <div class="dashboard-section">
-            <h2>Quick Actions</h2>
-            <ul>
-                <li><a href="#">Manage Artists</a></li>
-                <li><a href="#">Manage Clients</a></li>
-                <li><a href="#">View Analytics</a></li>
-            </ul>
-        </div>
+<link rel="stylesheet" href="/modules/admin/adminDashboard/moduleStyle.css" />
+
+<div class="admin-dashboard">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome to the Simeck Admin Portal!</h1>
     </div>
+<div class="dashboard-grid">
+  <!-- Row 1: 4 cards, each 1 column (no span class needed) -->
+  <div class="dashboard-card">Card 1</div>
+  <div class="dashboard-card">Card 2</div>
+  <div class="dashboard-card">Card 3</div>
+  <div class="dashboard-card">Card 4</div>
+  
+  <!-- Row 2: 2 cards, each spanning 2 columns -->
+  <div class="dashboard-card dashboard-card--span-2">Card 5</div>
+  <div class="dashboard-card dashboard-card--span-2">Card 6</div>
+  
+  <!-- Row 3: 1 card, spanning all 4 columns -->
+  <div class="dashboard-card dashboard-card--full">Card 7</div>
+</div>
