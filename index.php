@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <?php
+
    //Necessary to begin the session.
-   include_once __DIR__ . '/libraries/session.php';
-   include_once __DIR__ . '/libraries/auth.php';
-   include_once __DIR__ . '/libraries/topBarPhrases.php';
+
+   include_once __DIR__ . '/libraries/session.php'; //One of only 2 __DIR__s in the entire codebase, since session.php needs to be included before we can use __ROOT__.
+   include_once __ROOT__ . '/libraries/auth.php';
+   include_once __ROOT__ . '/libraries/topBarPhrases.php';
+   include_once __ROOT__ . '/libraries/moduleLoader.php';
 
    //Sends the user back to the login page if there is no session.
    if(!isset($_SESSION['username'])){
@@ -20,14 +23,42 @@
       exit;
    }
 
+if (isset($_GET['module'])) {
+    $moduleName = $_GET['module'];
+    // Set the active module in session
+    $_SESSION['ActiveModule'] = $_SESSION['tempRole'] . $moduleName;
+    
+    // Set the active module path and redirect to refresh page with new content
+    $_SESSION['ActiveModulePath'] = __ROOT__ . '/modules/' . $_SESSION['tempRole'] . '/' . $_SESSION['ActiveModule'] . '/module.php';
+    
+    // Redirect to refresh the page with new content
+    header("Location: index.php");
+    exit;
+} else {
+    // Initialize default module if none is set
+    if (!isset($_SESSION['ActiveModule']) || empty($_SESSION['ActiveModule'])) {
+        SetActiveModule('Dashboard');
+    }
+}
 
-   function adminViewToggle(){
-      if(GetRole() == 'admin' && GetTempRole() == 'admin'){
-         $_SESSION['tempRole'] = 'artist';
-      } else if(GetRole() == 'admin' && GetTempRole() == 'artist'){
-         $_SESSION['tempRole'] = 'admin';
-      }
-   }
+
+function adminViewToggle(){
+    if(GetRole() == 'admin' && GetTempRole() == 'admin'){
+        $_SESSION['tempRole'] = 'artist';
+    } else if(GetRole() == 'admin' && GetTempRole() == 'artist'){
+        $_SESSION['tempRole'] = 'admin';
+    }
+   $moduleName = $_SESSION['CurrentModuleName'] ?? 'Dashboard'; // Default to Dashboard if not set
+    
+    try {
+        SetActiveModule($moduleName);
+    } catch (Exception $e) {
+        // Handle the case where ActiveModule is not set or invalid
+        SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
+    }
+}
+
+
    function adminSwitchViewButtonActivation(){
       if(GetRole() == 'admin'){
          return '<a href="index.php?action=switch_role">Switch Role</a>';
@@ -35,10 +66,6 @@
          return '';
       }
    }
-
-
-   
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,10 +78,8 @@
       <div class="sidebar-header"><?php echo $_SESSION['tempRole']; ?> portal
    <br /> <?php echo adminSwitchViewButtonActivation(); ?></div>
    <nav>
-
    <!-- Sidebar content goes here -->
-
-
+    <?php echo LoadNavbarContent(); ?>
 </nav>
     <div class="sidebar-footer"><a href="index.php?action=logout">Logout</a></div>
    </aside>
@@ -62,8 +87,8 @@
 <div class="topbar-title"> Hi, <?php echo GetHumanName('first'); ?>!</div>
 <div class="topbar-right"><?php echo DisplayRandomTopbarPhrase(); ?></div>
 </header>
-
-
-
+<main id="content">
+   <?php echo DisplayActiveModuleContent(); ?>
+</main>
    </body>
 </html>

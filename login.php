@@ -10,8 +10,9 @@
 // 4) On success, set session and redirect to index.php
 //
 
-    include_once __DIR__ . '/libraries/session.php';
-    include_once __DIR__ . '/libraries/auth.php';
+    include_once __DIR__ . '/libraries/session.php'; //One of only 2 __DIR__s in the entire codebase, since session.php needs to be included before we can use __ROOT__.
+    include_once __ROOT__ . '/libraries/auth.php';
+    include_once __ROOT__ . '/libraries/moduleLoader.php'; //Needed to set up the session and determine the first module to load. Hint: It's the dashboard module for the user's role.
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         execute_login();
     }
@@ -23,6 +24,7 @@ function execute_login(){
         attempt_login($_POST['username'], $_POST['password']);
     }
     if(isset($_SESSION['username'])){
+        SetActiveModule('Dashboard'); // Set the default active module to the dashboard for the user's role.
         header("location: index.php");
         exit;
     } else {
