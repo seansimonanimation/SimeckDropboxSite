@@ -3,7 +3,9 @@
 //libraries/session.php - Session helpers for Simeck Entertainment's Dropbox.
 //
 //Let's throw any defines we need right here.
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+if(!defined('__ROOT__')) {
+    define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+}
 session_start();
 function PutArtistDataInSession($artistData){
     $_SESSION['username'] = $artistData['username'];

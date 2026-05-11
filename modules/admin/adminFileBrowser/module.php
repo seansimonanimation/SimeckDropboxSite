@@ -96,7 +96,7 @@ $(function() {
         cssAutoLoad: false,
         baseUrl: '<?php echo EF_ROOT; ?>/',
         url: 'modules/admin/adminFileBrowser/adminConnector.php',
-        height: $(window).height() - $('#elfinder').offset().top - 15
+        height: $(window).height() - $('#elfinder').offset().top - 15,
     });
     
     $(window).on('resize', resizeElfinder);
@@ -104,4 +104,4 @@ $(function() {
 </script>
 
 <!-- Element where elFinder will be created -->
-<div id="elfinder" style="height: 100%;"><center><h1>Please wait while your filebrowser is loading...</h1></center></div>
+<div id="elfinder" style="height: 100%;"><center><h1>Thank you for your patience while your filebrowser is loading...</h1></center></div>
