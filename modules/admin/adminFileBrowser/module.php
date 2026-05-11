@@ -53,6 +53,7 @@ function loadElfinderJs($dir) {
 <script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.js"></script>
+<script src="modules/admin/adminFileBrowser/elfinderOptionOverride.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.command.js"></script>
@@ -77,6 +78,7 @@ function loadElfinderJs($dir) {
 
 <!-- elfinder initialization -->
 <script>
+
 $(function() {
     function resizeElfinder() {
         var winH = $(window).height();
@@ -103,4 +105,4 @@ $(function() {
 </script>
 
 <!-- Element where elFinder will be created -->
-<div id="elfinder" style="height: 100%;"></div>
+<div id="elfinder" style="height: 100%;"><center><h1>Please wait while your filebrowser is loading...</h1></center></div>
