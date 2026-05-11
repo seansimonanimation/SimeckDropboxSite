@@ -11,8 +11,8 @@ function getAdminFileBrowserOptions(){
             array(
                 //Corporate volume
                 'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-                'path'          => 'files/Corporate',                 // path to files (REQUIRED)
-                'URL'           => dirname($_SERVER['PHP_SELF']) . 'files/Corporate/', // URL to files (REQUIRED)
+                'path' => __ROOT__ . '/files/Corporate',                 // path to files (REQUIRED)
+                'URL'  => '/files/Corporate/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -23,8 +23,8 @@ function getAdminFileBrowserOptions(){
             //Dropbox volume
             array(
                 'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-                'path'          => 'files/Dropboxes',                 // path to files (REQUIRED)
-                'URL'           => dirname($_SERVER['PHP_SELF']) . 'files/Dropboxes/', // URL to files (REQUIRED)
+                'path' => __ROOT__ . '/files/Dropboxes',                 // path to files (REQUIRED)
+                'URL'  => '/files/Dropboxes/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -35,8 +35,8 @@ function getAdminFileBrowserOptions(){
             //Project volume
             array(
                 'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-                'path'          => 'files/Projects',                 // path to files (REQUIRED)
-                'URL'           => dirname($_SERVER['PHP_SELF']) . 'files/Project/', // URL to files (REQUIRED)
+                'path' => __ROOT__ . '/files/Projects',               // path to files (REQUIRED)
+                'URL'  => '/files/Projects/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -48,8 +48,8 @@ function getAdminFileBrowserOptions(){
             array(
                 'id'            => '1',
                 'driver'        => 'Trash',
-                'path'          => 'files/.trash/',
-                'tmbURL'        => dirname($_SERVER['PHP_SELF']) . 'files/.trash/.tmb/',
+                'path'   => __ROOT__ . '/files/.trash/',
+                'tmbURL' => '/files/.trash/.tmb/',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
                 'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
@@ -80,6 +80,7 @@ function initializeConnector($connectorOptions){
 }
 
 function ConnectorSetup(){
-    require __ELFINDER_ROOT__ . 'php/autoload.php';
+    require_once __ROOT__ . '/libraries/elfinder/php/autoload.php';
+
 }
 ?>
