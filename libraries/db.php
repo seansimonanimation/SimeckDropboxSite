@@ -60,4 +60,37 @@ function GetClientCount(bool $includeInactive = false){
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC)['client_count'];
 }
+
+function GetArtistCount(bool $includeInactive = false){
+    $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
+    if($includeInactive){
+        $SQLString = 'SELECT COUNT(*) as artist_count FROM artists WHERE active = 1';
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
+}
+
+function GetTimeclockEntries($startDate = null, $endDate = null, $artistId = null){
+    // This function will pull timeclock entries from the database based on the provided filters (date range and/or artist ID). It will return an array of timeclock entries that match the criteria.
+    $SQLString = 'SELECT * FROM timeclock_entries WHERE 1=1';
+    $params = [];
+    if($startDate){
+        $SQLString .= ' AND clock_in >= ?';
+        $params[] = $startDate;
+    }
+    if($endDate){
+        $SQLString .= ' AND clock_out <= ?';
+        $params[] = $endDate;
+    }
+    if($artistId){
+        $SQLString .= ' AND artist_id = ?';
+        $params[] = $artistId;
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

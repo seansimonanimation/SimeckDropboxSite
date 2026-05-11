@@ -14,51 +14,27 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
--- Dumping database structure for simeckdb
-CREATE DATABASE IF NOT EXISTS `simeckdb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `simeckdb`;
-
--- Dumping structure for table simeckdb.artists
-CREATE TABLE IF NOT EXISTS `artists` (
-  `username` varchar(50) DEFAULT NULL,
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(50) DEFAULT NULL,
-  `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `userID` int unsigned DEFAULT NULL,
-  `active` int unsigned DEFAULT NULL,
-  `role` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 -- Dumping data for table simeckdb.artists: ~2 rows (approximately)
-REPLACE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin'),
-	('artist', 'Artist', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 2, 1, 'artist');
-
--- Dumping structure for table simeckdb.clients
-CREATE TABLE IF NOT EXISTS `clients` (
-  `email` varchar(70) DEFAULT NULL,
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(50) DEFAULT NULL,
-  `password` varchar(500) DEFAULT NULL,
-  `active` int unsigned DEFAULT '1',
-  `outstandingBalance` decimal(20,2) DEFAULT '0.00'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`) VALUES
+	('admin', 'Admin', 'User', '$2a$12$BL7SUJ63D.SaFgJO6GqEIOno/nI/mbK8u.0n9QVpTIwAhsha7VFqG', 1, 1, 'admin'),
+	('artist', 'Artist', 'User', '$2a$12$BL7SUJ63D.SaFgJO6GqEIOno/nI/mbK8u.0n9QVpTIwAhsha7VFqG', 2, 1, 'artist');
 
 -- Dumping data for table simeckdb.clients: ~1 rows (approximately)
-REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `active`, `outstandingBalance`) VALUES
-	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 0.00);
+INSERT IGNORE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `active`, `outstandingBalance`) VALUES
+	('client', 'Client', 'User', '$2a$12$BL7SUJ63D.SaFgJO6GqEIOno/nI/mbK8u.0n9QVpTIwAhsha7VFqG', 1, 0.000000);
 
--- Dumping structure for table simeckdb.logs
-CREATE TABLE IF NOT EXISTS `logs` (
-  `name` varchar(50) DEFAULT NULL,
-  `time` datetime DEFAULT NULL,
-  `user_action` varchar(500) DEFAULT NULL,
-  `ip_address` varchar(20) DEFAULT NULL,
-  `extraData` varchar(500) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- Dumping data for table simeckdb.logs: ~1 rows (approximately)
+INSERT IGNORE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
+	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
 
--- Dumping data for table simeckdb.logs: ~0 rows (approximately)
+-- Dumping data for table simeckdb.modules: ~1 rows (approximately)
+INSERT IGNORE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
+	(1, 'buffer', 1);
+
+-- Dumping data for table simeckdb.timeclockpunches: ~2 rows (approximately)
+INSERT IGNORE INTO `timeclockpunches` (`uid`, `time`, `in_out`) VALUES
+	(1, '2026-05-11 14:52:00', 'in'),
+	(1, '2026-05-11 14:53:08', 'out');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

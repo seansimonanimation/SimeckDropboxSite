@@ -8,4 +8,43 @@
  * @nav-order 10
  */
 
+
+include_once __DIR__ . '/../../../libraries/session.php';
+include_once __ROOT__ . '/libraries/timeclockLib.php';
+
 ?>
+
+<link rel="stylesheet" href="/modules/admin/adminTimeclockManagement/moduleStyle.css" />
+<div class="admin-timeclock-management">
+    <div class="timeclock-header">
+        <h1>Timeclock Management</h1>
+        <p>This module allows admins to manage artist timeclocks, including viewing clock-in/out times, editing entries, and generating reports.</p>
+    </div>
+    <div class="tcm-grid">
+        <div class="tcm-card tcm-card--span-1">
+            <center>
+                <h3>Number of artists currently clocked in</h3>
+            </center>
+        </div>
+        <div class="tcm-card tcm-card--span-1">
+            <center>
+                <h3>Clock everyone out</h3>
+            </center>
+        </div>
+            <div class="tcm-card tcm-card--span-1">
+            <center>
+                <h3>Limit view to date range</h3>
+            </center>
+        </div>
+                    <div class="tcm-card tcm-card--span-1">
+            <center>
+                <h3>Filter by artist</h3>
+            </center>
+        </div>
+        <div class="tcm-card tcm-card--span-4">
+            <center>
+                <h3>Timeclock entries</h3>
+                <?php echo GenerateTimeclockTable(); ?>
+            </center>
+    </div>
+</div>
