@@ -258,6 +258,7 @@ body.page-full {
 
 #topbar .topbar-right {
   display:     flex;
+  font-size:   12px;
   align-items: center;
   gap:         14px;
 }
