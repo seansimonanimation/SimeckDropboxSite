@@ -39,8 +39,9 @@ function loadElfinderJs($dir) {
     return $html;
 }
 ?>
-<!-- elFinder CSS -->
+<!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
+<link href="css/elfinderThemes/win10/css/theme.css" rel="stylesheet">
 
 <!-- jQuery and jQuery UI (REQUIRED) -->
 <script src="https://code.jquery.com/jquery-4.0.0.min.js" type="text/javascript" charset="utf-8"></script>
@@ -76,14 +77,30 @@ function loadElfinderJs($dir) {
 
 <!-- elfinder initialization -->
 <script>
-    $(function() {
-        $('#elfinder').elfinder({
-            cssAutoLoad : false,
-            baseUrl : '<?php echo EF_ROOT; ?>/',
-            url : 'modules/admin/adminFileBrowser/adminConnector.php',
-        });
+$(function() {
+    function resizeElfinder() {
+        var winH = $(window).height();
+        var offset = $('#elfinder').offset().top;
+        var h = winH - offset - 15; // 15px breathing room
+        if (h < 300) h = 300;
+        $('#elfinder').height(h);
+        
+        var instance = $('#elfinder').elfinder('instance');
+        if (instance) {
+            instance.resize();
+        }
+    }
+    
+    $('#elfinder').elfinder({
+        cssAutoLoad: false,
+        baseUrl: '<?php echo EF_ROOT; ?>/',
+        url: 'modules/admin/adminFileBrowser/adminConnector.php',
+        height: $(window).height() - $('#elfinder').offset().top - 15
     });
+    
+    $(window).on('resize', resizeElfinder);
+});
 </script>
 
 <!-- Element where elFinder will be created -->
-<div id="elfinder" style="height: 600px;"></div>
+<div id="elfinder" style="height: 100%;"></div>
