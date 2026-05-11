@@ -52,7 +52,6 @@ function loadElfinderJs($dir) {
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.version.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
-<script src="<?php echo EF_ROOT; ?>/js/elFinder.options.js"></script>
 <script src="modules/admin/adminFileBrowser/elfinderOptionOverride.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>
