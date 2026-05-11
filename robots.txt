@@ -1,0 +1,5 @@
+# Simeck Portal — robots.txt
+# This is a private internal portal. All crawlers are blocked.
+
+User-agent: *
+Disallow: /
