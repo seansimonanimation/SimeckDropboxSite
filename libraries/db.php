@@ -74,7 +74,7 @@ function GetArtistCount(bool $includeInactive = false){
 
 function GetTimeclockEntries($startDate = null, $endDate = null, $artistId = null){
     // This function will pull timeclock entries from the database based on the provided filters (date range and/or artist ID). It will return an array of timeclock entries that match the criteria.
-    $SQLString = 'SELECT * FROM timeclock_entries WHERE 1=1';
+    $SQLString = 'SELECT * FROM timeclockpunches WHERE 1=1';
     $params = [];
     if($startDate){
         $SQLString .= ' AND clock_in >= ?';
