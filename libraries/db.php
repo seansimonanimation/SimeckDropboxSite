@@ -92,4 +92,11 @@ function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null)
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function CloseTimeclockShift($shiftID){
+    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE shift_id = ?';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$shiftID]);
+}
 ?>

@@ -10,9 +10,20 @@
 
 
 include_once __DIR__ . '/../../../libraries/session.php';
-include_once __ROOT__ . '/libraries/timeclockLib.php';
+include_once __ROOT__ . '/libraries/timeclock/timeclockLib.php';
+include_once __ROOT__ . '/libraries/db.php';
 
 ?>
+<script>
+function clockArtistOut(shiftId) {
+    fetch('libraries/timeclock/clockout.php?shift_id=' + shiftId)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+}</script>
+
+
 
 <link rel="stylesheet" href="/modules/admin/adminTimeclockManagement/moduleStyle.css" />
 <div class="admin-timeclock-management">
