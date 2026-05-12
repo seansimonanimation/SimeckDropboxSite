@@ -106,3 +106,6 @@
     align-items: flex-start;
   }
 }
+.admin-timeclock-management .dataTables_filter {
+    display: none;
+}
