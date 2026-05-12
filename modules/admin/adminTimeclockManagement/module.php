@@ -24,11 +24,13 @@ include_once __ROOT__ . '/libraries/timeclockLib.php';
         <div class="tcm-card tcm-card--span-1">
             <center>
                 <h3>Number of artists currently clocked in</h3>
+                <p><h1><?php echo GetClockedInArtistCount(); ?></h1></p>
             </center>
         </div>
         <div class="tcm-card tcm-card--span-1">
             <center>
                 <h3>Clock everyone out</h3>
+                <img src="globalSiteAssets/big-red-button.png">
             </center>
         </div>
             <div class="tcm-card tcm-card--span-1">
@@ -43,7 +45,7 @@ include_once __ROOT__ . '/libraries/timeclockLib.php';
         </div>
         <div class="tcm-card tcm-card--span-4">
             <center>
-                <h3>Timeclock entries</h3>
+                <h1>Timeclock entries</h1>
                 <?php echo GenerateTimeclockTable(); ?>
             </center>
     </div>

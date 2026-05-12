@@ -72,21 +72,20 @@ function GetArtistCount(bool $includeInactive = false){
     return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
 }
 
-function GetTimeclockEntries($startDate = null, $endDate = null, $artistId = null){
-    // This function will pull timeclock entries from the database based on the provided filters (date range and/or artist ID). It will return an array of timeclock entries that match the criteria.
-    $SQLString = 'SELECT * FROM timeclockpunches WHERE 1=1';
+function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null){
+    $SQLString = 'SELECT * FROM timeclockshifts WHERE 1=1';
     $params = [];
     if($startDate){
-        $SQLString .= ' AND clock_in >= ?';
+        $SQLString .= ' AND time_in >= ?';
         $params[] = $startDate;
     }
     if($endDate){
-        $SQLString .= ' AND clock_out <= ?';
+        $SQLString .= ' AND time_out <= ?';
         $params[] = $endDate;
     }
-    if($artistId){
-        $SQLString .= ' AND artist_id = ?';
-        $params[] = $artistId;
+    if($artist){
+        $SQLString .= ' AND user = ?';
+        $params[] = $artist;
     }
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
