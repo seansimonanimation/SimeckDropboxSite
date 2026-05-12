@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `outstandingBalance` decimal(20,2) DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clients: ~1 rows (approximately)
+-- Dumping data for table simeckdb.clients: ~0 rows (approximately)
 REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `active`, `outstandingBalance`) VALUES
 	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 0.00);
 
@@ -69,21 +69,27 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `enabled` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.modules: ~0 rows (approximately)
+-- Dumping data for table simeckdb.modules: ~1 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 	('Admin User', 'buffer', 1);
 
 -- Dumping structure for table simeckdb.timeclockshifts
 CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   `user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `shift_id` int unsigned NOT NULL AUTO_INCREMENT,
   `time_in` datetime DEFAULT NULL,
-  `time_out` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `time_out` datetime DEFAULT NULL,
+  KEY `shift_id` (`shift_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.timeclockshifts: ~2 rows (approximately)
-REPLACE INTO `timeclockshifts` (`user`, `time_in`, `time_out`) VALUES
-	('admin', '2026-05-11 19:10:06', NULL),
-	('artist', '2026-05-11 18:10:22', '2026-05-11 19:10:27');
+-- Dumping data for table simeckdb.timeclockshifts: ~5 rows (approximately)
+REPLACE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
+	('artist', 4, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
+	('admin', 2, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
+	('admin', 3, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
+	('artist', 1, '2026-05-11 19:10:06', '2026-05-12 13:32:30'),
+	('admin', 5, '2026-05-11 19:10:06', '2026-05-12 13:48:03'),
+	('admin', 8, '2026-05-12 14:36:21', '2026-05-12 14:44:00');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
