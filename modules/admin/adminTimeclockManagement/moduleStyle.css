@@ -109,3 +109,29 @@
 .admin-timeclock-management .dataTables_filter {
     display: none;
 }
+/* Inline editing styles */
+.atc-editable {
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.15s ease;
+}
+
+.atc-editable:hover {
+    background-color: rgba(59, 130, 246, 0.06);
+}
+
+.atc-editable.editing {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.atc-input {
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-bright);
+    background: var(--color-bg-raised);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}

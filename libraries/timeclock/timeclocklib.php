@@ -14,8 +14,12 @@ function GenerateTimeclockTable(){
         echo '<tr>';
         echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
         echo '<td>' . htmlspecialchars($entry['user']) . '</td>';
-        echo '<td>' . htmlspecialchars($entry['time_in']) . '</td>';
-        echo '<td>' . htmlspecialchars($entry['time_out']) . '</td>';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_in">';
+        echo '  <span class="atc-display">' . htmlspecialchars($entry['time_in']) . '</span>';
+        echo '</td>';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_out">';
+        echo '  <span class="atc-display">' . htmlspecialchars($entry['time_out'] ?? '') . '</span>';
+        echo '</td>';
         echo '<td>' . DetermineShiftLengthOrSummonButton($entry['time_in'], $entry['time_out'], $entry['shift_id']) . '</td>';
         echo '<td><a href="index.php?delete_shift_id=' . htmlspecialchars($entry['shift_id']) . '">❌</a></td>';
         echo '</tr>';
@@ -63,7 +67,7 @@ function DetermineArtistShiftLength($timeIn, $timeOut){
         return 'Currently working...';
     }
     $start = new DateTime($timeIn);
-    $end = new DateTime(); // Current time
+    $end = new DateTime($timeOut); // Current time
     $interval = $start->diff($end);
     return $interval->format('%h hours %i minutes');
 }

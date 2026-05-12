@@ -9,7 +9,7 @@
 // connection; subsequent calls in the same request return the cached instance.
 //
 
-$DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
+// $DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
 // $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
 $clientSQL = "Select * from clients where email = ? AND active = 1";
@@ -98,5 +98,17 @@ function CloseTimeclockShift($shiftID){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$shiftID]);
+}
+
+function UpdateTimeclockShiftField($shiftId, $field, $value){
+    // Only allow updating time_in or time_out — whitelist for security
+    $allowedFields = ['time_in', 'time_out'];
+    if(!in_array($field, $allowedFields)){
+        return false;
+    }
+    $SQLString = "UPDATE timeclockshifts SET $field = ? WHERE shift_id = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    return $stmt->execute([$value, $shiftId]);
 }
 ?>
