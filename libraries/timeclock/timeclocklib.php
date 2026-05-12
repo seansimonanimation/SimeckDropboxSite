@@ -23,6 +23,22 @@ function GenerateTimeclockTable(){
     echo '</tbody></table>';
 }
 
+function GenerateArtistTimeclockTable($artistID){
+    $entryArray = GetTimeclockEntries(null, null, $artistID);
+    echo '<table id="ShiftList" class="display" style="width:100%; border-collapse: collapse;">';
+    echo '<thead><tr><th>Shift ID</th><th>Time In</th><th>Time Out</th><th>Shift Length</th></tr></thead>';
+    echo '<tbody>';
+    foreach($entryArray as $entry){
+        echo '<tr>';
+        echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
+        echo '<td>' . htmlspecialchars($entry['time_in']) . '</td>';
+        echo '<td>' . htmlspecialchars($entry['time_out'] == NULL ? '' : $entry['time_out']) . '</td>';
+        echo '<td>' . DetermineArtistShiftLength($entry['time_in'], $entry['time_out']) . '</td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+}
+
 
 function GetClockedInArtistCount(){
     $SQLString = 'SELECT COUNT(*) as clocked_in_count FROM timeclockshifts WHERE time_out IS NULL OR time_out = NULL';
@@ -42,6 +58,15 @@ function DetermineShiftLengthOrSummonButton($timeIn, $timeOut, $shiftID){
     return $interval->format('%h hours %i minutes');
 }
 
+function DetermineArtistShiftLength($timeIn, $timeOut){
+    if($timeOut == ''){
+        return 'Currently working...';
+    }
+    $start = new DateTime($timeIn);
+    $end = new DateTime(); // Current time
+    $interval = $start->diff($end);
+    return $interval->format('%h hours %i minutes');
+}
 function ClockEveryoneOut(){
     $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE time_out IS NULL OR time_out = NULL';
     $pdo = DBConnect();
@@ -54,5 +79,37 @@ function DeleteShift($shiftID){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$shiftID]);
+}
+
+function DisplayArtistClockInOutButton($artistID){
+    $SQLString = 'SELECT * FROM timeclockshifts WHERE user = ? AND time_out IS NULL ORDER BY time_in DESC LIMIT 1';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$artistID]);
+    $currentShift = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if($currentShift){
+        return '<center><h1>Clock Out</h1><a href="?clock_out=1" id="clockButton"><img src="/globalSiteAssets/clockOut_button.png" alt="Clock Out" /></a></center>';
+    } else {
+        return '<center><h1>Clock In</h1><a href="?clock_in=1" id="clockButton"><img src="/globalSiteAssets/clockIn_button.png" alt="Clock In" /></a></center>';
+    }
+}
+
+function ArtistClockIn($artistID){
+    $SQLString = 'INSERT INTO timeclockshifts (user, time_in) VALUES (?, NOW())';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$artistID]);
+    header("Location: index.php");
+    exit;
+}
+
+function ArtistClockOut($artistID){
+    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE user = ? AND time_out IS NULL';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$artistID]);
+    header("Location: index.php");
+    exit;
 }
 ?>

@@ -80,8 +80,8 @@ $(document).ready(function () {
         </div>
 <div class="tcm-card tcm-card--span-1">
     <center>
-        <h3>Filter by artist</h3>
-        <input type="text" id="artistFilter" placeholder="Type artist name..." style="width:90%; padding:8px; border-radius:6px; border:1px solid var(--color-border-bright); background:var(--color-bg-raised); color:var(--color-text); margin-top:8px;">
+        <h3>Filter by content</h3>
+        <input type="text" id="artistFilter" placeholder="Type filter info..." style="width:90%; padding:8px; border-radius:6px; border:1px solid var(--color-border-bright); background:var(--color-bg-raised); color:var(--color-text); margin-top:8px;">
     </center>
 </div>
         <div class="tcm-card tcm-card--span-4">
@@ -90,4 +90,5 @@ $(document).ready(function () {
                 <?php echo GenerateTimeclockTable(); ?>
             </center>
     </div>
+ 
 </div>
