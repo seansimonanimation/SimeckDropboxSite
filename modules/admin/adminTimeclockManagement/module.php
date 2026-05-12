@@ -41,7 +41,7 @@ function clockArtistOut(shiftId) {
         <div class="tcm-card tcm-card--span-1">
             <center>
                 <h3>Clock everyone out</h3>
-                <img src="globalSiteAssets/big-red-button.png">
+                <a href=<?php ClockEveryoneOut(); ?>><img src="globalSiteAssets/big-red-button.png"></a>
             </center>
         </div>
             <div class="tcm-card tcm-card--span-1">

@@ -42,4 +42,11 @@ function DetermineShiftLengthOrSummonButton($timeIn, $timeOut, $shiftID){
     $interval = $start->diff($end);
     return $interval->format('%h hours %i minutes');
 }
+
+function ClockEveryoneOut(){
+    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE time_out IS NULL OR time_out = NULL';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+}
 ?>
