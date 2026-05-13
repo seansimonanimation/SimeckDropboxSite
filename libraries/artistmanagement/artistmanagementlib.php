@@ -33,9 +33,9 @@ function GenerateArtistStatusButton($artistID, $isActive){
         return "This is you!";
     }
     if($isActive){
-        return '<button class="toggle-artist-status" data-artist-id="' . $artistID . '" data-new-status="0">✅</button>';
+        return '<a href="?artist_id=' . $artistID . '&new_status=0" class="toggle-artist-status">✅</a>';
     } else {
-        return '<button class="toggle-artist-status" data-artist-id="' . $artistID . '" data-new-status="1">❌</button>';
+        return '<a href="?artist_id=' . $artistID . '&new_status=1" class="toggle-artist-status">❌</a>';
     }
 
 }
@@ -43,9 +43,9 @@ function GenerateArtistStatusButton($artistID, $isActive){
 
 function ToggleArtistStatus($artistID, $isActive){
     if($isActive == "1"){
-        $SQLString = "UPDATE artists SET active = 0 WHERE userID = ?";
-    } else {
         $SQLString = "UPDATE artists SET active = 1 WHERE userID = ?";
+    } else {
+        $SQLString = "UPDATE artists SET active = 0 WHERE userID = ?";
     }
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);

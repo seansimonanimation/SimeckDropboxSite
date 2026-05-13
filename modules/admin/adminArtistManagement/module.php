@@ -14,20 +14,12 @@ include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/artistmanagement/artistmanagementlib.php';
 
-?>
-<script>
-$(document).on('click', '.toggle-artist-status', function() {
-    var artistId = $(this).data('artist-id');
-    var newStatus = $(this).data('new-status');
-    
-    fetch('libraries/artistmanagement/toggleartiststatus.php?artist_id=' + artistId + '&new_status=' + newStatus)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) location.reload();
-        });
-});
+if(isset($_GET['artist_id']) && isset($_GET['new_status'])){
+    ToggleArtistStatus($_GET['artist_id'], $_GET['new_status']);
+}
 
-</script>
+
+?>
 
 <link rel="stylesheet" href="modules/admin/adminArtistManagement/moduleStyle.css" />
 <div class="admin-artist-management">
