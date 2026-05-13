@@ -9,7 +9,7 @@
 // connection; subsequent calls in the same request return the cached instance.
 //
 
-$DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
+// $DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
 // $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
 $clientSQL = "Select * from clients where email = ? AND active = 1";
@@ -59,5 +59,56 @@ function GetClientCount(bool $includeInactive = false){
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC)['client_count'];
+}
+
+function GetArtistCount(bool $includeInactive = false){
+    $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
+    if($includeInactive){
+        $SQLString = 'SELECT COUNT(*) as artist_count FROM artists WHERE active = 1';
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
+}
+
+function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null){
+    $SQLString = 'SELECT * FROM timeclockshifts WHERE 1=1';
+    $params = [];
+    if($startDate){
+        $SQLString .= ' AND time_in >= ?';
+        $params[] = $startDate;
+    }
+    if($endDate){
+        $SQLString .= ' AND time_out <= ?';
+        $params[] = $endDate;
+    }
+    if($artist){
+        $SQLString .= ' AND user = ?';
+        $params[] = $artist;
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function CloseTimeclockShift($shiftID){
+    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE shift_id = ?';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$shiftID]);
+}
+
+function UpdateTimeclockShiftField($shiftId, $field, $value){
+    // Only allow updating time_in or time_out — whitelist for security
+    $allowedFields = ['time_in', 'time_out'];
+    if(!in_array($field, $allowedFields)){
+        return false;
+    }
+    $SQLString = "UPDATE timeclockshifts SET $field = ? WHERE shift_id = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    return $stmt->execute([$value, $shiftId]);
 }
 ?>

@@ -27,8 +27,12 @@ include_once __ROOT__ . '/libraries/db.php';
     </div>
     <div class="dashboard-grid">
         <!-- Row 1: 4 cards, each 1 column (no span class needed) -->
-        <div class="dashboard-card">Card 1</div>
-        <div class="dashboard-card">Card 2</div>
+        <div class="dashboard-card"><center><h3> Number of active clients</h3>
+        <p><?php echo GetClientCount(false); ?></p></center>
+    </div>
+        <div class="dashboard-card"><center><h3> Number of active artists</h3>
+        <p><?php echo GetArtistCount(false); ?></p></center>
+    </div>
         <div class="dashboard-card">Card 3</div>
         <div class="dashboard-card">Card 4</div>
         

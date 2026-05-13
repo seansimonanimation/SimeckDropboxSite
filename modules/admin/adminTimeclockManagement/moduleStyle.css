@@ -1,5 +1,5 @@
-/* Admin Artist Management module styles */
-.admin-artist-management {
+/* Admin Timeclock Management module styles */
+.admin-timeclock-management {
   padding: 24px;
   
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-.aam-header {
+.tcm-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -18,39 +18,39 @@
   margin-bottom: 24px;
 }
 
-.aam-title {
+.tcm-title {
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
 }
 
-.aam-subtitle {
+.tcm-subtitle {
   margin: 0;
   color: #6c7280;
   font-size: 0.95rem;
 }
 
-.aam-grid {
+.tcm-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 /* Default: card spans 1 column (Row 1 cards) */
-.aam-card { 
+.tcm-card { 
     grid-column: span 1;
  }
 
 /* Span 2 columns (Row 2 cards) */
-.aam-card--span-2 {
+.tcm-card--span-2 {
   grid-column: span 2;
 }
 
 /* Span 4 columns / full width (Row 3 card) */
-.aam-card--span-4,
-.aam-card--full {
+.tcm-card--span-4,
+.tcm-card--full {
   grid-column: 1 / -1;
 }
-.aam-card {
+.tcm-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -59,72 +59,72 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.aam-card:hover {
+.tcm-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 36px var(--shadow-md);
 }
 
-.aam-card__header {
+.tcm-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 18px;
 }
 
-.aam-card__title {
+.tcm-card__title {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.aam-card__meta {
+.tcm-card__meta {
   color: var(--color-text);
   font-size: 0.88rem;
 }
 
-.aam-card__content {
+.tcm-card__content {
   font-size: 0.96rem;
   line-height: 1.65;
   color: var(--color-text);
 }
 
-.aam-card--accent {
+.tcm-card--accent {
   border-color: rgba(59, 130, 246, 0.18);
 }
 
-.aam-card--accent .aam-card__title {
+.tcm-card--accent .tcm-card__title {
   color: #0f4cfa;
 }
 
 @media (max-width: 640px) {
-  .admin-aam {
+  .admin-tcm {
     padding: 16px;
   }
 
-  .aam-header {
+  .tcm-header {
     flex-direction: column;
     align-items: flex-start;
   }
 }
-.admin-artist-management .dataTables_filter {
+.admin-timeclock-management .dataTables_filter {
     display: none;
 }
 /* Inline editing styles */
-.aam-editable {
+.atc-editable {
     cursor: pointer;
     position: relative;
     transition: background-color 0.15s ease;
 }
 
-.aam-editable:hover {
+.atc-editable:hover {
     background-color: rgba(59, 130, 246, 0.06);
 }
 
-.aam-editable.editing {
+.atc-editable.editing {
     background-color: rgba(59, 130, 246, 0.1);
 }
 
-.aam-input {
+.atc-input {
     padding: 4px 6px;
     border-radius: 6px;
     border: 1px solid var(--color-border-bright);

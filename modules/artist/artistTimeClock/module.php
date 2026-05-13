@@ -7,5 +7,46 @@
  * @nav-icon clock
  * @nav-order 10
  */
+include_once __DIR__ . '/../../../libraries/session.php';
+include_once __ROOT__ . '/libraries/timeclock/timeclockLib.php';
+include_once __ROOT__ . '/libraries/db.php';
 
+if(isset($_GET['clock_in'])){
+    ArtistClockIn($_SESSION['username']);
+}
+if(isset($_GET['clock_out'])){
+    ArtistClockOut($_SESSION['username']);
+}
 ?>
+
+<link rel="stylesheet" href="/modules/artist/artistTimeClock/moduleStyle.css" />
+
+<div class="artist-timeclock">
+    <div class="timeclock-header">
+        <h1>Time Clock</h1>
+        <p>Use the button below to clock in or out. If you forget to clock out, an admin can adjust your times. Just remember to tell us the shift ID!</p>
+    </div>
+    <div class="atc-grid">
+        <div class="atc-card atc-card--span-1">
+            <h3>Your most recent activity was</h3>
+        </div>
+        <div class="atc-card atc-card--span-2">
+            <h3> Your Stats</h3>
+        </div>
+        <div class="atc-card atc-card--span-1">
+            <?php echo DisplayArtistClockInOutButton($_SESSION['username']); ?>
+        </div>
+        <div class="atc-card atc-card--span-2">
+            <center>
+                <h1>Your Timeclock Entries</h1>
+                <?php GenerateArtistTimeclockTable($_SESSION['username']); ?>
+            </center>
+        </div>
+        <div class="atc-card atc-card--span-2">
+            <center>
+                <h1>Your important documents</h1>
+                <p>coming soon!</p>
+            </center>
+    </div>
+    </div>
+</div>
