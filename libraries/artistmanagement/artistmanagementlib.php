@@ -36,4 +36,5 @@ function GenerateArtistStatusButton($artistID, $isActive){
     }
 
 }
+//
 ?>
