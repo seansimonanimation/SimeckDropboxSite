@@ -29,12 +29,28 @@ function GetAllArtists(){
 
 
 function GenerateArtistStatusButton($artistID, $isActive){
+    if($artistID == $_SESSION["userID"]){
+        return "This is you!";
+    }
     if($isActive){
         return '<button class="toggle-artist-status" data-artist-id="' . $artistID . '" data-new-status="0">✅</button>';
     } else {
         return '<button class="toggle-artist-status" data-artist-id="' . $artistID . '" data-new-status="1">❌</button>';
     }
 
+}
+
+
+function ToggleArtistStatus($artistID, $isActive){
+    if($isActive == "1"){
+        $SQLString = "UPDATE artists SET active = 0 WHERE userID = ?";
+    } else {
+        $SQLString = "UPDATE artists SET active = 1 WHERE userID = ?";
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$artistID]);
+    RefreshPortal();
 }
 //
 ?>

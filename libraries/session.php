@@ -11,6 +11,7 @@ function PutArtistDataInSession($artistData){
     $_SESSION['username'] = $artistData['username'];
     $_SESSION['firstname'] = $artistData['firstname'];
     $_SESSION['lastname'] = $artistData['lastname'];
+    $_SESSION['userID'] = $artistData['userID'];
     $_SESSION['role'] = $artistData['role'];
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
@@ -50,5 +51,7 @@ function GetRole(){
 function GetTempRole(){
     return $_SESSION['tempRole'];
 }
-
+function RefreshPortal(){
+    header("Location: index.php");
+}
 ?>
