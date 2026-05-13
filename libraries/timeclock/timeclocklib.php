@@ -116,4 +116,18 @@ function ArtistClockOut($artistID){
     header("Location: index.php");
     exit;
 }
+
+function ShowArtistFilesForTimeclock(){
+    //This is a place where artist can view things like important tax documents, contracts, and other files related to their work at Simeck Entertainment. This is a future feature that we will be adding, but for now it just returns a placeholder message.
+    $SQLString = 'SELECT * from artistdocuments where owner = ?';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$_SESSION['username']]);
+    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    foreach($files as $file){
+        echo '<p><a href="/artistdocuments/' . htmlspecialchars($file['filepath']) . '">' . htmlspecialchars(basename($file['filepath'])) . '</a></p>';
+    }
+}
 ?>

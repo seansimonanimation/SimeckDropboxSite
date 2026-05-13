@@ -17,6 +17,7 @@ function GenerateArtistCards() {
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
+        echo DisplayArtistDocuments($artist['username']);
         echo '</div>';
     }
 }
@@ -88,7 +89,22 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$owner, $file_path, $uploaded_by, $upload_time]);
     RefreshPortal();
+}
 
+function SelectArtistDocuments($artistName){
+    $SQLString = "SELECT filepath, uploaded_by, upload_time FROM artistdocuments WHERE owner = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$artistName]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function DisplayArtistDocuments($artistName){
+    $documents = SelectArtistDocuments($artistName);
+    foreach($documents as $doc){
+        echo '<div class="artist-document">';
+        echo '<a href="' . htmlspecialchars($doc['filepath']) . '" target="_blank">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
+        echo '</div>';
+    }
 }
 //
 ?>

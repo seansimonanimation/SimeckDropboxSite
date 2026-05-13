@@ -45,7 +45,7 @@ if(isset($_GET['clock_out'])){
         <div class="atc-card atc-card--span-2">
             <center>
                 <h1>Your important documents</h1>
-                <p>coming soon!</p>
+                <p><?php ShowArtistFilesForTimeclock(); ?></p>
             </center>
     </div>
     </div>
