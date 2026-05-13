@@ -7,7 +7,7 @@ include_once __ROOT__ . '/libraries/auth.php';
 
 function GenerateTimeclockTable(){
     $entryArray = GetTimeclockEntries();
-    echo '<table id="ShiftList" class="display" style="width:100%; border-collapse: collapse;">';
+    echo '<table id="ShiftList" class="display atc-tablecell" style="width:100%; border-collapse: collapse;">';
     echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Delete</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){

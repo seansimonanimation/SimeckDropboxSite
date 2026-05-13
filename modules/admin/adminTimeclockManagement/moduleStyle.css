@@ -37,17 +37,20 @@
 }
 /* Default: card spans 1 column (Row 1 cards) */
 .tcm-card { 
+    text-align: center;
     grid-column: span 1;
  }
 
 /* Span 2 columns (Row 2 cards) */
 .tcm-card--span-2 {
+    text-align: center;
   grid-column: span 2;
 }
 
 /* Span 4 columns / full width (Row 3 card) */
 .tcm-card--span-4,
 .tcm-card--full {
+    text-align: center;
   grid-column: 1 / -1;
 }
 .tcm-card {
@@ -134,4 +137,15 @@
     font-size: inherit;
     width: 100%;
     box-sizing: border-box;
+}
+.atc-tablecell th,
+.atc-tablecell td {
+    text-align: center;
+    padding: 8px 12px;
+    border: none;
+    border-right: 1px solid var(--color-border);
+}
+.atc-tablecell th:last-child,
+.atc-tablecell td:last-child {
+    border-right: none;
 }
