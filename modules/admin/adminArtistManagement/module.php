@@ -17,6 +17,9 @@ include_once __ROOT__ . '/libraries/artistmanagement/artistmanagementlib.php';
 if(isset($_GET['artist_id']) && isset($_GET['new_status'])){
     ToggleArtistStatus($_GET['artist_id'], $_GET['new_status']);
 }
+if(isset($_GET['reset_pw_for'])){
+    ResetArtistPassword($_GET['reset_pw_for']);
+}
 
 
 ?>

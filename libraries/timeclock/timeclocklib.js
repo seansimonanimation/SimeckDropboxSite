@@ -75,6 +75,7 @@ $(document).on('click', '.atc-editable', function(){
             alert('Failed to save. Check your connection.');
             $td.removeClass('editing');
         });
+        location.reload();
     }
     
     $input.on('change', saveValue);
