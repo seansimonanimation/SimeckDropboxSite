@@ -6,7 +6,7 @@ function GenerateArtistCards() {
     foreach ($artists as $artist) {
         echo '<div class="aam-card aam-card--span-4">';
         echo '<table id="oneArtistTable" class="display aam-tablecell" style="width:100%; border-collapse: collapse;">';
-        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Reset PW</th><th>Upload Document</th><th>Save Changes</th></tr></thead><tbody>';
+        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
@@ -14,7 +14,6 @@ function GenerateArtistCards() {
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
         echo '<td class="aam-tablecell"><button class="edit-artist-button" onclick="location.href=\'?reset_pw_for=' . $artist['username'] . '\'">Reset PW</button></td>';
         echo '<td class="aam-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['userID'] . '">Upload Document</button></td>';
-        echo '<td class="aam-tablecell"><button class="save-artist-button" data-artist-id="' . $artist['userID'] . '">Save Changes</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
@@ -36,9 +35,9 @@ function GenerateArtistStatusButton($artistID, $isActive){
         return "This is you!";
     }
     if($isActive){
-        return '<a href="?artist_id=' . $artistID . '&new_status=0" class="toggle-artist-status">✅</a>';
+        return '<a href="?artist_id=' . $artistID . '&new_status=0" class="toggle-artist-status"><h1>✅</h1></a>';
     } else {
-        return '<a href="?artist_id=' . $artistID . '&new_status=1" class="toggle-artist-status">❌</a>';
+        return '<a href="?artist_id=' . $artistID . '&new_status=1" class="toggle-artist-status"><h1>❌</h1></a>';
     }
 
 }
@@ -65,9 +64,9 @@ function ResetArtistPassword($username){
     RefreshPortal();
 }
 
-function UploadArtistDocument($artistName, $file){
+function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     $owner = $artistName;
-    $folder_path = __ROOT__ . '/files/Corporate/ArtistDocuments/' . $artistName . '/';
+    $folder_path = __ROOT__ . '/files/Corporate/ArtistDocuments/' . $lastname . ", " . $firstname . '/';
     $file_path = $folder_path . $file['name'];
     $uploaded_by = $_SESSION['username'];
     $upload_time = date('Y-m-d H:i:s');
@@ -88,7 +87,6 @@ function UploadArtistDocument($artistName, $file){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$owner, $file_path, $uploaded_by, $upload_time]);
-    return true;
     RefreshPortal();
 
 }
