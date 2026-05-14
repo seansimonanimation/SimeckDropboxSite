@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `description` varchar(500) DEFAULT NULL COMMENT 'A short project description'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.projects: ~6 rows (approximately)
+-- Dumping data for table simeckdb.projects: ~0 rows (approximately)
 REPLACE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
 	('C02', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('C03', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
