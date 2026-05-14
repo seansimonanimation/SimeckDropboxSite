@@ -106,8 +106,30 @@ function DisplayArtistDocuments($artistName){
         echo '<div class="artist-document">';
         $b64 = Generateb64EncodedDownloadLink($artistName, $doc['uploadID']);
         echo '<a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
+        echo '<a href="?delete=' . $doc['uploadID'] . '">❌</a>';
         echo '</div>';
     }
+}
+
+function DeleteArtistDocument($docID){
+    // First, we need to get the file path so we can delete the file from the server.
+    $SQLString = "SELECT filepath FROM artistdocuments WHERE uploadID = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$docID]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($result) {
+        $filePath = __ROOT__ . $result['filepath'];
+        if (file_exists($filePath)) {
+            unlink($filePath); // Delete the file from the server
+        }
+    }
+    // Now we can delete the record from the database.
+    $SQLString = "DELETE FROM artistdocuments WHERE uploadID = ?";
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$docID]);
+    RefreshPortal();
 }
 //
 ?>

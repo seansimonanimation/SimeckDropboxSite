@@ -20,6 +20,9 @@ if(isset($_GET['artist_id']) && isset($_GET['new_status'])){
 if(isset($_GET['reset_pw_for'])){
     ResetArtistPassword($_GET['reset_pw_for']);
 }
+if(isset($_GET['delete'])){
+    DeleteArtistDocument($_GET['delete']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
     // Resolve artist_id → artist username
