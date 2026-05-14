@@ -19,6 +19,20 @@
 CREATE DATABASE IF NOT EXISTS `simeckdb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `simeckdb`;
 
+-- Dumping structure for table simeckdb.artistdocuments
+CREATE TABLE IF NOT EXISTS `artistdocuments` (
+  `owner` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `uploadID` int unsigned NOT NULL AUTO_INCREMENT,
+  `filepath` varchar(200) DEFAULT NULL,
+  `uploaded_by` varchar(20) DEFAULT NULL,
+  `upload_time` datetime DEFAULT NULL,
+  KEY `uploadID` (`uploadID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table simeckdb.artistdocuments: ~1 rows (approximately)
+REPLACE INTO `artistdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
+	('artist', 1, '/files/Corporate/ArtistDocuments/User, Artist/br.png', 'admin', '2026-05-13 08:45:10');
+
 -- Dumping structure for table simeckdb.artists
 CREATE TABLE IF NOT EXISTS `artists` (
   `username` varchar(50) DEFAULT NULL,
@@ -69,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `enabled` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.modules: ~1 rows (approximately)
+-- Dumping data for table simeckdb.modules: ~0 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 	('Admin User', 'buffer', 1);
 
@@ -82,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   KEY `shift_id` (`shift_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.timeclockshifts: ~5 rows (approximately)
+-- Dumping data for table simeckdb.timeclockshifts: ~6 rows (approximately)
 REPLACE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
 	('artist', 4, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
 	('admin', 2, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),

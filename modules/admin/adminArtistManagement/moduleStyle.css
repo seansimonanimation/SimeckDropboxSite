@@ -1,7 +1,7 @@
 /* Admin Artist Management module styles */
 .admin-artist-management {
   padding: 24px;
-  
+    text-align: center;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
@@ -10,6 +10,7 @@
 }
 
 .aam-header {
+    text-align: center;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -19,12 +20,14 @@
 }
 
 .aam-title {
+    text-align: center;
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
 }
 
 .aam-subtitle {
+    text-align: center;
   margin: 0;
   color: #6c7280;
   font-size: 0.95rem;
@@ -37,20 +40,24 @@
 }
 /* Default: card spans 1 column (Row 1 cards) */
 .aam-card { 
+    text-align: center;
     grid-column: span 1;
  }
 
 /* Span 2 columns (Row 2 cards) */
 .aam-card--span-2 {
+  text-align: center;
   grid-column: span 2;
 }
 
 /* Span 4 columns / full width (Row 3 card) */
 .aam-card--span-4,
 .aam-card--full {
+  text-align: center;
   grid-column: 1 / -1;
 }
 .aam-card {
+  text-align: center;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -134,4 +141,15 @@
     font-size: inherit;
     width: 100%;
     box-sizing: border-box;
+}
+.aam-tablecell th,
+.aam-tablecell td {
+    text-align: center;
+    padding: 8px 12px;
+    border: none;
+    border-right: 1px solid var(--color-border);
+}
+.aam-tablecell th:last-child,
+.aam-tablecell td:last-child {
+    border-right: none;
 }

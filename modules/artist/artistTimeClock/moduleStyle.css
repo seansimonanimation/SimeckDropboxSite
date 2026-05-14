@@ -1,6 +1,7 @@
 /* artist Timeclock Management module styles */
 .artist-timeclock-management {
   padding: 24px;
+  text-align: center;
   
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--color-bg);
@@ -37,20 +38,24 @@
 }
 /* Default: card spans 1 column (Row 1 cards) */
 .atc-card { 
+    text-align: center;
     grid-column: span 1;
  }
 
 /* Span 2 columns (Row 2 cards) */
 .atc-card--span-2 {
+    text-align: center;
   grid-column: span 2;
 }
 
 /* Span 4 columns / full width (Row 3 card) */
 .atc-card--span-4,
 .atc-card--full {
+    text-align: center;
   grid-column: 1 / -1;
 }
 .atc-card {
+    text-align: center;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;

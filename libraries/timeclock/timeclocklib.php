@@ -2,12 +2,13 @@
 include_once __DIR__ . '/../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
+include_once __ROOT__ . '/download.php';
 
 
 
 function GenerateTimeclockTable(){
     $entryArray = GetTimeclockEntries();
-    echo '<table id="ShiftList" class="display" style="width:100%; border-collapse: collapse;">';
+    echo '<table id="ShiftList" class="display atc-tablecell" style="width:100%; border-collapse: collapse;">';
     echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Delete</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
@@ -115,5 +116,20 @@ function ArtistClockOut($artistID){
     $stmt->execute([$artistID]);
     header("Location: index.php");
     exit;
+}
+
+function ShowArtistFilesForTimeclock(){
+    //This is a place where artist can view things like important tax documents, contracts, and other files related to their work at Simeck Entertainment. This is a future feature that we will be adding, but for now it just returns a placeholder message.
+    $SQLString = 'SELECT * from artistdocuments where owner = ?';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$_SESSION['username']]);
+    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    foreach($files as $file){
+        $b64 = Generateb64EncodedDownloadLink($_SESSION['username'], $file['uploadID']);
+        echo '<p><a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($file['filepath'])) . '</a></p>';
+    }
 }
 ?>
