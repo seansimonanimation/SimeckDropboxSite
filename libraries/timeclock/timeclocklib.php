@@ -2,6 +2,7 @@
 include_once __DIR__ . '/../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
+include_once __ROOT__ . '/download.php';
 
 
 
@@ -127,7 +128,8 @@ function ShowArtistFilesForTimeclock(){
 
 
     foreach($files as $file){
-        echo '<p><a href="/artistdocuments/' . htmlspecialchars($file['filepath']) . '">' . htmlspecialchars(basename($file['filepath'])) . '</a></p>';
+        $b64 = Generateb64EncodedDownloadLink($_SESSION['username'], $file['uploadID']);
+        echo '<p><a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($file['filepath'])) . '</a></p>';
     }
 }
 ?>

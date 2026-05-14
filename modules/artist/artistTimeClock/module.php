@@ -10,12 +10,16 @@
 include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/timeclock/timeclockLib.php';
 include_once __ROOT__ . '/libraries/db.php';
+include_once __ROOT__ . '/download.php';
 
 if(isset($_GET['clock_in'])){
     ArtistClockIn($_SESSION['username']);
 }
 if(isset($_GET['clock_out'])){
     ArtistClockOut($_SESSION['username']);
+}
+if(isset($_GET['download_file'])){
+    InitiateDownload($_GET['download']);
 }
 ?>
 

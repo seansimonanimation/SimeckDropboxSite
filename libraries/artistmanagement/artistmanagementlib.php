@@ -1,6 +1,7 @@
 <?php
 include_once __DIR__ . '/../session.php';
 include_once __ROOT__ . '/libraries/db.php';
+include_once __ROOT__ . '/download.php';  
 function GenerateArtistCards() {
     $artists = GetAllArtists();
     foreach ($artists as $artist) {
@@ -93,7 +94,7 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
 }
 
 function SelectArtistDocuments($artistName){
-    $SQLString = "SELECT filepath, uploaded_by, upload_time FROM artistdocuments WHERE owner = ?";
+    $SQLString = "SELECT uploadID, filepath, uploaded_by, upload_time FROM artistdocuments WHERE owner = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$artistName]);
@@ -103,7 +104,8 @@ function DisplayArtistDocuments($artistName){
     $documents = SelectArtistDocuments($artistName);
     foreach($documents as $doc){
         echo '<div class="artist-document">';
-        echo '<a href="' . htmlspecialchars($doc['filepath']) . '" target="_blank">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
+        $b64 = Generateb64EncodedDownloadLink($artistName, $doc['uploadID']);
+        echo '<a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
         echo '</div>';
     }
 }
