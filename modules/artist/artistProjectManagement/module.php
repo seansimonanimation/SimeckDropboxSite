@@ -3,12 +3,12 @@
 // yep
 
 /**
- * @module artistClientManagement
- * @name ClientManagement
+ * @module artistProjectManagement
+ * @name ProjectManagement
  * @role artist
- * @nav-text Client Management
- * @nav-icon users
- * @nav-order 30
+ * @nav-text Project Management
+ * @nav-icon settings
+ * @nav-order 4
  */
 include_once __ROOT__ . '/libraries/session.php';
 

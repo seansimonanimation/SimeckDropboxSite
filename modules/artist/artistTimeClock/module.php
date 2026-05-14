@@ -5,7 +5,7 @@
  * @role artist
  * @nav-text Time Clock
  * @nav-icon clock
- * @nav-order 10
+ * @nav-order 3
  */
 include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/timeclock/timeclockLib.php';

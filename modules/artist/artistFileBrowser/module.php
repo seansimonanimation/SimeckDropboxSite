@@ -1,5 +1,5 @@
 <?php
-//The module responsible for dashboard content on the admin portal. 
+//The module responsible for File Management on the artist portal. 
 // yep
 
 /**
@@ -8,7 +8,7 @@
  * @role artist
  * @nav-text File Browser
  * @nav-icon Files
- * @nav-order 10
+ * @nav-order 2
  */
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/elfinderlib.php';
