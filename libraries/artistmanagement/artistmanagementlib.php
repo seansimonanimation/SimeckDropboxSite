@@ -67,8 +67,9 @@ function ResetArtistPassword($username){
 
 function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     $owner = $artistName;
-    $folder_path = __ROOT__ . '/files/Corporate/ArtistDocuments/' . $lastname . ", " . $firstname . '/';
+    $folder_path = '/files/Corporate/ArtistDocuments/' . $lastname . ", " . $firstname . '/';
     $file_path = $folder_path . $file['name'];
+    $systemFilePath = __ROOT__ . $file_path;
     $uploaded_by = $_SESSION['username'];
     $upload_time = date('Y-m-d H:i:s');
     // This function would handle the file upload logic, including moving the uploaded file to a secure location and updating the database with the file information.
@@ -79,7 +80,7 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
-    if (!move_uploaded_file($file['tmp_name'], $file_path)) {
+    if (!move_uploaded_file($file['tmp_name'], $systemFilePath)) {
     // Failed to move file — disk full? permissions?
     return false;
     }
