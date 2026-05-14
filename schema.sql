@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `outstandingBalance` decimal(20,2) DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clients: ~0 rows (approximately)
+-- Dumping data for table simeckdb.clients: ~1 rows (approximately)
 REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`) VALUES
 	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00);
 
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~0 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~1 rows (approximately)
 REPLACE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
 
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `enabled` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.modules: ~0 rows (approximately)
+-- Dumping data for table simeckdb.modules: ~1 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 	('Admin User', 'buffer', 1);
 
@@ -103,14 +103,15 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `description` varchar(500) DEFAULT NULL COMMENT 'A short project description'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.projects: ~0 rows (approximately)
+-- Dumping data for table simeckdb.projects: ~7 rows (approximately)
 REPLACE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
 	('C02', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('C03', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('C04', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('C05', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('C01', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
-	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.');
+	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.'),
+	('P01', 'C City', 1, '/files/Projects/internal/P01_C City/', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.');
 
 -- Dumping structure for table simeckdb.timeclockshifts
 CREATE TABLE IF NOT EXISTS `timeclockshifts` (
