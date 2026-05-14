@@ -19,6 +19,36 @@ include_once __ROOT__ . '/libraries/projectlib.php';
 
 
 ?>
+<script>
+function archiveProject(pid, action) {
+    fetch('/libraries/archive_project.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'pid=' + pid + '&action=' + action
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'started') {
+            // Button already shows "Transitioning..." from DB update
+            // Start polling for completion
+            pollTransitionStatus(pid);
+        }
+    });
+}
+
+function pollTransitionStatus(pid) {
+    const interval = setInterval(() => {
+        fetch('/libraries/check_transition.php?pid=' + pid)
+        .then(r => r.json())
+        .then(data => {
+            if (data.transitioning == 0) {
+                clearInterval(interval);
+                location.reload(); // Refresh the page to show updated state
+            }
+        });
+    }, 3000); // Poll every 3 seconds
+}
+</script>
 
 
 <link rel="stylesheet" href="/modules/admin/adminProjectManagement/moduleStyle.css" />

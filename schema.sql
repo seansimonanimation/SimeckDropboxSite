@@ -27,12 +27,13 @@ CREATE TABLE IF NOT EXISTS `artistdocuments` (
   `uploaded_by` varchar(20) DEFAULT NULL,
   `upload_time` datetime DEFAULT NULL,
   KEY `uploadID` (`uploadID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.artistdocuments: ~2 rows (approximately)
+-- Dumping data for table simeckdb.artistdocuments: ~3 rows (approximately)
 REPLACE INTO `artistdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('artist', 1, '/files/Corporate/ArtistDocuments/User, Artist/br.png', 'admin', '2026-05-13 08:45:10'),
-	('admin', 6, '/files/Corporate/ArtistDocuments/User, Admin/br.png', 'admin', '2026-05-14 14:39:38');
+	('admin', 6, '/files/Corporate/ArtistDocuments/User, Admin/br.png', 'admin', '2026-05-14 14:39:38'),
+	('admin', 9, '/files/Corporate/ArtistDocuments/User, Admin/illustrator-exercise-2.pdf', 'admin', '2026-05-14 18:26:32');
 
 -- Dumping structure for table simeckdb.artists
 CREATE TABLE IF NOT EXISTS `artists` (
@@ -62,9 +63,9 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `outstandingBalance` decimal(20,2) DEFAULT '0.00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clients: ~1 rows (approximately)
+-- Dumping data for table simeckdb.clients: ~0 rows (approximately)
 REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`) VALUES
-	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', NULL, 1, 0.00);
+	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00);
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -92,16 +93,24 @@ REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
-  `pid` int unsigned DEFAULT NULL,
+  `pid` varchar(5) DEFAULT NULL,
   `project_name` varchar(50) DEFAULT NULL,
   `active` int DEFAULT '1' COMMENT 'Inactive projects need to be zipped',
   `active_path` varchar(200) DEFAULT NULL COMMENT 'from site root',
   `inactive_zip_path` varchar(200) DEFAULT NULL,
   `transitioning` int DEFAULT '0',
-  `type` varchar(10) DEFAULT NULL COMMENT 'internal or client'
+  `type` varchar(10) DEFAULT NULL COMMENT 'internal or client',
+  `description` varchar(500) DEFAULT NULL COMMENT 'A short project description'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.projects: ~0 rows (approximately)
+-- Dumping data for table simeckdb.projects: ~6 rows (approximately)
+REPLACE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
+	('C02', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C03', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C04', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C05', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C01', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.');
 
 -- Dumping structure for table simeckdb.timeclockshifts
 CREATE TABLE IF NOT EXISTS `timeclockshifts` (
