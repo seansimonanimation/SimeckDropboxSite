@@ -180,5 +180,10 @@ function RemoveArtistFromProject($username, $pid){
     }
     RefreshPortal();
 }
+
+function RetrieveAllClientProjectsForDropdown(){
+    $SQLString = "SELECT pid, project_name FROM projects WHERE pid LIKE 'c%'";
+    return GetDataFromDB($SQLString);
+}
 //
 ?>
