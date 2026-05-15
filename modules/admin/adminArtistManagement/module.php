@@ -14,6 +14,12 @@ include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/artistmanagement/artistmanagementlib.php';
 
+
+if(isset($_GET['addArtistToProject'])){
+    $params = explode(",", $_GET['addArtistToProject']);
+    AddArtistToProject($params[0], $params[1]);
+}
+
 if(isset($_GET['artist_id']) && isset($_GET['new_status'])){
     ToggleArtistStatus($_GET['artist_id'], $_GET['new_status']);
 }

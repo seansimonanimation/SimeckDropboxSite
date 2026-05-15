@@ -134,28 +134,48 @@ function DeleteArtistDocument($docID){
 }
 
 function FetchArtistProjectAssignments($username, $projectAssignmentStr){
-    if(empty($projectAssignmentStr)){
-        return "No projects assigned";
-    }
-    $projectArr = explode(",", $projectAssignmentStr);
+    $projectArr = empty($projectAssignmentStr) ? [] : explode(",", $projectAssignmentStr);
 
-    // ------ CHANGED: select both pid AND project_name ------
-    $SQLString = "SELECT pid, project_name FROM projects WHERE pid IN ("
-        . implode(",", array_fill(0, count($projectArr), "?")) . ")";
-
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute($projectArr);
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    // ------ CHANGED: build display string with pid_projectName + delete link ------
+    // --- Dropdown at top ---
+    $allProjects = RetrieveAllActiveProjects();
     $output = [];
-    foreach ($results as $row) {
-        $output[] = $row['pid'] . '_' . $row['project_name']
-            . ' <a href="?removeArtistFromProject=' . $username . ',' . $row['pid'] . '">❌</a>';
+    $dropdown = '<select onchange="location.href=\'?addArtistToProject=' . $username . ',\'+this.value">';
+    $dropdown .= '<option value="">-- Add project --</option>';
+    $availableCount = 0;
+    foreach ($allProjects as $proj) {
+        if (!in_array($proj['pid'], $projectArr)) {
+            $dropdown .= '<option value="' . $proj['pid'] . '">' . $proj['pid'] . '_' . $proj['project_name'] . '</option>';
+            $availableCount++;
+        }
     }
+    $dropdown .= '</select>';
+
+    if ($availableCount > 0) {
+        $output[] = $dropdown;
+    } else {
+        $output[] = 'All projects assigned';
+    }
+
+    // --- Then existing assignments below ---
+    if (!empty($projectAssignmentStr)) {
+        $SQLString = "SELECT pid, project_name FROM projects WHERE pid IN ("
+            . implode(",", array_fill(0, count($projectArr), "?")) . ")";
+        $pdo = DBConnect();
+        $stmt = $pdo->prepare($SQLString);
+        $stmt->execute($projectArr);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($results as $row) {
+            $output[] = $row['pid'] . '_' . $row['project_name']
+                . ' <a href="?removeArtistFromProject=' . $username . ',' . $row['pid'] . '">❌</a>';
+        }
+    } else {
+        $output[] = 'No projects assigned';
+    }
+
     return implode("<br>", $output);
 }
+
 
 function RemoveArtistFromProject($username, $pid){
     // First we need to get the current project assignment string for the artist
@@ -181,9 +201,35 @@ function RemoveArtistFromProject($username, $pid){
     RefreshPortal();
 }
 
-function RetrieveAllClientProjectsForDropdown(){
-    $SQLString = "SELECT pid, project_name FROM projects WHERE pid LIKE 'c%'";
+function RetrieveAllActiveProjects(){
+    $SQLString = "SELECT pid, project_name FROM projects WHERE active = 1";
     return GetDataFromDB($SQLString);
 }
+
+function AddArtistToProject($username, $pid){
+    // First we need to get the current project assignment string for the artist
+    $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($result) {
+        $projectAssignmentStr = $result['project_assignments'];
+        $projectArr = explode(",", $projectAssignmentStr);
+        // Add the new pid to the array if it's not already there
+        if (!in_array($pid, $projectArr)) {
+            $projectArr[] = $pid;
+        }
+        // Update the database with the new project assignment string
+        $newProjectAssignmentStr = implode(",", $projectArr);
+        $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
+        $updateStmt = $pdo->prepare($updateSQL);
+        $updateStmt->execute([$newProjectAssignmentStr, $username]);
+    }
+    RefreshPortal();
+}
+
+
 //
 ?>
