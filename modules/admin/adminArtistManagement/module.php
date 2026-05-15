@@ -23,6 +23,10 @@ if(isset($_GET['reset_pw_for'])){
 if(isset($_GET['delete'])){
     DeleteArtistDocument($_GET['delete']);
 }
+if(isset($_GET['removeArtistFromProject'])){
+    $params = explode(",", $_GET['removeArtistFromProject']);
+    RemoveArtistFromProject($params[0], $params[1]);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
     // Resolve artist_id → artist username

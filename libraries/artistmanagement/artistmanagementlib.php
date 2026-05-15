@@ -7,14 +7,15 @@ function GenerateArtistCards() {
     foreach ($artists as $artist) {
         echo '<div class="aam-card aam-card--span-4">';
         echo '<table id="oneArtistTable" class="display aam-tablecell" style="width:100%; border-collapse: collapse;">';
-        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
+        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
-        echo '<td class="aam-tablecell">' . GenerateArtistStatusButton($artist['userID'], $artist['active']) . '</td>';
+        echo '<td class="aam-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
         echo '<td class="aam-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
+        echo '<td class="aam-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
         echo '<td class="aam-tablecell"><button class="edit-artist-button" onclick="location.href=\'?reset_pw_for=' . $artist['username'] . '\'">Reset PW</button></td>';
-        echo '<td class="aam-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['userID'] . '">Upload Document</button></td>';
+        echo '<td class="aam-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
@@ -24,7 +25,7 @@ function GenerateArtistCards() {
 }
 
 function GetAllArtists(){
-    $SQLString = "SELECT username, firstname, lastname, userID, active, role FROM artists";
+    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments FROM artists";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -129,6 +130,54 @@ function DeleteArtistDocument($docID){
     $SQLString = "DELETE FROM artistdocuments WHERE uploadID = ?";
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$docID]);
+    RefreshPortal();
+}
+
+function FetchArtistProjectAssignments($username, $projectAssignmentStr){
+    if(empty($projectAssignmentStr)){
+        return "No projects assigned";
+    }
+    $projectArr = explode(",", $projectAssignmentStr);
+
+    // ------ CHANGED: select both pid AND project_name ------
+    $SQLString = "SELECT pid, project_name FROM projects WHERE pid IN ("
+        . implode(",", array_fill(0, count($projectArr), "?")) . ")";
+
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute($projectArr);
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // ------ CHANGED: build display string with pid_projectName + delete link ------
+    $output = [];
+    foreach ($results as $row) {
+        $output[] = $row['pid'] . '_' . $row['project_name']
+            . ' <a href="?removeArtistFromProject=' . $username . ',' . $row['pid'] . '">❌</a>';
+    }
+    return implode("<br>", $output);
+}
+
+function RemoveArtistFromProject($username, $pid){
+    // First we need to get the current project assignment string for the artist
+    $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($result) {
+        $projectAssignmentStr = $result['project_assignments'];
+        $projectArr = explode(",", $projectAssignmentStr);
+        // Remove the pid from the array
+        if (($key = array_search($pid, $projectArr)) !== false) {
+            unset($projectArr[$key]);
+        }
+        // Update the database with the new project assignment string
+        $newProjectAssignmentStr = implode(",", $projectArr);
+        $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
+        $updateStmt = $pdo->prepare($updateSQL);
+        $updateStmt->execute([$newProjectAssignmentStr, $username]);
+    }
     RefreshPortal();
 }
 //
