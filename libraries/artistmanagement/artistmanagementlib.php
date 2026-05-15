@@ -33,28 +33,28 @@ function GetAllArtists(){
 }
 
 
-function GenerateArtistStatusButton($artistID, $isActive){
-    if($artistID == $_SESSION["userID"]){
+function GenerateArtistStatusButton($artistUsername, $isActive){
+    if($artistUsername == $_SESSION["username"]){
         return "This is you!";
     }
     if($isActive){
-        return '<a href="?artist_id=' . $artistID . '&new_status=0" class="toggle-artist-status"><h1>✅</h1></a>';
+        return '<a href="?artist_id=' . $artistUsername . '&new_status=0" class="toggle-artist-status"><h1>✅</h1></a>';
     } else {
-        return '<a href="?artist_id=' . $artistID . '&new_status=1" class="toggle-artist-status"><h1>❌</h1></a>';
+        return '<a href="?artist_id=' . $artistUsername . '&new_status=1" class="toggle-artist-status"><h1>❌</h1></a>';
     }
 
 }
 
 
-function ToggleArtistStatus($artistID, $isActive){
+function ToggleArtistStatus($artistUsername, $isActive){
     if($isActive == "1"){
-        $SQLString = "UPDATE artists SET active = 1 WHERE userID = ?";
+        $SQLString = "UPDATE artists SET active = 1 WHERE username = ?";
     } else {
-        $SQLString = "UPDATE artists SET active = 0 WHERE userID = ?";
+        $SQLString = "UPDATE artists SET active = 0 WHERE username = ?";
     }
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
-    $stmt->execute([$artistID]);
+    $stmt->execute([$artistUsername]);
     RefreshPortal();
 }
 

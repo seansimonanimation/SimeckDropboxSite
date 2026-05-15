@@ -5,9 +5,13 @@
 
 
 function GenerateClientCards(){
-    $clients = GetAllClients();
+    if(isset($_GET['searchClient'])){
+        $clients = GetSearchedClient($_GET['searchClient']);
+    } else {
+        $clients = GetAllClients();
+    }
     foreach($clients as $client){
-        echo '<div class="acm-card acm-card--span-2">';
+        echo '<div class="acm-card acm-card--span-4">';
         echo '<table>';
         echo '<tr><td>Email</td><td>'.$client['email'].'</td></tr>';
         echo '<tr><td>Name</td><td>'.$client['firstname'].' '.$client['lastname'].'</td></tr>';
@@ -32,6 +36,13 @@ function GetAllClients(){
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function GetSearchedClient($searchterm){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT * FROM clients WHERE email LIKE ? OR firstname LIKE ? OR lastname LIKE ?");
+    $likeTerm = '%' . $searchterm . '%';
+    $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 function SummonActivityButton($isActive){
     if($isActive){
         return '<span style="color:green; font-weight:bold">✅</span>';
@@ -48,15 +59,15 @@ function GetToggleButtonText($email, $activestatus){
 
 function GetAllClientProjectList(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_name FROM projects WHERE pid LIKE 'c%'");
+    $stmt = $pdo->prepare("SELECT project_name, pid FROM projects WHERE pid LIKE 'c%'");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function CreateNewClient($email, $firstname, $lastname){
+function CreateNewClient($email, $firstname, $lastname, $PoC, $pid){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("INSERT INTO clients (email, firstname, lastname) VALUES (?, ?, ?)");
-    $stmt->execute([$email, $firstname, $lastname]);
+    $stmt = $pdo->prepare("INSERT INTO clients (email, firstname, lastname, point_of_contact, project_assignments) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$email, $firstname, $lastname, $PoC, $pid]);
     RefreshPortal();
 }
 
@@ -70,4 +81,11 @@ function GetPoCName($username){
     }
     return 'Unknown';
 }
+function GetAllArtists(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>
