@@ -57,16 +57,17 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `email` varchar(70) DEFAULT NULL,
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
-  `password` varchar(500) DEFAULT NULL,
+  `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq',
   `project_assignments` varchar(100) DEFAULT NULL,
   `active` int unsigned DEFAULT '1',
   `outstandingBalance` decimal(20,2) DEFAULT '0.00',
   `point_of_contact` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clients: ~1 rows (approximately)
+-- Dumping data for table simeckdb.clients: ~2 rows (approximately)
 REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`) VALUES
-	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00, 'admin');
+	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00, 'admin'),
+	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'admin');
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -77,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~0 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~1 rows (approximately)
 REPLACE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
 
