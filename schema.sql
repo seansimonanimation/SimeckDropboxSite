@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS `artists` (
 
 -- Dumping data for table simeckdb.artists: ~2 rows (approximately)
 REPLACE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', NULL),
-	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', NULL);
+	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01'),
+	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P01');
 
 -- Dumping structure for table simeckdb.clients
 CREATE TABLE IF NOT EXISTS `clients` (
@@ -60,12 +60,13 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `password` varchar(500) DEFAULT NULL,
   `project_assignments` varchar(100) DEFAULT NULL,
   `active` int unsigned DEFAULT '1',
-  `outstandingBalance` decimal(20,2) DEFAULT '0.00'
+  `outstandingBalance` decimal(20,2) DEFAULT '0.00',
+  `point_of_contact` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.clients: ~1 rows (approximately)
-REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`) VALUES
-	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00);
+REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`) VALUES
+	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00, 'admin');
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -76,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~1 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~0 rows (approximately)
 REPLACE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
 
@@ -87,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `enabled` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.modules: ~1 rows (approximately)
+-- Dumping data for table simeckdb.modules: ~0 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 	('Admin User', 'buffer', 1);
 
@@ -105,11 +106,11 @@ CREATE TABLE IF NOT EXISTS `projects` (
 
 -- Dumping data for table simeckdb.projects: ~7 rows (approximately)
 REPLACE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
-	('C02', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
-	('C03', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
-	('C04', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
-	('C05', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
-	('C01', 'SampleProject', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C02', 'SampleProject2', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C03', 'SampleProject3', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C04', 'SampleProjec4', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C05', 'SampleProject5', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C01', 'SampleProject1', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
 	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.'),
 	('P01', 'C City', 1, '/files/Projects/internal/P01_C City/', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.');
 
