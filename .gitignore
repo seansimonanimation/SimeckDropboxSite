@@ -1,2 +1,3 @@
 files/*
 login.conf.php
+libraries/dbconfig.php

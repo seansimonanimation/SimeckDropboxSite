@@ -21,7 +21,23 @@ function DBConnect(){
         return $db_instance;
     }
 
-    $dbconfig = include __DIR__ . '/dbconfig.php';
+    $possibleConfigPaths = [
+        __DIR__ . '/dbconfig.php', // default location
+        'C:/Users/rsimon_ptaa/Documents/dropbox.simeck.com/libraries/dbconfig.php', //school location for Iwerks
+        'C:/Users/randy/Documents/dropbox.simeck.com/libraries/dbconfig.php', //home location for Fabio
+        '/var/www/dbconfig.php' // typical Linux server location
+    ];
+
+    $dbconfig = null;
+    foreach ($possibleConfigPaths as $path) {
+        if (file_exists($path)) {
+            $dbconfig = include $path;
+            break;
+        }
+    }
+    if ($dbconfig === null) {
+        throw new Exception('Database configuration file not found.');
+    }
     $db = $dbconfig['simeckdb']; // default connection
     $dsnData = "mysql:host={$db['host']};port={$db['port']};dbname={$db['dbname']};charset={$db['charset']}";
     $db_instance = new PDO($dsnData, $db['user'], $db['pass']);
