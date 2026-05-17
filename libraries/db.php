@@ -111,4 +111,11 @@ function UpdateTimeclockShiftField($shiftId, $field, $value){
     $stmt = $pdo->prepare($SQLString);
     return $stmt->execute([$value, $shiftId]);
 }
+
+function GetDataFromDB($SQLString, $params = []){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

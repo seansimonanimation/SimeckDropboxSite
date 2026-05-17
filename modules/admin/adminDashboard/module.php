@@ -1,5 +1,5 @@
 <?php
-//The module responsible for dashboard content on the admin portal. 
+//The module responsible for Dashboard content on the admin portal. 
 // yep
 
 /**
@@ -18,29 +18,29 @@ include_once __ROOT__ . '/libraries/db.php';
 
 
 ?>
-<link rel="stylesheet" href="/modules/admin/adminDashboard/moduleStyle.css" />
 
-<div class="admin-dashboard">
-    <div class="dashboard-header">
-        <h1 class="dashboard-title">Welcome to the Simeck Admin Portal!</h1>
+<div class="module">
+    <div class="module-header">
+        <h1 class="module-title">Welcome to the Simeck Admin Portal!</h1>
         <br />
     </div>
-    <div class="dashboard-grid">
+    <div class="module-grid">
         <!-- Row 1: 4 cards, each 1 column (no span class needed) -->
-        <div class="dashboard-card"><center><h3> Number of active clients</h3>
+        <div class="module-card"><center><h3> Number of active clients</h3>
         <p><?php echo GetClientCount(false); ?></p></center>
     </div>
-        <div class="dashboard-card"><center><h3> Number of active artists</h3>
+        <div class="module-card"><center><h3> Number of active artists</h3>
         <p><?php echo GetArtistCount(false); ?></p></center>
     </div>
-        <div class="dashboard-card">Card 3</div>
-        <div class="dashboard-card">Card 4</div>
+        <div class="module-card">Card 3</div>
+        <div class="module-card">Card 4</div>
         
         <!-- Row 2: 2 cards, each spanning 2 columns -->
-        <div class="dashboard-card dashboard-card--span-2">Card 5</div>
-        <div class="dashboard-card dashboard-card--span-2">Card 6</div>
+        <div class="module-card module-card--span-2">Card 5</div>
+        <div class="module-card module-card--span-2">Card 6</div>
         
         <!-- Row 3: 1 card, spanning all 4 columns -->
-        <div class="dashboard-card dashboard-card--full">Card 7</div>
+        <div class="module-card module-card--span-4"><h1>Changelog</h1>
+    <p><?php echo file_get_contents(__ROOT__ .'/changelog.txt'); ?></p></div>
     </div>
 </div>

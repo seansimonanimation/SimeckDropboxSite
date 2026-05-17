@@ -5,10 +5,10 @@
 /**
  * @module artistClientManagement
  * @name ClientManagement
- * @role admin
- * @nav-text Clients
+ * @role artist
+ * @nav-text Client Management
  * @nav-icon users
- * @nav-order 5
+ * @nav-order 30
  */
 include_once __ROOT__ . '/libraries/session.php';
 

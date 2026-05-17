@@ -27,11 +27,13 @@ CREATE TABLE IF NOT EXISTS `artistdocuments` (
   `uploaded_by` varchar(20) DEFAULT NULL,
   `upload_time` datetime DEFAULT NULL,
   KEY `uploadID` (`uploadID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.artistdocuments: ~1 rows (approximately)
+-- Dumping data for table simeckdb.artistdocuments: ~3 rows (approximately)
 REPLACE INTO `artistdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
-	('artist', 1, '/files/Corporate/ArtistDocuments/User, Artist/br.png', 'admin', '2026-05-13 08:45:10');
+	('artist', 1, '/files/Corporate/ArtistDocuments/User, Artist/br.png', 'admin', '2026-05-13 08:45:10'),
+	('admin', 6, '/files/Corporate/ArtistDocuments/User, Admin/br.png', 'admin', '2026-05-14 14:39:38'),
+	('admin', 9, '/files/Corporate/ArtistDocuments/User, Admin/illustrator-exercise-2.pdf', 'admin', '2026-05-14 18:26:32');
 
 -- Dumping structure for table simeckdb.artists
 CREATE TABLE IF NOT EXISTS `artists` (
@@ -41,27 +43,31 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `userID` int unsigned DEFAULT NULL,
   `active` int unsigned DEFAULT NULL,
-  `role` varchar(10) DEFAULT NULL
+  `role` varchar(10) DEFAULT NULL,
+  `project_assignments` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~2 rows (approximately)
-REPLACE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin'),
-	('artist', 'Artist', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 2, 1, 'artist');
+REPLACE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`) VALUES
+	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01'),
+	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P01');
 
 -- Dumping structure for table simeckdb.clients
 CREATE TABLE IF NOT EXISTS `clients` (
   `email` varchar(70) DEFAULT NULL,
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
-  `password` varchar(500) DEFAULT NULL,
+  `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq',
+  `project_assignments` varchar(100) DEFAULT NULL,
   `active` int unsigned DEFAULT '1',
-  `outstandingBalance` decimal(20,2) DEFAULT '0.00'
+  `outstandingBalance` decimal(20,2) DEFAULT '0.00',
+  `point_of_contact` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clients: ~0 rows (approximately)
-REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `active`, `outstandingBalance`) VALUES
-	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 0.00);
+-- Dumping data for table simeckdb.clients: ~2 rows (approximately)
+REPLACE INTO `clients` (`email`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`) VALUES
+	('client', 'Client', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 'C01,C02', 1, 0.00, 'admin'),
+	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'admin');
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -72,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~0 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~1 rows (approximately)
 REPLACE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
 
@@ -86,6 +92,28 @@ CREATE TABLE IF NOT EXISTS `modules` (
 -- Dumping data for table simeckdb.modules: ~0 rows (approximately)
 REPLACE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
 	('Admin User', 'buffer', 1);
+
+-- Dumping structure for table simeckdb.projects
+CREATE TABLE IF NOT EXISTS `projects` (
+  `pid` varchar(5) DEFAULT NULL,
+  `project_name` varchar(50) DEFAULT NULL,
+  `active` int DEFAULT '1' COMMENT 'Inactive projects need to be zipped',
+  `active_path` varchar(200) DEFAULT NULL COMMENT 'from site root',
+  `inactive_zip_path` varchar(200) DEFAULT NULL,
+  `transitioning` int DEFAULT '0',
+  `type` varchar(10) DEFAULT NULL COMMENT 'internal or client',
+  `description` varchar(500) DEFAULT NULL COMMENT 'A short project description'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table simeckdb.projects: ~7 rows (approximately)
+REPLACE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
+	('C02', 'SampleProject2', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C03', 'SampleProject3', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C04', 'SampleProjec4', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C05', 'SampleProject5', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('C01', 'SampleProject1', 1, '/files/Projects/clientProjects/C01_SampleProject/', '/files/Projects/clientProjects/archive/C01_SampleProject.zip', 0, 'client', 'A simple sample client project'),
+	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.'),
+	('P01', 'C City', 1, '/files/Projects/internal/P01_C City/', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.');
 
 -- Dumping structure for table simeckdb.timeclockshifts
 CREATE TABLE IF NOT EXISTS `timeclockshifts` (
