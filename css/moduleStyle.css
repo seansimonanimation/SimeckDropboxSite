@@ -148,7 +148,6 @@
 .module-create-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
 
 .module-form-title {

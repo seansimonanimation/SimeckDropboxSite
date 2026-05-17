@@ -85,7 +85,7 @@ document.addEventListener('click', function(e) {
 
 
 <link rel="stylesheet" href="/css/moduleStyle.css" />
-<div class="admin-module">
+<div class="module">
     <div class="module-header">
     </div>
     <div class="module-grid">

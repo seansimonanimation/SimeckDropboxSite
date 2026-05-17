@@ -12,8 +12,11 @@
  */
 include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/libraries/artistmanagementlib.php';
+include_once __ROOT__ . '/libraries/artistManagementlib.php';
 
+if(isset($_GET['CreateArtist'])){
+    CreateNewArtist($_GET['username'], $_GET['firstname'], $_GET['lastname']);
+}
 
 if(isset($_GET['addArtistToProject'])){
     $params = explode(",", $_GET['addArtistToProject']);
@@ -73,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<link rel="stylesheet" href="/css/moduleStyle.css">
 <div class="module">
     <div class="module-header">
     </div>
@@ -82,7 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>This module allows admins to manage artists, including viewing artist details, editing information, and handling artist-related tasks.</p> </div>
         <div class="module-card module-card--span-1">Search for Artist </div>
         <div class="module-card module-card--span-2"> Stats </div>
-        <div class="module-card module-card--span-1"> Create new artist </div>
+        <div class="module-card module-card--span-1"> <h1>Create new Artist</h1>
+            <form method="GET" class="module-create-form" action="">
+            <input class="module-input" type="hidden" name="CreateArtist" placeholder="Enter Artist name" />
+            <input class="module-input" type="text" name="username" placeholder="Username" required/><br />
+            <input class="module-input" type="text" name="firstname" placeholder="First Name" required/><br />
+            <input class="module-input" type="text" name="lastname" placeholder="Last Name" required/><br />
+            <button class="module-button" type="submit">Create Artist</button>
+</form></div>
         <?php GenerateArtistCards(); ?>
         <input type="file" id="fileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
     </div>
