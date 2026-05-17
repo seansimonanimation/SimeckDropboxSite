@@ -30,10 +30,17 @@ if (PHP_OS_FAMILY === 'Windows') {
     pclose(popen("start /B \"\" \"{$phpBin}\" \"{$workerScript}\" {$pid} {$action}", "r"));
 
 } else {
-    // Linux (Docker): PHP_BINARY should be the CLI binary in php-fpm setups
+    // Linux (Docker): PHP_BINARY in php-fpm points to php-fpm, not the CLI binary
+    // Try to locate the PHP CLI binary
     $phpBin = PHP_BINARY;
+    if (strpos($phpBin, 'php-fpm') !== false) {
+        // php-fpm can't run CLI scripts — look for the CLI binary
+        $cliBin = trim(exec('which php 2>/dev/null'));
+        $phpBin = $cliBin ?: '/usr/local/bin/php';
+    }
     exec("nohup \"{$phpBin}\" \"{$workerScript}\" {$pid} {$action} > /dev/null 2>&1 &");
 }
+
 
 
 // 3. Return success immediately
