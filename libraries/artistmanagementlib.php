@@ -1,21 +1,21 @@
 <?php
-include_once __DIR__ . '/../session.php';
+include_once __DIR__ . '/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/download.php';  
 function GenerateArtistCards() {
     $artists = GetAllArtists();
     foreach ($artists as $artist) {
-        echo '<div class="aam-card aam-card--span-4">';
-        echo '<table id="oneArtistTable" class="display aam-tablecell" style="width:100%; border-collapse: collapse;">';
+        echo '<div class="module-card module-card--span-4">';
+        echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
         echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
-        echo '<td class="aam-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
-        echo '<td class="aam-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
-        echo '<td class="aam-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
-        echo '<td class="aam-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
-        echo '<td class="aam-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
-        echo '<td class="aam-tablecell"><button class="edit-artist-button" onclick="location.href=\'?reset_pw_for=' . $artist['username'] . '\'">Reset PW</button></td>';
-        echo '<td class="aam-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
+        echo '<td class="module-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
+        echo '<td class="module-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
+        echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
+        echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
+        echo '<td class="module-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
+        echo '<td class="module-tablecell"><button class="edit-artist-button" onclick="location.href=\'?reset_pw_for=' . $artist['username'] . '\'">Reset PW</button></td>';
+        echo '<td class="module-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
@@ -104,7 +104,7 @@ function SelectArtistDocuments($artistName){
 function DisplayArtistDocuments($artistName){
     $documents = SelectArtistDocuments($artistName);
     foreach($documents as $doc){
-        echo '<div class="artist-document">';
+        echo '<div class="admin-Artist-management-artist-document">';
         $b64 = Generateb64EncodedDownloadLink($artistName, $doc['uploadID']);
         echo '<a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
         echo '<a href="?delete=' . $doc['uploadID'] . '">❌</a>';

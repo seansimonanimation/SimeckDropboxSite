@@ -71,6 +71,7 @@ function adminViewToggle(){
 <html lang="en">
 <head>
    <link rel="stylesheet" href="css/portal.css">
+   <link rel="stylesheet" href="css/moduleStyle.css">
    <title>Simeck Entertainment <?php echo GetTempRole(); ?> Portal<br /></title>
 </head>
 <body class="portal-layout">

@@ -21,27 +21,26 @@ if(isset($_GET['CreateClient'])){
 ?>
 
 
-<link rel="stylesheet" href="/modules/admin/adminClientManagement/moduleStyle.css" />
 <div class="admin-client-management">
-    <div class="acm-header">
+    <div class="module-header">
     </div>
-    <div class="acm-grid">
-        <div class="acm-card acm-card--span-4">
+    <div class="module-grid">
+        <div class="module-card module-card--span-4">
             <h1>Client Management</h1>
             <p>This module allows admins to manage clients, including viewing client details, editing information, and handling client-related tasks.</p> </div>
-        <div class="acm-card acm-card--span-1">Search for Client 
+        <div class="module-card module-card--span-1">Search for Client 
             <form method="GET" class="client-search-form">
-                <input type="text" name="searchClient" placeholder="Enter Client Name" /><br />
-                <button type="submit">Search</button></form>
+                <input class="module-input" type="text" name="searchClient" placeholder="Enter Client Name" /><br />
+                <button class="module-button" type="submit">Search</button></form>
         </div>
-        <div class="acm-card acm-card--span-2"> Stats </div>
-        <div class="acm-card acm-card--span-1"> Create new client<br />
+        <div class="module-card module-card--span-2"> Stats </div>
+        <div class="module-card module-card--span-1"> Create new client<br />
         <form method="GET" class="client-create-form" action="">
-            <input type="hidden" name="CreateClient" value="Enter client name" />
-            <input type="text" name="email" placeholder="Email" required/><br />
-            <input type="text" name="firstname" placeholder="First Name" required/><br />
-            <input type="text" name="lastname" placeholder="Last Name" required/><br />
-            <select name="pid">
+            <input class="module-input" type="hidden" name="CreateClient" value="Enter client name" />
+            <input class="module-input" type="text" name="email" placeholder="Email" required/><br />
+            <input class="module-input" type="text" name="firstname" placeholder="First Name" required/><br />
+            <input class="module-input" type="text" name="lastname" placeholder="Last Name" required/><br />
+            <select class="module-input" name="pid">
                 <option value="">Select Initial project assignment</option>
                     <?php
                     $projs = GetAllClientProjectList();
@@ -50,7 +49,7 @@ if(isset($_GET['CreateClient'])){
                     }
                     ?>
                     </select><br />
-            <select name="point_of_contact">
+            <select class="module-input" name="point_of_contact">
                 <option value="">Select Point Of Contact</option>
                 <?php 
                     $pocs = GetAllArtists();
@@ -59,7 +58,7 @@ if(isset($_GET['CreateClient'])){
                     }
                 ?>
                 </select><br />
-            <button type="submit">Create Client</button>
+            <button class="module-button" type="submit">Create Client</button>
 </form>
         </div>
         <?php GenerateClientCards(); ?>

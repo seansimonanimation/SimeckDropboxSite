@@ -1,5 +1,5 @@
-/* Admin apm module styles */
-.admin-apm {
+/* Common module styles */
+.module {
   padding: 24px;
   
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-.apm-header {
+.module-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -18,39 +18,43 @@
   margin-bottom: 24px;
 }
 
-.apm-title {
+.module-title {
   margin: 0;
   font-size: 1.9rem;
   font-weight: 700;
 }
 
-.apm-subtitle {
+.module-subtitle {
   margin: 0;
   color: #6c7280;
   font-size: 0.95rem;
 }
 
-.apm-grid {
+.module-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 /* Default: card spans 1 column (Row 1 cards) */
-.apm-card { 
+.module-card { 
     grid-column: span 1;
  }
 
 /* Span 2 columns (Row 2 cards) */
-.apm-card--span-2 {
+.module-card--span-2 {
   grid-column: span 2;
 }
 
+/* Span 3 columns (Row 3 card) */
+.module-card--span-3 {
+  grid-column: span 3;
+}
 /* Span 4 columns / full width (Row 3 card) */
-.apm-card--span-4,
-.apm-card--full {
+.module-card--span-4,
+.module-card--full {
   grid-column: 1 / -1;
 }
-.apm-card {
+.module-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: 16px;
@@ -59,68 +63,102 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.apm-card:hover {
+.module-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 36px var(--shadow-md);
 }
 
-.apm-card__header {
+.module-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 18px;
 }
 
-.apm-card__title {
+.module-card__title {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.apm-card__meta {
+.module-card__meta {
   color: var(--color-text);
   font-size: 0.88rem;
 }
 
-.apm-card__content {
+.module-card__content {
   font-size: 0.96rem;
   line-height: 1.65;
   color: var(--color-text);
 }
 
-.apm-card--accent {
+.module-card--accent {
   border-color: rgba(59, 130, 246, 0.18);
 }
 
-.apm-card--accent .apm-card__title {
+.module-card--accent .module-card__title {
   color: #0f4cfa;
 }
 
 @media (max-width: 640px) {
-  .admin-apm {
+  .module {
     padding: 16px;
   }
 
-  .apm-header {
+  .module-header {
     flex-direction: column;
     align-items: flex-start;
   }
 }
+
+.admin-Artist-management-artist-document {
+  display: inline-block;
+  margin: 8px;
+  padding: 12px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.module-input {
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-bright);
+    background: var(--color-bg-raised);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+.module-tablecell th,
+.module-tablecell td {
+    text-align: center;
+    padding: 8px 12px;
+    border: none;
+    border-right: 1px solid var(--color-border);
+}
+.module-tablecell th:last-child,
+.module-tablecell td:last-child {
+    border-right: none;
+}
 /* ── Create Project Form ── */
-.apm-create-form {
+.module-create-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.apm-form-title {
+.module-form-title {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
 }
 
 /* Two-sided toggle */
-.apm-toggle {
+.module-toggle {
   position: relative;
   display: flex;
   background: #e8eaed;
@@ -131,7 +169,7 @@
   height: 38px;
 }
 
-.apm-toggle__option {
+.module-toggle__option {
   flex: 1;
   display: flex;
   align-items: center;
@@ -146,11 +184,11 @@
   white-space: nowrap;
 }
 
-.apm-toggle__option--active {
+.module-toggle__option--active {
   color: #fff;
 }
 
-.apm-toggle__slider {
+.module-toggle__slider {
   position: absolute;
   top: 3px;
   bottom: 3px;
@@ -163,26 +201,25 @@
 }
 
 /* Slide to the right when "Internal" is active */
-.apm-toggle__option[data-value="internal"].apm-toggle__option--active ~ .apm-toggle__slider {
+.module-toggle__option[data-value="internal"].module-toggle__option--active ~ .module-toggle__slider {
   transform: translateX(100%);
 }
 /* (When client is active, slider stays at default left position) */
-
 /* Form inputs */
-.apm-form-group {
+.module-form-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.apm-form-group label {
+.module-form-group label {
   font-size: 0.82rem;
   font-weight: 500;
   color: #5f6368;
 }
 
-.apm-form-group input,
-.apm-form-group textarea {
+.module-form-group input,
+.module-form-group textarea {
   padding: 8px 10px;
   border: 1px solid #dadce0;
   border-radius: 8px;
@@ -192,25 +229,9 @@
   transition: border-color 0.2s;
 }
 
-.apm-form-group input:focus,
-.apm-form-group textarea:focus {
+.module-form-group input:focus,
+.module-form-group textarea:focus {
   outline: none;
   border-color: #1a73e8;
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
-}
-
-.apm-btn {
-  padding: 10px 16px;
-  background: #1a73e8;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.apm-btn:hover {
-  background: #1557b0;
 }

@@ -12,7 +12,7 @@
  */
 include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/libraries/artistmanagement/artistmanagementlib.php';
+include_once __ROOT__ . '/libraries/artistmanagementlib.php';
 
 
 if(isset($_GET['addArtistToProject'])){
@@ -73,17 +73,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<link rel="stylesheet" href="/modules/admin/adminArtistManagement/moduleStyle.css" />
-<div class="admin-artist-management">
-    <div class="aam-header">
+<div class="module">
+    <div class="module-header">
     </div>
-    <div class="aam-grid">
-        <div class="aam-card aam-card--span-4">
+    <div class="module-grid">
+        <div class="module-card module-card--span-4">
             <h1>Artist Management</h1>
             <p>This module allows admins to manage artists, including viewing artist details, editing information, and handling artist-related tasks.</p> </div>
-        <div class="aam-card aam-card--span-1">Search for Artist </div>
-        <div class="aam-card aam-card--span-2"> Stats </div>
-        <div class="aam-card aam-card--span-1"> Create new artist </div>
+        <div class="module-card module-card--span-1">Search for Artist </div>
+        <div class="module-card module-card--span-2"> Stats </div>
+        <div class="module-card module-card--span-1"> Create new artist </div>
         <?php GenerateArtistCards(); ?>
         <input type="file" id="fileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
     </div>

@@ -64,16 +64,16 @@ function pollTransitionStatus(pid) {
 
 // Two-sided toggle interaction
 document.addEventListener('click', function(e) {
-    const toggleOption = e.target.closest('.apm-toggle__option');
+    const toggleOption = e.target.closest('.module-toggle__option');
     if (!toggleOption) return;
 
-    const toggle = toggleOption.closest('.apm-toggle');
+    const toggle = toggleOption.closest('.module-toggle');
     // Deactivate all options
-    toggle.querySelectorAll('.apm-toggle__option').forEach(opt => {
-        opt.classList.remove('apm-toggle__option--active');
+    toggle.querySelectorAll('.module-toggle__option').forEach(opt => {
+        opt.classList.remove('module-toggle__option--active');
     });
     // Activate clicked option
-    toggleOption.classList.add('apm-toggle__option--active');
+    toggleOption.classList.add('module-toggle__option--active');
 
     // Sync the hidden radio buttons
     const value = toggleOption.dataset.value;
@@ -84,42 +84,42 @@ document.addEventListener('click', function(e) {
 </script>
 
 
-<link rel="stylesheet" href="/modules/admin/adminProjectManagement/moduleStyle.css" />
-<div class="admin-apm">
-    <div class="apm-header">
+<link rel="stylesheet" href="/css/moduleStyle.css" />
+<div class="admin-module">
+    <div class="module-header">
     </div>
-    <div class="apm-grid">
-        <div class="apm-card apm-card--span-4">
+    <div class="module-grid">
+        <div class="module-card module-card--span-4">
             <h1>Project Management</h1>
             <p>This module allows admins to manage projects.</p> </div>
-        <div class="apm-card apm-card--span-1">Search for Project </div>
-        <div class="apm-card apm-card--span-2"> Stats </div>
-        <div class="apm-card apm-card--span-1">
+        <div class="module-card module-card--span-1">Search for Project </div>
+        <div class="module-card module-card--span-2"> Stats </div>
+        <div class="module-card module-card--span-1">
             
-<div class="apm-card apm-card--span-1">
-    <form method="post" class="apm-create-form">
-        <h1 class="apm-form-title"><center>Create New Project</center></h1>
+<div class="module-card module-card--span-1">
+    <form method="post" class="module-create-form">
+        <h1 class="module-form-title"><center>Create New Project</center></h1>
 
         <!-- Two-sided toggle -->
-        <div class="apm-toggle" id="projectTypeToggle">
+        <div class="module-toggle" id="projectTypeToggle">
             <input type="radio" name="project_type" id="typeClient" value="client" checked hidden>
             <input type="radio" name="project_type" id="typeInternal" value="internal" hidden>
-            <label for="typeClient" class="apm-toggle__option apm-toggle__option--active" data-value="client">Client Project</label>
-            <label for="typeInternal" class="apm-toggle__option" data-value="internal">Internal Project</label>
-            <div class="apm-toggle__slider"></div>
+            <label for="typeClient" class="module-toggle__option module-toggle__option--active" data-value="client">Client Project</label>
+            <label for="typeInternal" class="module-toggle__option" data-value="internal">Internal Project</label>
+            <div class="module-toggle__slider"></div>
         </div>
 
-        <div class="apm-form-group">
+        <div class="module-form-group">
             <label for="projectName">Project Name</label>
             <input type="text" name="project_name" id="projectName" required>
         </div>
 
-        <div class="apm-form-group">
+        <div class="module-form-group">
             <label for="projectDescription">Description</label>
             <textarea name="project_description" id="projectDescription" rows="3"></textarea>
         </div>
 
-        <button type="submit" name="create_project" class="apm-btn">Create Project</button>
+        <button type="submit" name="create_project" class="module-btn">Create Project</button>
     </form>
 </div>
 </div>

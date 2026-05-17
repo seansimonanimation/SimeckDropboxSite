@@ -28,37 +28,37 @@ if(isset($_GET['delete_shift_id'])){
 
 
 
-<link rel="stylesheet" href="/modules/admin/adminTimeclockManagement/moduleStyle.css" />
+<link rel="stylesheet" href="/css/moduleStyle.css" />
 <div class="admin-timeclock-management">
     <div class="timeclock-header">
         <h1>Timeclock Management</h1>
         <p>This module allows admins to manage artist timeclocks, including viewing clock-in/out times, editing entries, and generating reports.</p>
     </div>
-    <div class="tcm-grid">
-        <div class="tcm-card tcm-card--span-1">
+    <div class="module-grid">
+        <div class="module-card module-card--span-1">
             <center>
                 <h3>Number of artists currently clocked in</h3>
                 <p><h1><?php echo GetClockedInArtistCount(); ?></h1></p>
             </center>
         </div>
-        <div class="tcm-card tcm-card--span-1">
+        <div class="module-card module-card--span-1">
             <center>
                 <h3>Clock everyone out</h3>
                 <a href="?clockout_all=1"><img src="globalSiteAssets/big-red-button.png"></a>
             </center>
         </div>
-            <div class="tcm-card tcm-card--span-1">
+            <div class="module-card module-card--span-1">
             <center>
                 <h3>Limit view to date range</h3>
             </center>
         </div>
-<div class="tcm-card tcm-card--span-1">
+<div class="module-card module-card--span-1">
     <center>
         <h3>Filter by content</h3>
         <input type="text" id="artistFilter" placeholder="Type filter info..." style="width:90%; padding:8px; border-radius:6px; border:1px solid var(--color-border-bright); background:var(--color-bg-raised); color:var(--color-text); margin-top:8px;">
     </center>
 </div>
-        <div class="tcm-card tcm-card--span-4">
+        <div class="module-card module-card--span-4">
             <center>
                 <h1>Timeclock entries</h1>
                 <?php echo GenerateTimeclockTable(); ?>

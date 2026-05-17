@@ -6,7 +6,7 @@ include_once __DIR__ . '/db.php';
 function GenerateProjectCards(){
     $projects = GetAllProjects();
     foreach($projects as $project){
-        echo '<div class="apm-card apm-card--span-1">';
+        echo '<div class="module-card module-card--span-1">';
         echo '<table><th> Project ID </th><th> Project Name </th><th> Active </th><th>Toggle Active</th>';
         echo '<tr>';
         echo '<td>'.$project['pid'].'</td>';
