@@ -10,6 +10,7 @@
    //Sends the user back to the login page if there is no session.
    if(!isset($_SESSION['username'])){
      header("location: login.php");
+     exit;
    }
    if (isset($_GET['action']) && $_GET['action'] === 'switch_role') {
       adminViewToggle();
