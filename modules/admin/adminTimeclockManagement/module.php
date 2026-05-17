@@ -29,8 +29,8 @@ if(isset($_GET['delete_shift_id'])){
 
 
 <link rel="stylesheet" href="/css/moduleStyle.css" />
-<div class="admin-timeclock-management">
-    <div class="timeclock-header">
+<div class="module">
+    <div class="module-header">
         <h1>Timeclock Management</h1>
         <p>This module allows admins to manage artist timeclocks, including viewing clock-in/out times, editing entries, and generating reports.</p>
     </div>

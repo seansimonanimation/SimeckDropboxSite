@@ -230,6 +230,12 @@ function AddArtistToProject($username, $pid){
     RefreshPortal();
 }
 
+function CreateNewArtist($username, $firstname, $lastname){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("INSERT INTO artists (username, firstname, lastname) VALUES (?, ?, ?)");
+    $stmt->execute([$username, $firstname, $lastname]);
+    RefreshPortal();
+}
 
 //
 ?>

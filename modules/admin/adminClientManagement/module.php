@@ -21,7 +21,7 @@ if(isset($_GET['CreateClient'])){
 ?>
 
 
-<div class="admin-client-management">
+<div class="module">
     <div class="module-header">
     </div>
     <div class="module-grid">
