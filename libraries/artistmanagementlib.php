@@ -236,6 +236,3 @@ function CreateNewArtist($username, $firstname, $lastname){
     $stmt->execute([$username, $firstname, $lastname]);
     RefreshPortal();
 }
-
-//
-?>

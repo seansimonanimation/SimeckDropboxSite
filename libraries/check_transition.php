@@ -10,4 +10,3 @@ $stmt = $pdo->prepare("SELECT transitioning FROM projects WHERE pid = ?");
 $stmt->execute([$pid]);
 $row = $stmt->fetch(PDO::FETCH_ASSOC);
 echo json_encode(['transitioning' => $row['transitioning'] ?? 0]);
-?>

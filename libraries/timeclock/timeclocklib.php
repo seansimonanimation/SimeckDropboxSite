@@ -132,4 +132,3 @@ function ShowArtistFilesForTimeclock(){
         echo '<p><a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($file['filepath'])) . '</a></p>';
     }
 }
-?>

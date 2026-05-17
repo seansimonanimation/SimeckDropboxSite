@@ -10,5 +10,3 @@ function DisplayChangelog(){
     //Simply reads the changelog.txt file and returns it as a string to be displayed on the dashboard.
     return file_get_contents(__ROOT__ .'/changelog.txt');
 }
-
-?>

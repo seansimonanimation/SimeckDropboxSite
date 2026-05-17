@@ -64,4 +64,3 @@ function GetClientProjects($clientEmail, $clientProjects){
     }
     return $projectString;
 }
-?>

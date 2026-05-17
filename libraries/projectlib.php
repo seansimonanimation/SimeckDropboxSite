@@ -102,4 +102,3 @@ function CreateNewProject($name, $description, $type) {
 
     return $newPid;
 }
-?>
