@@ -8,7 +8,7 @@
  * @nav-order 3
  */
 include_once __DIR__ . '/../../../libraries/session.php';
-include_once __ROOT__ . '/libraries/timeclock/timeclockLib.php';
+include_once __ROOT__ . '/libraries/timeclock/timeclocklib.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/download.php';
 
