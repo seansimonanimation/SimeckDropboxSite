@@ -141,9 +141,3 @@ function SetCurrentModuleSessionData($moduleData){
     $_SESSION['CurrentModuleNavIcon'] = $moduleData['nav-icon'];
     $_SESSION['CurrentModuleNavOrder'] = $moduleData['nav-order'];
 }
-?>
-
-
-
-
-

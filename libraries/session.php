@@ -55,4 +55,3 @@ function GetTempRole(){
 function RefreshPortal(){
     header("Location: index.php");
 }
-?>

@@ -24,10 +24,3 @@ function attempt_login($username, $password){
         session_unset();
         session_destroy();
 }
-
-
-
-
-
-
-?>

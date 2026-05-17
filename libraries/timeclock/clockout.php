@@ -9,4 +9,3 @@ if (isset($_GET['shift_id'])) {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'Missing shift_id']);
 }
-?>

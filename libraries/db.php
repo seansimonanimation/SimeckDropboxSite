@@ -134,4 +134,3 @@ function GetDataFromDB($SQLString, $params = []){
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-?>

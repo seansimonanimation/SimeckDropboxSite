@@ -45,4 +45,3 @@
         $randomIndex = array_rand($phraseArray);
         return $phraseArray[$randomIndex];
     }
-?>
