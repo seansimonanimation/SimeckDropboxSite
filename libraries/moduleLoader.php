@@ -1,4 +1,3 @@
-
 <?php
 //This file dynamically loads modules from the modules directory.
 //It is included in the index.php file, and it looks for all 
