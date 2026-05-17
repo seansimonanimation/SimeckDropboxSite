@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 
    //Necessary to begin the session.
