@@ -11,7 +11,7 @@ function GenerateClientCards(){
         $clients = GetAllClients();
     }
     foreach($clients as $client){
-        echo '<div class="module-card module-card--span-4">';
+        echo '<div class="module-card module-card--span-2">';
         echo '<table>';
         echo '<tr><td>Email</td><td>'.$client['email'].'</td></tr>';
         echo '<tr><td>Name</td><td>'.$client['firstname'].' '.$client['lastname'].'</td></tr>';
