@@ -57,8 +57,6 @@ function adminViewToggle(){
         SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
     }
 }
-
-
    function adminSwitchViewButtonActivation(){
       if(GetRole() == 'admin'){
          return '<a href="index.php?action=switch_role">Switch Role</a>';
