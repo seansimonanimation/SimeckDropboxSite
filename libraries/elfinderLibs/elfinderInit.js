@@ -69,6 +69,7 @@ elFinder.prototype.commands.seecm = function() {
                 '<div class="seecm-loading">Loading comments...</div>' +
                 '</div>').dialog({
                     title: 'Comments for: ' + files[0].name,
+                    dialogClass: 'elfinder-seecm-dialog-wrapper',
                     width: 700,
                     height: 500,
                     modal: true,
@@ -81,23 +82,24 @@ elFinder.prototype.commands.seecm = function() {
                 file_url: fileUrl
             }, function(response) {
                 if (response.success) {
-                    var html = '<div class="seecm-comments-list" style="max-height: 250px; overflow-y: auto;">';
+                    var html = '<div class="seecm-comments-list">';
                     if (response.comments.length === 0) {
-                        html += '<p style="color: #888; text-align: center;">No comments yet.</p>';
+                        html += '<p class="seecm-status-empty">No comments yet.</p>';
                     } else {
                         $.each(response.comments, function(i, comment) {
-                            html += '<div style="border-bottom: 1px solid #eee; padding: 8px 0;">' +
-                                '<strong>' + fm.escape(comment.owner) + '</strong> ' +
-                                '<span style="color: #999; font-size: 0.85em;">' + comment.comment_time + '</span>' +
-                                '<p style="margin: 4px 0 0 0;">' + fm.escape(comment.comment_content) + '</p>' +
+                            html += '<div class="seecm-comment">' +
+                                '<div class="seecm-comment__header">' +
+                                '<span class="seecm-comment__author">' + fm.escape(comment.owner) + '</span> ' +
+                                '<span class="seecm-comment__time">' + comment.comment_time + '</span></div>' +
+                                '<p class="seecm-comment__body">' + fm.escape(comment.comment_content) + '</p>' +
                                 '</div>';
                         });
                     }
                     html += '</div>' +
-                        '<hr>' +
+                        '<hr class="seecm-divider">' +
                         '<div class="seecm-add-form" style="margin-top: 8px;">' +
-                        '<textarea id="seecm-new-comment" style="width: 100%; height: 60px; box-sizing: border-box;" placeholder="Write a comment..."></textarea>' +
-                        '<button id="seecm-submit" style="margin-top: 4px;">Add Comment</button>' +
+                        '<textarea id="seecm-new-comment" placeholder="Write a comment..."></textarea>' +
+                        '<button id="seecm-submit">Add Comment</button>' +
                         '</div>';
                     
                     dialog.html(html);
@@ -126,10 +128,10 @@ elFinder.prototype.commands.seecm = function() {
 
                     });
                 } else {
-                    dialog.html('<p style="color: red;">Failed to load comments: ' + (response.error || 'unknown error') + '</p>');
+                    dialog.html('<p class="seecm-status-error">Failed to load comments: ' + (response.error || 'unknown error') + '</p>');
                 }
             }, 'json').fail(function() {
-                dialog.html('<p style="color: red;">Failed to load comments due to a server error.</p>');
+                dialog.html('<p class="seecm-status-error">Failed to load comments due to a server error.</p>');
             });
             
         } else {

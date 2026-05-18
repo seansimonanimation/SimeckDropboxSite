@@ -65,28 +65,6 @@ function pull_client_data($email){
 function SetArtistPassword($currentPass){
     //TODO: implement this function. It should take the current password, verify it, and if correct, prompt the user for a new password and update the database with the new password hash.
 }
-function GetClientCount(bool $includeInactive = false){
-
-    $SQLString = 'SELECT COUNT(*) as client_count FROM clients';
-    if($includeInactive){
-        $SQLString = 'SELECT COUNT(*) as client_count FROM clients WHERE active = 1';
-    }
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC)['client_count'];
-}
-
-function GetArtistCount(bool $includeInactive = false){
-    $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
-    if($includeInactive){
-        $SQLString = 'SELECT COUNT(*) as artist_count FROM artists WHERE active = 1';
-    }
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
-}
 
 function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null){
     $SQLString = 'SELECT * FROM timeclockshifts WHERE 1=1';

@@ -10,3 +10,37 @@ function DisplayChangelog(){
     //Simply reads the changelog.txt file and returns it as a string to be displayed on the dashboard.
     return file_get_contents(__ROOT__ .'/changelog.txt');
 }
+
+function GetClientCount(bool $includeInactive = false){
+
+    $SQLString = 'SELECT COUNT(*) as client_count FROM clients';
+    if($includeInactive){
+        $SQLString = 'SELECT COUNT(*) as client_count FROM clients WHERE active = 1';
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['client_count'];
+}
+
+function GetArtistCount(bool $includeInactive = false){
+    $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
+    if($includeInactive){
+        $SQLString = 'SELECT COUNT(*) as artist_count FROM artists WHERE active = 1';
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
+}
+
+function GetTotalCommentCount(){
+    $SQLString = 'SELECT COUNT(*) as comment_count FROM filecomments';
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC)['comment_count'];
+}
+function GetNASUsage(){
+    return 'Not implemented';
+}

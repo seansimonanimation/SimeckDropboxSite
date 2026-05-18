@@ -43,6 +43,7 @@ function loadElfinderJs($dir) {
 <!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
 <link href="css/elfinderThemes/win10/css/theme.css" rel="stylesheet">
+<link href="css/comments.css" rel="stylesheet">
 
 <!-- jQuery and jQuery UI (REQUIRED) -->
 <script src="https://code.jquery.com/jquery-4.0.0.min.js" type="text/javascript" charset="utf-8"></script>
