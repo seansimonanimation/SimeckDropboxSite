@@ -186,3 +186,26 @@ function AttachOrCreateDropbox(){
     }
     return $dropboxpath;
 }
+
+function ScanForPlugins() {
+    $config = ['plugin' => [], 'bind' => []];
+    $base   = __DIR__ . '/elfinderplugins';
+    
+    foreach (new DirectoryIterator($base) as $dir) {
+        if ($dir->isDot() || !$dir->isDir()) continue;
+        
+        $file = $dir->getPathname() . '/plugin.php';
+        if (!file_exists($file)) continue;
+        
+        require_once $file;
+        
+        $name  = $dir->getFilename();
+        $class = 'elFinderPlugin' . $name;
+        if (!class_exists($class)) continue;
+        
+        $config['plugin'][$name] = ['enable' => true];
+        $config['bind']['upload.presave'][] = 'Plugin.' . $name . '.onUpLoadPreSave';
+    }
+    
+    return $config;
+}
