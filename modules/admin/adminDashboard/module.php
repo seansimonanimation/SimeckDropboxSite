@@ -12,6 +12,7 @@
  */
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
+include_once __ROOT__ . '/libraries/dashboardlib.php';
 
 
 
@@ -33,10 +34,16 @@ include_once __ROOT__ . '/libraries/db.php';
         <p><?php echo GetArtistCount(false); ?></p></center>
     </div>
         <div class="module-card">Card 3</div>
-        <div class="module-card">Card 4</div>
+        <div class="module-card"><h1> Drive Status</h1>
+    <h2>Drive Name:</h2>Larson<br />
+    <h2> Drive Usage:</h2>
+    <?php echo GetNASUsage(); ?>
+    </div>
         
         <!-- Row 2: 2 cards, each spanning 2 columns -->
-        <div class="module-card module-card--span-2">Card 5</div>
+        <div class="module-card module-card--span-2"><center><h1>Total number of comments</h1>
+        <h1><?php echo GetTotalCommentCount(); ?> </h1>
+        </div>
         <div class="module-card module-card--span-2">Card 6</div>
         
         <!-- Row 3: 1 card, spanning all 4 columns -->

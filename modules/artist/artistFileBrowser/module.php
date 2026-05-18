@@ -11,7 +11,7 @@
  * @nav-order 2
  */
 include_once __ROOT__ . '/libraries/session.php';
-include_once __ROOT__ . '/libraries/elfinderlib.php';
+include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
 // Absolute root-relative path to elFinder
 define('EF_ROOT', 'libraries/elfinder');
@@ -43,6 +43,7 @@ function loadElfinderJs($dir) {
 <!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
 <link href="css/elfinderThemes/win10/css/theme.css" rel="stylesheet">
+<link href="css/comments.css" rel="stylesheet">
 
 <!-- jQuery and jQuery UI (REQUIRED) -->
 <script src="https://code.jquery.com/jquery-4.0.0.min.js" type="text/javascript" charset="utf-8"></script>
@@ -77,95 +78,7 @@ function loadElfinderJs($dir) {
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 
 <!-- elfinder initialization -->
-<script>
-
-$(function() {
-    function resizeElfinder() {
-        var winH = $(window).height();
-        var offset = $('#elfinder').offset().top;
-        var h = winH - offset - 15; // 15px breathing room
-        if (h < 300) h = 300;
-        $('#elfinder').height(h);
-        
-        var instance = $('#elfinder').elfinder('instance');
-        if (instance) {
-            instance.resize();
-        }
-    }
-
-
-elFinder.prototype.commands.sendToMondayChat = function() {
-    this.contextmenu = true;
-
-    this.init = function(){
-        this.title = 'Send to Monday Chat';
-    };
-    this.exec = function(hashes) {
-        var fm = this.fm;
-        var files = fm.selectedFiles();
-        alert('If this was implemented, it would have sent ' + files.length + ' file(s) To Monday Chat!');
-        return $.Deferred().resolve();
-    };
-    this.getstate = function() {
-        return this.fm.selectedFiles().length ? 1 : 0;
-    };
-};
-
-elFinder.prototype.commands.sendToThursdayChat = function() {
-    this.contextmenu = true;
-
-    this.init = function(){
-        this.title = 'Send to Thursday Chat';
-    };
-    this.exec = function(hashes) {
-        var fm = this.fm;
-        var files = fm.selectedFiles();
-        alert('If this was implemented, it would have sent ' + files.length + ' file(s) To Thursday Chat!');
-        return $.Deferred().resolve();
-    };
-    this.getstate = function() {
-        return this.fm.selectedFiles().length ? 1 : 0;
-    };
-};
-
-
-
-
-
-
-elFinder.prototype.commands.seecm = function() {
-    this.contextmenu = true;
-
-    this.init = function(){
-        this.title = 'See Comments';
-    };
-    
-    this.exec = function(hashes) {
-        var fm = this.fm;
-        var files = fm.selectedFiles();
-        if (files.length === 1) {
-            alert(' Once comments is implemented, you will be able to see comments for: ' + files[0].name);
-        } else {
-            alert('You can only see comments for one file at a time, you silly goose!');
-        }
-        return $.Deferred().resolve();
-    };
-    
-    this.getstate = function() {
-        return this.fm.selectedFiles().length ? 1 : 0;
-    };
-};
-elFinder.prototype.i18.en.cmdseecm = 'See Comments';
-    $('#elfinder').elfinder({
-        cssAutoLoad: false,
-        baseUrl: '<?php echo EF_ROOT; ?>/',
-        url: 'modules/admin/adminFileBrowser/adminConnector.php',
-        height: $(window).height() - $('#elfinder').offset().top - 15,
-    });
-    
-    $(window).on('resize', resizeElfinder);
-});
-</script>
+<script src="libraries/elfinderLibs/elfinderInit.js"></script>
 
 <!-- Element where elFinder will be created -->
 <div id="elfinder" style="height: 100%;"><center><h1>Please wait while your filebrowser is loading...</h1></center></div>
