@@ -92,12 +92,75 @@ $(function() {
             instance.resize();
         }
     }
+
+
+elFinder.prototype.commands.sendToMondayChat = function() {
+    this.contextmenu = true;
+
+    this.init = function(){
+        this.title = 'Send to Monday Chat';
+    };
+    this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        alert('If this was implemented, it would have sent ' + files.length + ' file(s) To Monday Chat!');
+        return $.Deferred().resolve();
+    };
+    this.getstate = function() {
+        return this.fm.selectedFiles().length ? 1 : 0;
+    };
+};
+
+elFinder.prototype.commands.sendToThursdayChat = function() {
+    this.contextmenu = true;
+
+    this.init = function(){
+        this.title = 'Send to Thursday Chat';
+    };
+    this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        alert('If this was implemented, it would have sent ' + files.length + ' file(s) To Thursday Chat!');
+        return $.Deferred().resolve();
+    };
+    this.getstate = function() {
+        return this.fm.selectedFiles().length ? 1 : 0;
+    };
+};
+
+
+
+
+
+
+elFinder.prototype.commands.seecm = function() {
+    this.contextmenu = true;
+
+    this.init = function(){
+        this.title = 'See Comments';
+    };
     
+    this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length === 1) {
+            alert(' Once comments is implemented, you will be able to see comments for: ' + files[0].name);
+        } else {
+            alert('You can only see comments for one file at a time, you silly goose!');
+        }
+        return $.Deferred().resolve();
+    };
+    
+    this.getstate = function() {
+        return this.fm.selectedFiles().length ? 1 : 0;
+    };
+};
+elFinder.prototype.i18.en.cmdseecm = 'See Comments';
     $('#elfinder').elfinder({
         cssAutoLoad: false,
         baseUrl: '<?php echo EF_ROOT; ?>/',
-        url: 'modules/artist/artistFileBrowser/artistConnector.php',
-        height: $(window).height() - $('#elfinder').offset().top - 15
+        url: 'modules/admin/adminFileBrowser/adminConnector.php',
+        height: $(window).height() - $('#elfinder').offset().top - 15,
     });
     
     $(window).on('resize', resizeElfinder);
