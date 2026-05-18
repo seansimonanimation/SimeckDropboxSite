@@ -53,5 +53,12 @@ function GetTempRole(){
     return $_SESSION['tempRole'];
 }
 function RefreshPortal(){
+    // AJAX requests should get JSON, not a redirect
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) 
+        && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+        exit;
+    }
     header("Location: index.php");
 }

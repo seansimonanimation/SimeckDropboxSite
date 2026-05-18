@@ -139,7 +139,7 @@ function FetchArtistProjectAssignments($username, $projectAssignmentStr){
     // --- Dropdown at top ---
     $allProjects = RetrieveAllActiveProjects();
     $output = [];
-    $dropdown = '<select onchange="location.href=\'?addArtistToProject=' . $username . ',\'+this.value">';
+    $dropdown = '<select onchange="assignProject(\'' . $username . '\', this.value)">';
     $dropdown .= '<option value="">-- Add project --</option>';
     $availableCount = 0;
     foreach ($allProjects as $proj) {
@@ -167,7 +167,7 @@ function FetchArtistProjectAssignments($username, $projectAssignmentStr){
 
         foreach ($results as $row) {
             $output[] = $row['pid'] . '_' . $row['project_name']
-                . ' <a href="?removeArtistFromProject=' . $username . ',' . $row['pid'] . '">❌</a>';
+    . ' <a href="#" data-username="' . $username . '" data-pid="' . $row['pid'] . '" onclick="removeProject(\'' . $username . '\', \'' . $row['pid'] . '\'); return false;">❌</a>';
         }
     } else {
         $output[] = 'No projects assigned';
