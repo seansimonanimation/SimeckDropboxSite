@@ -1,6 +1,6 @@
 <?php
     Define('__ELFINDER_ROOT__','libraries/elfinder/');
-    include_once __DIR__ . '/session.php';
+    include_once __DIR__ . '/../session.php';
 
 
 function getAdminFileBrowserOptions(){
