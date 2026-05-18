@@ -13,7 +13,7 @@ function getAdminFileBrowserOptions(){
                 'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
                 'alias'        => "My Dropbox",                    // display this instead of real root name
                 'path' => AttachOrCreateDropbox(),                 // path to files (REQUIRED)
-                'URL'  => '/files/Dropboxes/', // URL to files (REQUIRED)
+                'URL'  => DetermineMyDropboxURL(), // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -100,7 +100,7 @@ function getArtistFileBrowserOptions(){
                 'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
                 'alias'        => "My Dropbox",                    // display this instead of real root name
                 'path' => AttachOrCreateDropbox(),                 // path to files (REQUIRED)
-                'URL'  => '/files/Dropboxes/', // URL to files (REQUIRED)
+                'URL'  => DetermineMyDropboxURL(), // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
                 'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -185,6 +185,10 @@ function AttachOrCreateDropbox(){
         mkdir($dropboxpath . '/older', 0777, true); // Create the older folder for moved files
     }
     return $dropboxpath;
+}
+
+function DetermineMyDropboxURL(){
+    return '/files/Dropboxes/' . $_SESSION['lastname'] . ', ' . $_SESSION['firstname'];
 }
 
 function ScanForPlugins() {

@@ -359,7 +359,7 @@ elFinder.prototype._options = {
 		// "download" command options.
 		download : {
 			// max request to download files when zipdl disabled
-			maxRequests : 10,
+			maxRequests : 100,
 			// minimum count of files to use zipdl
 			minFilesZipdl : 2
 		},
@@ -800,7 +800,7 @@ elFinder.prototype._options = {
 	 * @default ['toolbar', 'places', 'tree', 'path', 'stat']
 	 * @full ['toolbar', 'places', 'tree', 'path', 'stat']
 	 */
-	ui : ['toolbar', 'places', 'tree', 'path', 'stat'],
+	ui : ['toolbar', 'tree', 'path', 'stat'],
 	
 	/**
 	 * Some UI plugins options.
