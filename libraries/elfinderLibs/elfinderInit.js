@@ -68,12 +68,13 @@ elFinder.prototype.commands.seecm = function() {
             var dialog = $('<div id="' + dialogId + '">' +
                 '<div class="seecm-loading">Loading comments...</div>' +
                 '</div>').dialog({
-                title: 'Comments for: ' + files[0].name,
-                width: 500,
-                height: 400,
-                modal: true,
-                close: function() { $(this).dialog('destroy').remove(); }
-            });
+                    title: 'Comments for: ' + files[0].name,
+                    width: 700,
+                    height: 500,
+                    modal: true,
+                    appendTo: '#elfinder',
+                    close: function() { $(this).dialog('destroy').remove(); }
+                });
             
             $.get('libraries/elfinderLibs/commentsEndpoint.php', {
                 action: 'fetch',
@@ -100,7 +101,6 @@ elFinder.prototype.commands.seecm = function() {
                         '</div>';
                     
                     dialog.html(html);
-                    
                     $('#seecm-submit').on('click', function() {
                         var content = $('#seecm-new-comment').val().trim();
                         if (!content) return;
@@ -118,6 +118,12 @@ elFinder.prototype.commands.seecm = function() {
                         }, 'json').fail(function() {
                             alert('Failed to add comment due to a server error.');
                         });
+                    });
+
+                    // Prevent elFinder hotkeys from firing when typing in the comment box
+                    $('#seecm-new-comment').on('keydown', function(event) {
+                        event.stopPropagation();
+
                     });
                 } else {
                     dialog.html('<p style="color: red;">Failed to load comments: ' + (response.error || 'unknown error') + '</p>');
