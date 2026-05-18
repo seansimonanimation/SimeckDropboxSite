@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
    //Necessary to begin the session.
 
    include_once __DIR__ . '/libraries/session.php'; //One of only 2 __DIR__s in the entire codebase, since session.php needs to be included before we can use __ROOT__.
@@ -66,6 +66,7 @@ function adminViewToggle(){
          return '';
       }
    }
+   ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="en">
