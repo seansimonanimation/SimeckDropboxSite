@@ -47,9 +47,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
         UploadArtistDocument($artist['username'],$artist['firstname'],$artist['lastname'], $_FILES['uploaded_file']);
     }
 }
-
 ?>
 <script>
+async function assignProject(username, pid) {
+    if (!pid) return;
+    await fetch('?addArtistToProject=' + username + ',' + pid, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    await refreshContent();
+}
+
+async function removeProject(username, pid) {
+    await fetch('?removeArtistFromProject=' + username + ',' + pid, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    await refreshContent();
+}
+
+async function refreshContent() {
+    const resp = await fetch(window.location.href, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const html = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const newContent = doc.querySelector('#content');
+    if (newContent) {
+        document.querySelector('#content').innerHTML = newContent.innerHTML;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.upload-file-button').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -75,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 
 <link rel="stylesheet" href="/css/moduleStyle.css">
 <div class="module">
