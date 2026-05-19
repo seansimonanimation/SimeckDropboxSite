@@ -188,7 +188,7 @@ function AttachOrCreateDropbox(){
 }
 
 function DetermineMyDropboxURL(){
-    return '/files/Dropboxes/' . $_SESSION['lastname'] . ', ' . $_SESSION['firstname'];
+    return '/files/Dropboxes/' . $_SESSION['lastname'] . '%2C%20' . $_SESSION['firstname'];
 }
 
 function ScanForPlugins() {

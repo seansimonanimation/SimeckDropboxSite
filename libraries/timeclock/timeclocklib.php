@@ -46,7 +46,7 @@ function GenerateArtistTimeclockTable($artistID){
 
 
 function GetClockedInArtistCount(){
-    $SQLString = 'SELECT COUNT(*) as clocked_in_count FROM timeclockshifts WHERE time_out IS NULL OR time_out = NULL';
+    $SQLString = 'SELECT COUNT(*) as clocked_in_count FROM timeclockshifts WHERE time_out IS NULL';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();

@@ -5,10 +5,6 @@
 // includes them.
 
     include_once __ROOT__ . '/libraries/session.php';
-function RegisterModules(){
-
-
-}
 
 function LoadNavbarContent(){
     $moduleDir = '';
