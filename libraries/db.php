@@ -62,10 +62,6 @@ function pull_client_data($email){
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function SetArtistPassword($currentPass){
-    //TODO: implement this function. It should take the current password, verify it, and if correct, prompt the user for a new password and update the database with the new password hash.
-}
-
 function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null){
     $SQLString = 'SELECT * FROM timeclockshifts WHERE 1=1';
     $params = [];
