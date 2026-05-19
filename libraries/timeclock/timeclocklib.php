@@ -1,5 +1,4 @@
 <?php
-include_once __DIR__ . '/../../libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
 include_once __ROOT__ . '/download.php';
@@ -73,7 +72,7 @@ function DetermineArtistShiftLength($timeIn, $timeOut){
     return $interval->format('%h hours %i minutes');
 }
 function ClockEveryoneOut(){
-    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE time_out IS NULL OR time_out = NULL';
+    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE time_out IS NULL';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();

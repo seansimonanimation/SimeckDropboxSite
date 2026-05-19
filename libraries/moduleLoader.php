@@ -4,8 +4,6 @@
 // files in the modules subdirectories that are named module.php and 
 // includes them.
 
-    include_once __ROOT__ . '/libraries/session.php';
-
 function LoadNavbarContent(){
     $moduleDir = '';
     if($_SESSION['tempRole'] == 'admin'){
