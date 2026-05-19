@@ -48,6 +48,6 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
         
         <!-- Row 3: 1 card, spanning all 4 columns -->
         <div class="module-card module-card--span-4"><h1>Changelog</h1>
-    <p><?php echo file_get_contents(__ROOT__ .'/changelog.txt'); ?></p></div>
+    <p><?php echo DisplayChangelog(); ?></p></div>
     </div>
 </div>

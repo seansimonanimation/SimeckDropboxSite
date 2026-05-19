@@ -1,5 +1,6 @@
 <?php
-
+include_once __DIR__ .'/../session.php';
+include_once __ROOT__ . '/libraries/sharedlib.php';
 
 
 
@@ -42,13 +43,6 @@ function GetSearchedClient($searchterm){
     $likeTerm = '%' . $searchterm . '%';
     $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-function SummonActivityButton($isActive){
-    if($isActive){
-        return '<span style="color:green; font-weight:bold">✅</span>';
-    } else {
-        return '<span style="color:red; font-weight:bold">❌</span>';
-    }
 }
 
 function GetToggleButtonText($email, $activestatus){

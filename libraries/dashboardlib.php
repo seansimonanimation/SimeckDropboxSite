@@ -14,8 +14,8 @@ function DisplayChangelog(){
 function GetClientCount(bool $includeInactive = false){
 
     $SQLString = 'SELECT COUNT(*) as client_count FROM clients';
-    if($includeInactive){
-        $SQLString = 'SELECT COUNT(*) as client_count FROM clients WHERE active = 1';
+    if(!$includeInactive){
+        $SQLString .= ' WHERE active = 1';
     }
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -25,8 +25,8 @@ function GetClientCount(bool $includeInactive = false){
 
 function GetArtistCount(bool $includeInactive = false){
     $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
-    if($includeInactive){
-        $SQLString = 'SELECT COUNT(*) as artist_count FROM artists WHERE active = 1';
+    if(!$includeInactive){
+        $SQLString .= ' WHERE active = 1';
     }
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
