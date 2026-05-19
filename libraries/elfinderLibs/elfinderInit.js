@@ -146,12 +146,4 @@ elFinder.prototype.commands.seecm = function() {
 };
 
 elFinder.prototype.i18.en.cmdseecm = 'See Comments';
-    $('#elfinder').elfinder({
-        cssAutoLoad: false,
-        baseUrl: 'libraries/elfinder/',
-        url: 'modules/admin/adminFileBrowser/adminConnector.php',
-        height: $(window).height() - $('#elfinder').offset().top - 15,
-    });
-    
-    $(window).on('resize', resizeElfinder);
 });

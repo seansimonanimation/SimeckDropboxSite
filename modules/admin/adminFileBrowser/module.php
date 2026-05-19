@@ -53,7 +53,7 @@ function loadElfinderJs($dir) {
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.version.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
-<script src="modules/artist/artistFileBrowser/elfinderOptionOverride.js"></script>
+<script src="modules/admin/adminFileBrowser/elfinderOptionOverride.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.command.js"></script>
@@ -77,5 +77,16 @@ function loadElfinderJs($dir) {
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
+<script>
+    $('#elfinder').elfinder({
+        cssAutoLoad: false,
+        baseUrl: 'libraries/elfinder/',
+        url: 'modules/admin/adminFileBrowser/adminConnector.php',
+        height: $(window).height() - $('#elfinder').offset().top - 15,
+    });
+    
+    $(window).on('resize', resizeElfinder);
+
+</script>
 <!-- Element where elFinder will be created -->
 <div id="elfinder" style="height: 100%;"><center><h1>Thank you for your patience while your filebrowser is loading...</h1></center></div>
