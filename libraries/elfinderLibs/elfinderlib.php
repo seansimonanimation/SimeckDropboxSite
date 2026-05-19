@@ -1,6 +1,7 @@
 <?php
     Define('__ELFINDER_ROOT__','libraries/elfinder/');
     include_once __DIR__ . '/../session.php';
+    include_once __ROOT__ . '/libraries/db.php';
 
 
 function getAdminFileBrowserOptions(){
@@ -164,6 +165,53 @@ function getArtistFileBrowserOptions(){
 
     return $connectorOptions;
 }
+
+
+function getClientFileBrowserOptions(){
+    ConnectorSetup();
+    $clientassignments = GetClientProjectAssignments();
+    if(empty($clientassignments)){
+        //Client has no project assignments, return empty options to prevent access to any files.
+        $connectorOptions = array('roots' => array());
+        return $connectorOptions;
+    }
+    $projectQuery = 'SELECT pid, project_name FROM projects WHERE pid IN ?';
+    $stmt = $GLOBALS['db']->prepare($projectQuery);
+    $stmt->execute([implode(',', $clientassignments)]);
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $connectorOptions = array('roots' => array());
+
+    foreach ($projects as $project){
+        $roots[] = array(
+            'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
+            'alias'        => $project['project_name'],                    // display this instead of real root name
+            'path' => __ROOT__ . '/files/Projects/' . $project['pid'] . '/clientUpload/',                 // path to files (REQUIRED)
+            'URL'  => '/files/Projects/' . $project['pid'] . '/clientUpload/', // URL to files (REQUIRED)
+            'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
+            'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
+            //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+            //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+            //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+            'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
+        );
+    }
+    return array('roots' => $roots);
+}
+
+function GetClientProjectAssignments(){
+    $clientassignments = [];
+    $clientid = $_SESSION['username'];
+    $query = "SELECT project_assignments FROM clients WHERE email = ?";
+    $stmt = $GLOBALS['db']->prepare($query);
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (empty($result['project_assignments'])) {
+        return [];
+    }
+    return explode(',', $result['project_assignments']);
+}
+
 
 
 function initializeConnector($connectorOptions){
