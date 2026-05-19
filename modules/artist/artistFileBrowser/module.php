@@ -79,6 +79,17 @@ function loadElfinderJs($dir) {
 
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
+<script>
+    $('#elfinder').elfinder({
+        cssAutoLoad: false,
+        baseUrl: 'libraries/elfinder/',
+        url: 'modules/artist/artistFileBrowser/artistConnector.php',
+        height: $(window).height() - $('#elfinder').offset().top - 15,
+    });
+    
+    $(window).on('resize', resizeElfinder);
+
+</script>
 
 <!-- Element where elFinder will be created -->
 <div id="elfinder" style="height: 100%;"><center><h1>Please wait while your filebrowser is loading...</h1></center></div>
