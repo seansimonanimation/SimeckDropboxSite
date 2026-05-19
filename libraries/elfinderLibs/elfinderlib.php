@@ -16,9 +16,9 @@ function getAdminFileBrowserOptions(){
                 'URL'  => DetermineMyDropboxURL(), // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
             ),
             //Everyone's Dropboxes volume
@@ -29,9 +29,9 @@ function getAdminFileBrowserOptions(){
                 'URL'  => '/files/Dropboxes/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
             ),
             //Project volume
@@ -41,9 +41,9 @@ function getAdminFileBrowserOptions(){
                 'URL'  => '/files/Projects/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
             ),
             //Resources volume
@@ -54,9 +54,9 @@ function getAdminFileBrowserOptions(){
                 'URL'  => '/files/Resources/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
             ),
             array(
@@ -66,9 +66,9 @@ function getAdminFileBrowserOptions(){
                 'URL'  => '/files/Corporate/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
             ),
             // Trash volume
@@ -78,9 +78,9 @@ function getAdminFileBrowserOptions(){
                 'path'   => __ROOT__ . '/files/.trash/',
                 'tmbURL' => '/files/.trash/.tmb/',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
-                'uploadOrder'   => array('deny', 'allow'),      // Same as above
+                //'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
+                //'uploadOrder'   => array('deny', 'allow'),      // Same as above
                 'accessControl' => 'access',                    // Same as above
             )
         )
@@ -103,9 +103,9 @@ function getArtistFileBrowserOptions(){
                 'URL'  => DetermineMyDropboxURL(), // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
             ),
             //Everyone's Dropboxes volume
@@ -116,9 +116,9 @@ function getArtistFileBrowserOptions(){
                 'URL'  => '/files/Dropboxes/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
             ),
             //Project volume
@@ -128,9 +128,9 @@ function getArtistFileBrowserOptions(){
                 'URL'  => '/files/Projects/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
             ),
             //Resources volume
@@ -141,9 +141,9 @@ function getArtistFileBrowserOptions(){
                 'URL'  => '/files/Resources/', // URL to files (REQUIRED)
                 'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
-                'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+                //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
+                //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
             ),
             // Trash volume
@@ -153,9 +153,9 @@ function getArtistFileBrowserOptions(){
                 'path'   => __ROOT__ . '/files/.trash/',
                 'tmbURL' => '/files/.trash/.tmb/',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
-                'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
-                'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
-                'uploadOrder'   => array('deny', 'allow'),      // Same as above
+                //'uploadDeny'    => array('all'),                // Recomend the same settings as the original volume that uses the trash
+                //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
+                //'uploadOrder'   => array('deny', 'allow'),      // Same as above
                 'accessControl' => 'access',                    // Same as above
             )
         )
