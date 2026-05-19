@@ -24,3 +24,12 @@ function attempt_login($username, $password){
         session_unset();
         session_destroy();
 }
+
+function SetArtistPassword($username, $newpass){
+    $hashpass = password_hash($newpass, PASSWORD_BCRYPT);
+    $SQLString = "UPDATE artists SET password = ? WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$hashpass,$username]);
+    return true;
+}
