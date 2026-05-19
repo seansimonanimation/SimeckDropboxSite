@@ -2,6 +2,7 @@
 //This lib contains functions related to project management including creating projects, and assigning people to projects.
 include_once __DIR__ . '/session.php';
 include_once __DIR__ . '/db.php';
+include_once __ROOT__ . '/libraries/sharedlib.php';
 
 function GenerateProjectCards(){
     $projects = GetAllProjects();
@@ -23,14 +24,6 @@ function GetAllProjects(){
     $stmt = $pdo->prepare("SELECT * FROM projects");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-function SummonActivityButton($isActive){
-    if($isActive){
-        return '<span style="color:green; font-weight:bold">✅</span>';
-    } else {
-        return '<span style="color:red; font-weight:bold">❌</span>';
-    }
 }
 
 function ToggleProjectActivation($pid){

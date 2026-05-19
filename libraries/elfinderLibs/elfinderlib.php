@@ -213,3 +213,25 @@ function ScanForPlugins() {
     
     return $config;
 }
+function loadElfinderCss($dir) {
+    $html = '';
+    $files = glob($dir . '/*.css');
+    if (!$files) return '';
+    sort($files);
+    foreach ($files as $file) {
+        $html .= '<link rel="stylesheet" href="' . $file . '" type="text/css">' . "\n";
+    }
+    return $html;
+}
+
+// Helper to load a glob of JS files
+function loadElfinderJs($dir) {
+    $html = '';
+    $files = glob($dir . '/*.js');
+    if (!$files) return '';
+    sort($files);
+    foreach ($files as $file) {
+        $html .= '<script src="' . $file . '" type="text/javascript" charset="utf-8"></script>' . "\n";
+    }
+    return $html;
+}
