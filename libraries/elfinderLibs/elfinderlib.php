@@ -2,7 +2,7 @@
     Define('__ELFINDER_ROOT__','libraries/elfinder/');
     include_once __DIR__ . '/../session.php';
     include_once __ROOT__ . '/libraries/db.php';
-
+    $GLOBALS['db'] = DBConnect();
 
 function getAdminFileBrowserOptions(){
     ConnectorSetup();
@@ -108,6 +108,7 @@ function getArtistFileBrowserOptions(){
                 //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
                 //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
+                'dotFiles' => false,        // <-- No dotfiles!
             ),
             //Everyone's Dropboxes volume
             array(
@@ -121,6 +122,7 @@ function getArtistFileBrowserOptions(){
                 //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
                 //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                 'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
+                'dotFiles' => false,        // <-- No dotfiles!
             ),
             //Project volume
             array(
@@ -132,7 +134,8 @@ function getArtistFileBrowserOptions(){
                 //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
                 //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
                 //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
-                'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
+                'accessControl' => 'access' ,                    // disable and hide dot starting files (OPTIONAL)
+                'dotFiles' => false,        // <-- No dotfiles!
             ),
             //Resources volume
             array(
@@ -145,7 +148,8 @@ function getArtistFileBrowserOptions(){
                 //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
                 //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
                 //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
-                'accessControl' => 'access'                     // disable and hide dot starting files (OPTIONAL)
+                'accessControl' => 'access',                     // disable and hide dot starting files (OPTIONAL)
+                'dotFiles' => false,        // <-- No dotfiles!
             ),
             // Trash volume
             array(
@@ -158,6 +162,7 @@ function getArtistFileBrowserOptions(){
                 //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Same as above
                 //'uploadOrder'   => array('deny', 'allow'),      // Same as above
                 'accessControl' => 'access',                    // Same as above
+                'dotFiles' => false,        // <-- No dotfiles!
             )
         )
 
@@ -175,9 +180,11 @@ function getClientFileBrowserOptions(){
         $connectorOptions = array('roots' => array());
         return $connectorOptions;
     }
-    $projectQuery = 'SELECT pid, project_name FROM projects WHERE pid IN ?';
+    $placeholders = implode(',', array_fill(0, count($clientassignments), '?'));
+    $projectQuery = "SELECT pid, project_name, active_path FROM projects WHERE pid IN ($placeholders)";
+
     $stmt = $GLOBALS['db']->prepare($projectQuery);
-    $stmt->execute([implode(',', $clientassignments)]);
+    $stmt->execute($clientassignments);
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $connectorOptions = array('roots' => array());
 
@@ -185,14 +192,15 @@ function getClientFileBrowserOptions(){
         $roots[] = array(
             'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'alias'        => $project['project_name'],                    // display this instead of real root name
-            'path' => __ROOT__ . '/files/Projects/' . $project['pid'] . '/clientUpload/',                 // path to files (REQUIRED)
-            'URL'  => '/files/Projects/' . $project['pid'] . '/clientUpload/', // URL to files (REQUIRED)
+            'path' => __ROOT__ . $project['active_path'] . 'clientUpload/',                 // path to files (REQUIRED)
+            'URL'  => $project['active_path'] . 'clientUpload/', // URL to files (REQUIRED)
             'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
             //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
             //'uploadAllow'   => array('image/x-ms-bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/x-icon', 'text/plain'), // Mimetype `image` and `text/plain` allowed to upload
             //'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
             'accessControl' => 'access',                // disable and hide dot starting files (OPTIONAL)
+            'dotFiles' => false,        // <-- No dotfiles!
         );
     }
     return array('roots' => $roots);
@@ -237,6 +245,14 @@ function AttachOrCreateDropbox(){
 
 function DetermineMyDropboxURL(){
     return '/files/Dropboxes/' . $_SESSION['lastname'] . '%2C%20' . $_SESSION['firstname'];
+}
+
+function access($attr, $path, $data, $volume, $isDir, $relpath) {
+    $basename = basename($path);
+    return $basename[0] === '.'
+             && strlen($relpath) !== 1
+        ? !($attr == 'read' || $attr == 'write')
+        :  null;
 }
 
 function ScanForPlugins() {
