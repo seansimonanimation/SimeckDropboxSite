@@ -22,6 +22,7 @@ function PutClientDataInSession($clientData){
     $_SESSION['username'] = $clientData['email'];
     $_SESSION['firstname'] = $clientData['firstname'];
     $_SESSION['lastname'] = $clientData['lastname'];
+    $_SESSION['clientProjects'] = $clientData['project_assignments'];
     $_SESSION['role'] = 'client';
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session

@@ -40,7 +40,7 @@ if(isset($_GET['removeArtistFromProject'])){
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
     // Resolve artist_id → artist username
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists WHERE userID = ?");
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists WHERE username = ?");
     $stmt->execute([$_POST['artist_id']]);
     $artist = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($artist) {
