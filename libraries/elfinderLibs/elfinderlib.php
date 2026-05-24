@@ -214,7 +214,7 @@ foreach ($projects as $project){
             'dotFiles' => false,        // <-- No dotfiles!
         );
     }
-}
+
 
     return array('roots' => $roots);
 }
