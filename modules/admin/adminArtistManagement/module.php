@@ -49,21 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
 }
 ?>
 <script>
-async function assignProject(username, pid) {
-    if (!pid) return;
-    await fetch('?addArtistToProject=' + username + ',' + pid, {
+// ==========================================================
+// AJAX helper — sends a GET request with the XHR header
+// so RefreshPortal() returns JSON instead of redirecting
+// ==========================================================
+async function ajaxGet(url) {
+    return fetch(url, {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     });
-    await refreshContent();
 }
 
-async function removeProject(username, pid) {
-    await fetch('?removeArtistFromProject=' + username + ',' + pid, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    });
-    await refreshContent();
-}
-
+// ==========================================================
+// Refreshes the #content area in-place (no redirect)
+// ==========================================================
 async function refreshContent() {
     const resp = await fetch(window.location.href, {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -75,9 +73,92 @@ async function refreshContent() {
     if (newContent) {
         document.querySelector('#content').innerHTML = newContent.innerHTML;
     }
+    // Re-bind event listeners since the DOM was replaced
+    initPageListeners();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// ==========================================================
+// Project assignment (already works — stays in place)
+// ==========================================================
+async function assignProject(username, pid) {
+    if (!pid) return;
+    await ajaxGet('?addArtistToProject=' + username + ',' + pid);
+    await refreshContent();
+}
+
+async function removeProject(username, pid) {
+    await ajaxGet('?removeArtistFromProject=' + username + ',' + pid);
+    await refreshContent();
+}
+
+// ==========================================================
+// Toggle artist active status
+// ==========================================================
+async function toggleArtistStatus(artistId, newStatus) {
+    await ajaxGet('?artist_id=' + artistId + '&new_status=' + newStatus);
+    await refreshContent();
+}
+
+// ==========================================================
+// Reset artist password
+// ==========================================================
+async function resetPassword(artistId) {
+    await ajaxGet('?reset_pw_for=' + artistId);
+    await refreshContent();
+}
+
+// ==========================================================
+// Delete an artist document
+// ==========================================================
+async function deleteDocument(docId) {
+    await ajaxGet('?delete=' + docId);
+    await refreshContent();
+}
+
+// ==========================================================
+// Upload a document via AJAX with FormData
+// ==========================================================
+async function uploadDocument(artistId, file) {
+    const formData = new FormData();
+    formData.append('uploaded_file', file);
+    formData.append('artist_id', artistId);
+
+    await fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: formData
+    });
+    await refreshContent();
+}
+
+// ==========================================================
+// Binds all event listeners (called on load AND after refresh)
+// ==========================================================
+function initPageListeners() {
+    // --- Toggle artist status ---
+    document.querySelectorAll('.toggle-artist-status').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleArtistStatus(this.dataset.artistId, this.dataset.newStatus);
+        });
+    });
+
+    // --- Reset password ---
+    document.querySelectorAll('.reset-pw-button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            resetPassword(this.dataset.artistId);
+        });
+    });
+
+    // --- Delete document ---
+    document.querySelectorAll('.delete-artist-document').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            deleteDocument(this.dataset.docId);
+        });
+    });
+
+    // --- Upload file button (opens file picker) ---
     document.querySelectorAll('.upload-file-button').forEach(btn => {
         btn.addEventListener('click', function() {
             const artistId = this.dataset.artistId;
@@ -86,20 +167,43 @@ document.addEventListener('DOMContentLoaded', function() {
             fileInput.click();
         });
     });
-    document.getElementById('fileUploadInput').addEventListener('change', function() {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.enctype = 'multipart/form-data';
-        form.appendChild(this);
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'artist_id';
-        hiddenInput.value = this.dataset.artistId;
-        form.appendChild(hiddenInput);
 
-        document.body.appendChild(form);
-        form.submit();
-    });
+    // --- File selected → upload via AJAX ---
+    const fileInput = document.getElementById('fileUploadInput');
+    if (fileInput) {
+        // Remove old listener to avoid duplicates
+        const newInput = fileInput.cloneNode(true);
+        fileInput.parentNode.replaceChild(newInput, fileInput);
+        newInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadDocument(this.dataset.artistId, this.files[0]);
+            }
+            // Reset so re-selecting the same file triggers change again
+            this.value = '';
+        });
+    }
+
+    // --- Create artist form ---
+    const createForm = document.getElementById('createArtistForm');
+    if (createForm) {
+        createForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = this.querySelector('[name="username"]').value;
+            const firstname = this.querySelector('[name="firstname"]').value;
+            const lastname = this.querySelector('[name="lastname"]').value;
+            await ajaxGet('?CreateArtist=1&username=' + encodeURIComponent(username)
+                + '&firstname=' + encodeURIComponent(firstname)
+                + '&lastname=' + encodeURIComponent(lastname));
+            await refreshContent();
+        });
+    }
+}
+
+// ==========================================================
+// Initial bind on page load
+// ==========================================================
+document.addEventListener('DOMContentLoaded', function() {
+    initPageListeners();
 });
 </script>
 
@@ -115,13 +219,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="module-card module-card--span-1">Search for Artist </div>
         <div class="module-card module-card--span-2"> Stats </div>
         <div class="module-card module-card--span-1"> <h1>Create new Artist</h1>
-            <form method="GET" class="module-create-form" action="">
+            <!-- CHANGED: added id="createArtistForm" so JS can intercept submit -->
+            <form method="GET" class="module-create-form" action="" id="createArtistForm">
             <input class="module-input" type="hidden" name="CreateArtist" placeholder="Enter Artist name" />
             <input class="module-input" type="text" name="username" placeholder="Username" required/><br />
             <input class="module-input" type="text" name="firstname" placeholder="First Name" required/><br />
             <input class="module-input" type="text" name="lastname" placeholder="Last Name" required/><br />
             <button class="module-button" type="submit">Create Artist</button>
-</form></div>
+        </form></div>
         <?php GenerateArtistCards(); ?>
         <input type="file" id="fileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
     </div>

@@ -14,7 +14,8 @@ function GenerateArtistCards() {
         echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
         echo '<td class="module-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
-        echo '<td class="module-tablecell"><button class="edit-artist-button" onclick="location.href=\'?reset_pw_for=' . $artist['username'] . '\'">Reset PW</button></td>';
+        // CHANGED: added class="reset-pw-button" and data attribute instead of location.href
+        echo '<td class="module-tablecell"><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
         echo '<td class="module-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
@@ -23,7 +24,6 @@ function GenerateArtistCards() {
         echo '</div>';
     }
 }
-
 function GetAllArtists(){
     $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments FROM artists";
     $pdo = DBConnect();
@@ -37,12 +37,10 @@ function GenerateArtistStatusButton($artistUsername, $isActive){
     if($artistUsername == $_SESSION["username"]){
         return "This is you!";
     }
-    if($isActive){
-        return '<a href="?artist_id=' . $artistUsername . '&new_status=0" class="toggle-artist-status"><h1>✅</h1></a>';
-    } else {
-        return '<a href="?artist_id=' . $artistUsername . '&new_status=1" class="toggle-artist-status"><h1>❌</h1></a>';
-    }
-
+    // CHANGED: Use data attributes + href="#" instead of direct GET links
+    $newStatus = $isActive ? 0 : 1;
+    $icon = $isActive ? '✅' : '❌';
+    return '<a href="#" class="toggle-artist-status" data-artist-id="' . $artistUsername . '" data-new-status="' . $newStatus . '"><h1>' . $icon . '</h1></a>';
 }
 
 
@@ -107,7 +105,8 @@ function DisplayArtistDocuments($artistName){
         echo '<div class="admin-Artist-management-artist-document">';
         $b64 = Generateb64EncodedDownloadLink($artistName, $doc['uploadID']);
         echo '<a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
-        echo '<a href="?delete=' . $doc['uploadID'] . '">❌</a>';
+        // CHANGED: use data attribute + href="#" instead of direct GET link
+        echo '<a href="#" class="delete-artist-document" data-doc-id="' . $doc['uploadID'] . '">❌</a>';
         echo '</div>';
     }
 }
