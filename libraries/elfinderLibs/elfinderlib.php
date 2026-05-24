@@ -175,11 +175,12 @@ function getArtistFileBrowserOptions(){
 function getClientFileBrowserOptions(){
     ConnectorSetup();
     $clientassignments = GetClientProjectAssignments();
+    $roots = array();
     if(empty($clientassignments)){
         //Client has no project assignments, return empty options to prevent access to any files.
-        $connectorOptions = array('roots' => array());
-        return $connectorOptions;
+        return $roots;
     }
+    
     $placeholders = implode(',', array_fill(0, count($clientassignments), '?'));
     $projectQuery = "SELECT pid, project_name, active_path FROM projects WHERE pid IN ($placeholders)";
 
@@ -188,7 +189,17 @@ function getClientFileBrowserOptions(){
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $connectorOptions = array('roots' => array());
 
-    foreach ($projects as $project){
+foreach ($projects as $project){
+    $ProjectPath = __ROOT__ . $project['active_path'];
+    $clientUploadPath = __ROOT__ . $project['active_path'] . 'clientUpload/';
+    if(!is_dir($ProjectPath)){ //Create the project folder if it doesn't exist, this should always be true since the project is active, but just in case.
+        mkdir($ProjectPath, 0777, true);
+    }
+
+    if (!is_dir($clientUploadPath)) {
+        mkdir($clientUploadPath, 0777, true);
+        @mkdir($clientUploadPath . '.tmb', 0777, true);
+    }
         $roots[] = array(
             'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'alias'        => $project['project_name'],                    // display this instead of real root name
@@ -203,6 +214,8 @@ function getClientFileBrowserOptions(){
             'dotFiles' => false,        // <-- No dotfiles!
         );
     }
+}
+
     return array('roots' => $roots);
 }
 
