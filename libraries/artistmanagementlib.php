@@ -78,7 +78,7 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     // For security reasons, you should implement proper validation and sanitization of the uploaded file, as well as error handling.
     
     //Ensure that the user directory exists, and if not, create it.
-    $dir = dirname($folder_path);
+    $dir = dirname($systemFilePath);
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
