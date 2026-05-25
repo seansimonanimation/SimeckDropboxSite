@@ -26,6 +26,36 @@ function GetAllProjects(){
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function GetAssignedProjectOptionList(){
+    $pdo = DBConnect();
+    
+    // Get the project_assignments string for the current user
+    $stmt = $pdo->prepare("SELECT project_assignments FROM artists WHERE username = ?");
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$result || empty($result['project_assignments'])) {
+        return; // No projects assigned
+    }
+    
+    $projectArr = array_filter(explode(",", $result['project_assignments']));
+    if (empty($projectArr)) {
+        return;
+    }
+    
+    // Get project names for the assigned PIDs
+    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
+    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
+    $stmt->execute(array_values($projectArr));
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($projects as $p) {
+        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+    }
+}
+
+
+
 function ToggleProjectActivation($pid){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT active FROM projects WHERE pid = ?");
@@ -94,4 +124,98 @@ function CreateNewProject($name, $description, $type) {
     $stmt->execute([$newPid, $name, $activePath, $inactiveZipPath, $type, $description]);
 
     return $newPid;
+}
+
+function GetAllDataForProject($pid){
+    $projData = array();
+    $commentData = array();
+    $artistData = array();
+    $clientData = array();
+    $pdo = DBConnect();
+    $ProjectDataString = "SELECT * FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
+    $ProjectCommentString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? ORDER BY created_at DESC";
+    $ProjectArtistListString = "SELECT username, first_name, last_name FROM artists WHERE project_assignments LIKE ?";
+    $ProjectClientListString = "SELECT email, first_name, last_name FROM clients WHERE project_assignments LIKE ?";
+
+    $projstmt = $pdo->prepare($ProjectDataString);
+    $projstmt->execute([$pid]);
+    $projData = $projstmt->fetch(PDO::FETCH_ASSOC);
+
+    $commentstmt = $pdo->prepare($ProjectCommentString);
+    $commentstmt->execute(['%'.$pid.'%']);
+    $commentData = $commentstmt->fetch(PDO::FETCH_ASSOC);
+
+    $artiststmt = $pdo->prepare($ProjectArtistListString);
+    $artiststmt->execute(['%'.$pid.'%']);
+    $artistData = $artiststmt->fetch(PDO::FETCH_ASSOC);
+
+    $clientstmt = $pdo->prepare($ProjectClientListString);
+    $clientstmt->execute(['%'.$pid.'%']);
+    $clientData = $clientstmt->fetch(PDO::FETCH_ASSOC);
+
+    return array(
+        'project' => $projData,
+        'comments' => $commentData,
+        'artists' => $artistData,
+        'clients' => $clientData
+    );
+}
+function DisplayProjectTeamMembers($artists, $lead){
+    if($artists === array()){
+        return 'This is where you will see who is on your team.';
+    }
+    if($artists === ''){
+        return 'This project has no assigned artists.';
+    }
+
+    foreach($artists as $artist){
+
+        echo '<p>';
+        if($lead == $_SESSION['username']){
+            echo '⭐';
+        }
+        echo htmlspecialchars($artist['first_name'] . ' ' . $artist['last_name'] . ' (' . $artist['username'] . ')');
+        if($lead == $_SESSION['username'] && $artist['username'] != $_SESSION['username']){
+            echo ' <button onclick="removeTeamMember(\''.$artist['username'].'\')">❌</button>';
+
+        }
+        echo '</p>';
+    }
+}
+
+function DisplayProjectClients($clients){
+
+}
+
+function DisplayProjectComments($comments){
+
+}
+
+
+function DisplayArtistProject($pid){
+    //Project info to display:
+    //Row 1
+    // Left: Project Selector
+    // Middle: Assigned team - 1 span - Lead can add and remove team members - 1 span
+    // Right: Assigned Clients - 1 span
+
+    //Row 2
+    //Half width: All project comments
+    //Half width: Project activity feed (automated and manual entries)
+
+
+
+
+
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT * FROM projects WHERE pid = ?");
+    $stmt->execute([$pid]);
+    $project = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($project){
+        echo '<h2>'.htmlspecialchars($project['project_name']).'</h2>';
+        echo '<p>'.htmlspecialchars($project['description']).'</p>';
+        echo '<p><strong>Status:</strong> ' . ($project['active'] ? 'Active' : 'Inactive') . '</p>';
+        echo '<p><strong>Type:</strong> ' . htmlspecialchars($project['type']) . '</p>';
+        // Add more project details as needed
+    }
 }
