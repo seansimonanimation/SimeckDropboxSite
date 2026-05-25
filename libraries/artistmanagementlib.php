@@ -3,7 +3,11 @@ include_once __DIR__ . '/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/download.php';  
 function GenerateArtistCards() {
-    $artists = GetAllArtists();
+    if(isset($_GET['searchArtist'])){
+        $artists = GetSearchedArtist($_GET['searchArtist']);
+    } else {
+        $artists = GetAllArtists();
+    }
     foreach ($artists as $artist) {
         echo '<div class="module-card module-card--span-4">';
         echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
@@ -55,7 +59,14 @@ function ToggleArtistStatus($artistUsername, $isActive){
     $stmt->execute([$artistUsername]);
     RefreshPortal();
 }
-
+function GetSearchedArtist($searchterm){
+    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $likeTerm = '%' . $searchterm . '%';
+    $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 function ResetArtistPassword($username){
     $defaultPW = '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS'; // This is the hash for "SimeckArtist01".
     $SQLString = "UPDATE artists SET password = ? WHERE username = ?";

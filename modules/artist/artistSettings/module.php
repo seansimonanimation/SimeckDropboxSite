@@ -6,7 +6,7 @@
  * @module artistSettings
  * @name Settings
  * @role artist
- * @nav-text Artist Settings
+ * @nav-text Settings
  * @nav-icon settings
  * @nav-order 99
  */
@@ -75,7 +75,31 @@ function verifyCurrentPW($currentPW, $artistData){
     <div class="module-grid">
         <?php echo ArtistSettingsSuccessDisplay($successMessage);?>
         <?php echo ArtistSettingsErrorDisplay($errorMessage); ?>
-        <div class="module-card module-card--span-1">Theme Selector</div>
+        <?php
+        $themes = DiscoverThemes();
+        $currentTheme = $_SESSION['theme'] ?? 'dark-boo';
+        ?>
+        <div class="module-card module-card--span-1">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Theme Settings</h3>
+            </div>
+            <div class="module-card__content">
+                <form method="get" action="index.php">
+                    <label for="theme-select" class="module-form-group" style="margin-bottom:12px;">
+                        <span style="margin-bottom:4px;">Choose your theme</span>
+                        <select name="theme" id="theme-select" class="module-input" style="width:auto;min-width:200px;" onchange="this.form.submit()">
+                            <?php foreach($themes as $t): ?>
+                                <option value="<?php echo $t['id']; ?>" <?php echo ($t['id'] === $currentTheme) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($t['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <input type="hidden" name="action" value="set_theme">
+                    <noscript><button type="submit" class="btn--sm">Apply</button></noscript>
+                </form>
+            </div>
+        </div>
         <div class="module-card module-card--span-2">Some kind of content goes here.</div>
         <div class="module-card module-card--span-1">
         <h1>Password change</h1>

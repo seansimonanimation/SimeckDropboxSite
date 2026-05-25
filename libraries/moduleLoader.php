@@ -135,3 +135,42 @@ function SetCurrentModuleSessionData($moduleData){
     $_SESSION['CurrentModuleNavIcon'] = $moduleData['nav-icon'];
     $_SESSION['CurrentModuleNavOrder'] = $moduleData['nav-order'];
 }
+
+/**
+ * Scan css/siteThemes/ for theme files and return an array of theme metadata.
+ * Each CSS file should have a comment like /* @name Theme Name *​/ at the top.
+ * Falls back to humanizing the filename if no @name is found.
+ */
+function DiscoverThemes(){
+    $themesDir = __ROOT__ . '/css/siteThemes';
+    $themes = [];
+    if(!is_dir($themesDir)){
+        // Fallback: at least Dark Boo exists as default
+        return ['dark-boo' => ['id' => 'dark-boo', 'name' => 'Dark Boo']];
+    }
+    $files = glob($themesDir . '/*.css');
+    sort($files);
+    foreach($files as $file){
+        $filename = basename($file, '.css');
+        $id = $filename;
+        $name = ucwords(str_replace(['-', '_'], ' ', $filename)); // fallback
+        // Try to extract @name from file comments
+        $content = file_get_contents($file);
+        if(preg_match('/@name\s+(.+)/', $content, $matches)){
+            $name = trim($matches[1]);
+        }
+        $themes[$id] = [
+            'id' => $id,
+            'name' => $name,
+            'file' => 'css/siteThemes/' . $filename . '.css'
+        ];
+    }
+    return $themes;
+}
+
+/**
+ * Get the current user's theme class for the <body> tag.
+ */
+function GetThemeClass(){
+    return 'theme-' . ($_SESSION['theme'] ?? 'dark-boo');
+}

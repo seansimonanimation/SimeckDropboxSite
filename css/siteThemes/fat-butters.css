@@ -1,0 +1,36 @@
+/* @name Fat Butters
+/* @description A warm, playful orange theme */
+/* @author Simeck Entertainment */
+
+body.theme-fat-butters {
+  --color-primary:        #F59E0B;
+  --color-primary-dark:   #D97706;
+  --color-primary-light:  #FBBF24;
+  --color-primary-xlight: #FEF3C7;
+
+  --color-bg:             #1C1917;
+  --color-bg-mid:         #292524;
+  --color-bg-raised:      #3C3530;
+  --color-surface:        #44403C;
+  --color-surface-hover:  #57534E;
+
+  --color-text:           #FEF3C7;
+  --color-text-muted:     #D6A86D;
+  --color-text-dim:       #A67B4A;
+  --color-heading:        #FFFBEB;
+
+  --color-border:         rgba(245, 158, 11, 0.20);
+  --color-border-bright:  rgba(245, 158, 11, 0.45);
+
+  --color-success:        #84CC16;
+  --color-warning:        #F97316;
+  --color-danger:         #EF4444;
+  --color-info:           #38BDF8;
+
+  --glass-bg:             rgba(41, 37, 36, 0.75);
+  --glass-border:         1px solid rgba(245, 158, 11, 0.25);
+
+  --shadow-sm:            0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
+  --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
+}

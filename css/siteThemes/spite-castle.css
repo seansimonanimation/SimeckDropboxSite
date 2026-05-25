@@ -1,0 +1,36 @@
+/* @name Spite Castle
+/* @description A dark, gothic purple theme */
+/* @author Simeck Entertainment */
+
+body.theme-spite-castle {
+  --color-primary:        #8B5CF6;
+  --color-primary-dark:   #7C3AED;
+  --color-primary-light:  #A78BFA;
+  --color-primary-xlight: #EDE9FE;
+
+  --color-bg:             #0D0B1E;
+  --color-bg-mid:         #1A1533;
+  --color-bg-raised:      #231E40;
+  --color-surface:        #2D2650;
+  --color-surface-hover:  #3B3266;
+
+  --color-text:           #E2D9F3;
+  --color-text-muted:     #9D8FC6;
+  --color-text-dim:       #6F5FA0;
+  --color-heading:        #FFFFFF;
+
+  --color-border:         rgba(139, 92, 246, 0.20);
+  --color-border-bright:  rgba(139, 92, 246, 0.45);
+
+  --color-success:        #34D399;
+  --color-warning:        #FBBF24;
+  --color-danger:         #F87171;
+  --color-info:           #818CF8;
+
+  --glass-bg:             rgba(26, 21, 51, 0.75);
+  --glass-border:         1px solid rgba(139, 92, 246, 0.25);
+
+  --shadow-sm:            0 2px 8px rgba(0,0,0,0.40);
+  --shadow-md:            0 4px 20px rgba(0,0,0,0.50);
+  --shadow-lg:            0 8px 40px rgba(0,0,0,0.65);
+}

@@ -33,3 +33,15 @@ function SetArtistPassword($username, $newpass){
     $stmt->execute([$hashpass,$username]);
     return true;
 }
+function SetUserTheme($username, $theme, $role){
+    $table = ($role === 'client') ? 'clients' : 'artists';
+    $idCol = ($role === 'client') ? 'email' : 'username';
+    $SQLString = "UPDATE $table SET theme = ? WHERE $idCol = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $result = $stmt->execute([$theme, $username]);
+    if($result){
+        $_SESSION['theme'] = $theme;
+    }
+    return $result;
+}

@@ -22,6 +22,15 @@ ob_start();
       header("Location: login.php");
       exit;
    }
+if(isset($_GET['action']) && $_GET['action'] === 'set_theme' && isset($_GET['theme'])){
+    $theme = preg_replace('/[^a-zA-Z0-9\-_]/', '', $_GET['theme']);
+    $themesDir = __ROOT__ . '/css/siteThemes';
+    if(file_exists($themesDir . '/' . $theme . '.css')){
+        SetUserTheme($_SESSION['username'], $theme, $_SESSION['role']);
+    }
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];
@@ -71,9 +80,20 @@ function adminViewToggle(){
 <head>
    <link rel="stylesheet" href="css/portal.css">
    <link rel="stylesheet" href="css/moduleStyle.css">
+   <?php
+      $currentTheme = $_SESSION['theme'] ?? 'dark-boo';
+      $themeFile = 'css/siteThemes/' . $currentTheme . '.css';
+      if(file_exists(__ROOT__ . '/' . $themeFile)){
+         echo '<link rel="stylesheet" href="' . $themeFile . '?v=' . filemtime(__ROOT__ . '/' . $themeFile) . '">';
+      } else {
+         // Fallback to Dark Boo
+         echo '<link rel="stylesheet" href="css/siteThemes/dark-boo.css">';
+      }
+?>
    <title>Simeck Entertainment <?php echo GetTempRole(); ?> Portal<br /></title>
 </head>
-<body class="portal-layout">
+<body class="portal-layout <?php echo GetThemeClass(); ?>">
+
    <aside id="sidebar" role="navigation">
       <div class="sidebar-header"><?php echo $_SESSION['tempRole']; ?> portal
    <br /> <?php echo adminSwitchViewButtonActivation(); ?></div>
