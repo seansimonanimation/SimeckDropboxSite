@@ -1,63 +1,18 @@
 /* ─── 1. Design Tokens ────────────────────────────────────────────────────── */
 :root {
-  /* Brand colours */
-  --color-primary:        #1E5AC4;
-  --color-primary-dark:   #154496;
-  --color-primary-light:  #3B7AE0;
-  --color-primary-xlight: #E6EEFC;
-
-  /* Surface colours */
-  --color-bg:             #0F1729;
-  --color-bg-mid:         #172440;
-  --color-bg-raised:      #1C2C4D;
-  --color-surface:        #23365C;
-  --color-surface-hover:  #2A4270;
-
-  /* Text */
-  --color-text:           #D6E1F5;
-  --color-text-muted:     #7B9AD4;
-  --color-text-dim:       #4F73B8;
-  --color-heading:        #FFFFFF;
-
-  /* Borders */
-  --color-border:         rgba(30, 90, 196, 0.25);
-  --color-border-bright:  rgba(30, 90, 196, 0.55);
-
-  /* Semantic */
-  --color-success:        #2ECC71;
-  --color-warning:        #F39C12;
-  --color-danger:         #E74C3C;
-  --color-info:           #3498DB;
-
-  /* Frosted glass */
-  --glass-bg:             rgba(23, 36, 64, 0.72);
-  --glass-blur:           blur(14px);
-  --glass-border:         1px solid rgba(30, 90, 196, 0.30);
-
-  /* Layout dimensions */
   --sidebar-width:        175px;
   --topbar-height:        80px;
   --content-padding:      28px;
-
-  /* Radius */
   --radius-sm:            6px;
   --radius-md:            12px;
   --radius-lg:            20px;
   --radius-pill:          999px;
-
-  /* Shadows */
-  --shadow-sm:            0 2px 8px rgba(0,0,0,0.35);
-  --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
-  --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
-
-  /* Transitions */
   --transition-fast:      150ms ease;
   --transition-med:       250ms ease;
-
-  /* Typography */
   --font-sans:            'Nunito', system-ui, -apple-system, sans-serif;
   --font-mono:            'JetBrains Mono', 'Fira Mono', monospace;
 }
+
 
 
 /* ─── 2. Reset & Base ─────────────────────────────────────────────────────── */

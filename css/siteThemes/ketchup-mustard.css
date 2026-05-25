@@ -1,0 +1,36 @@
+/* @name Ketchup and Mustard
+/* @description A bold red and yellow theme */
+/* @author Simeck Entertainment */
+
+body.theme-ketchup-mustard {
+  --color-primary:        #EF4444;
+  --color-primary-dark:   #DC2626;
+  --color-primary-light:  #F87171;
+  --color-primary-xlight: #FEE2E2;
+
+  --color-bg:             #1F1B1B;
+  --color-bg-mid:         #2C2626;
+  --color-bg-raised:      #3D3333;
+  --color-surface:        #4A3D3D;
+  --color-surface-hover:  #5C4B4B;
+
+  --color-text:           #FEF9C3;
+  --color-text-muted:     #E8C36A;
+  --color-text-dim:       #C49B3C;
+  --color-heading:        #FEFCE8;
+
+  --color-border:         rgba(239, 68, 68, 0.20);
+  --color-border-bright:  rgba(239, 68, 68, 0.45);
+
+  --color-success:        #22C55E;
+  --color-warning:        #EAB308;
+  --color-danger:         #B91C1C;
+  --color-info:           #60A5FA;
+
+  --glass-bg:             rgba(44, 38, 38, 0.75);
+  --glass-border:         1px solid rgba(239, 68, 68, 0.25);
+
+  --shadow-sm:            0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
+  --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
+}
