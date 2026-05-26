@@ -18,7 +18,7 @@ define('EF_ROOT', 'libraries/elfinder');
 ?>
 <!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
-<link href="css/elfinderThemes/win10/css/theme.css" rel="stylesheet">
+<link href="css/elfinderThemes/simeck-responsive/theme.css" rel="stylesheet">
 <link href="css/comments.css" rel="stylesheet">
 
 <!-- jQuery and jQuery UI (REQUIRED) -->

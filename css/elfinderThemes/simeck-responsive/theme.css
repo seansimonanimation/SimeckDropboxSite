@@ -1,0 +1,726 @@
+Here's the complete `theme.css` for `css/elfinderThemes/simeck-responsive/theme.css`. It maps **all** elFinder UI areas to your site's CSS custom properties (`--color-*`, `--glass-*`, `--shadow-*`, `--color-primary`, etc.) so it automatically adapts to whichever site theme is active.
+
+```css
+/**
+ * Simeck Responsive Theme for elFinder
+ * 
+ * Automatically adapts to the active site theme via CSS custom properties.
+ * Drop-in replacement for win10/css/theme.css.
+ */
+
+/* ========================================================= */
+/*  1. MAIN CONTAINER & RESET                                */
+/* ========================================================= */
+
+/* Hard reset – let the site theme take over */
+div.elfinder {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+div.elfinder,
+div.elfinder * {
+  font-family: inherit;
+}
+
+/* Override the glossy jquery‑ui defaults everywhere */
+.elfinder,
+.elfinder .ui-widget,
+.elfinder .ui-widget-header,
+.elfinder .ui-widget-content,
+.elfinder .ui-state-default,
+.elfinder .ui-state-highlight {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.elfinder .ui-widget-header {
+  background: var(--color-bg-mid);
+}
+
+.elfinder .ui-widget-content {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ========================================================= */
+/*  2. WORKZONE (main split panel)                           */
+/* ========================================================= */
+
+.elfinder-workzone {
+  background: var(--color-bg);
+}
+
+/* ========================================================= */
+/*  3. TOOLBAR                                               */
+/* ========================================================= */
+
+.elfinder .elfinder-toolbar {
+  background: var(--color-bg-mid);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Button groups */
+.elfinder .elfinder-buttonset {
+  background: transparent;
+}
+
+/* Individual buttons */
+.elfinder .elfinder-button {
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.elfinder .elfinder-button.ui-state-hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-bright);
+}
+
+.elfinder .elfinder-button.ui-state-active {
+  background: var(--color-primary-xlight);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.elfinder .elfinder-button.ui-state-disabled {
+  opacity: 0.35;
+}
+
+/* Button separator */
+.elfinder .elfinder-toolbar-button-separator {
+  background: var(--color-border);
+  width: 1px;
+  height: 24px;
+  margin: 0 2px;
+}
+
+/* Search field */
+.elfinder .elfinder-toolbar .elfinder-button-search {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 4px;
+}
+
+.elfinder .elfinder-toolbar .elfinder-button-search input {
+  background: transparent !important;
+  color: var(--color-text) !important;
+  border: none !important;
+}
+
+.elfinder .elfinder-toolbar .elfinder-button-search input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.elfinder .elfinder-toolbar .elfinder-button-search .ui-icon {
+  opacity: 0.6;
+}
+
+/* Search dropdown */
+.elfinder .elfinder-button-search .elfinder-button-menu {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+/* ========================================================= */
+/*  4. NAVBAR (left tree panel)                              */
+/* ========================================================= */
+
+.elfinder .elfinder-navbar {
+  background: var(--color-bg-mid);
+  border-right: 1px solid var(--color-border);
+}
+
+.elfinder .elfinder-navbar-dir {
+  color: var(--color-text);
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.elfinder .elfinder-navbar-dir.ui-state-hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-bright);
+  color: var(--color-heading);
+}
+
+.elfinder .elfinder-navbar-dir.ui-state-active {
+  background: var(--color-primary-xlight);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.elfinder .elfinder-navbar-dir.elfinder-droppable-active {
+  background: var(--color-surface-hover);
+  outline: 1px dashed var(--color-border-bright);
+}
+
+/* Navbar arrows */
+.elfinder .elfinder-navbar-arrow {
+  opacity: 0.6;
+}
+
+/* Navbar icons */
+.elfinder .elfinder-navbar-icon {
+  opacity: 0.8;
+}
+
+/* Places root */
+.elfinder .elfinder-places .elfinder-navbar-root {
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Navbar resize handle */
+.elfinder .elfinder-navbar .ui-resizable-e {
+  background: var(--color-border);
+  width: 4px;
+}
+
+/* ========================================================= */
+/*  5. CURRENT WORKING DIRECTORY (icons / list view)         */
+/* ========================================================= */
+
+.elfinder .elfinder-cwd {
+  background: transparent;
+}
+
+/* Empty state */
+.elfinder-cwd-wrapper-empty .elfinder-cwd:after {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+}
+
+/* --- Icons view --- */
+.elfinder .elfinder-cwd-view-icons .elfinder-cwd-file {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.elfinder .elfinder-cwd-view-icons .elfinder-cwd-file.ui-state-hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border);
+}
+
+.elfinder .elfinder-cwd-view-icons .elfinder-cwd-file.ui-selected {
+  background: var(--color-primary-xlight);
+  border-color: var(--color-primary);
+}
+
+.elfinder .elfinder-cwd-view-icons .elfinder-cwd-file.ui-selected .elfinder-cwd-filename {
+  color: var(--color-primary-dark);
+}
+
+.elfinder .elfinder-cwd-view-icons .elfinder-cwd-filename {
+  color: var(--color-text);
+}
+
+/* --- List view --- */
+.elfinder .elfinder-cwd table {
+  border-collapse: collapse;
+}
+
+.elfinder .elfinder-cwd table thead tr {
+  background: var(--color-bg-mid);
+}
+
+.elfinder .elfinder-cwd table thead td {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.elfinder .elfinder-cwd table thead td.ui-state-hover {
+  background: var(--color-surface-hover);
+}
+
+.elfinder .elfinder-cwd table thead td.ui-state-active {
+  background: var(--color-primary-xlight);
+  color: var(--color-primary-dark);
+}
+
+/* Alternate row coloring */
+.elfinder .elfinder-cwd table tbody tr:nth-child(odd) {
+  background: transparent;
+}
+
+.elfinder .elfinder-cwd table tbody tr {
+  border-top: 1px solid var(--color-border);
+}
+
+.elfinder .elfinder-cwd table tbody tr.ui-state-hover {
+  background: var(--color-surface-hover);
+}
+
+.elfinder .elfinder-cwd table tbody tr.ui-selected {
+  background: var(--color-primary-xlight);
+}
+
+.elfinder .elfinder-cwd table tbody tr.ui-selected td {
+  border-top-color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Column separator in list header */
+.elfinder .elfinder-cwd table thead td:not(:last-child) {
+  border-right: 1px solid var(--color-border);
+}
+
+/* Droppable active state */
+.elfinder .elfinder-cwd-wrapper.elfinder-droppable-active {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* ========================================================= */
+/*  6. FILE ICONS (type badges)                              */
+/* ========================================================= */
+
+/* Generic icon background */
+.elfinder-cwd-icon:before {
+  color: #fff;
+  background-color: var(--color-text-muted);
+}
+
+/* Directory icon */
+.elfinder-cwd-icon-directory {
+  background-color: var(--color-primary-light);
+  mask-size: contain;
+}
+
+/* Type-specific badges */
+.elfinder-cwd-icon-text:before,
+.elfinder-cwd-icon-rtf:before,
+.elfinder-cwd-icon-rtfd:before {
+  background-color: var(--color-info);
+}
+
+.elfinder-cwd-icon-image:before {
+  background-color: var(--color-success);
+}
+
+.elfinder-cwd-icon-audio:before {
+  background-color: var(--color-warning);
+}
+
+.elfinder-cwd-icon-video:before {
+  background-color: var(--color-primary);
+}
+
+.elfinder-cwd-icon-pdf:before {
+  background-color: var(--color-danger);
+}
+
+.elfinder-cwd-icon-html:before {
+  background-color: var(--color-success);
+}
+
+.elfinder-cwd-icon-zip:before,
+.elfinder-cwd-icon-x-zip:before,
+.elfinder-cwd-icon-x-rar:before,
+.elfinder-cwd-icon-x-7z-compressed:before {
+  background-color: #97638e;
+}
+
+.elfinder-cwd-icon-javascript:before,
+.elfinder-cwd-icon-x-php:before {
+  background-color: #7c607c;
+}
+
+.elfinder-cwd-icon-vnd-ms-word:before {
+  background-color: #2b569a;
+}
+
+.elfinder-cwd-icon-ms-excel:before,
+.elfinder-cwd-icon-vnd-ms-excel:before {
+  background-color: #107b10;
+}
+
+.elfinder-cwd-icon-vnd-ms-powerpoint:before {
+  background-color: #d24625;
+}
+
+/* ========================================================= */
+/*  7. CONTEXT MENU                                          */
+/* ========================================================= */
+
+.elfinder-contextmenu,
+.elfinder-contextmenu-sub {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--color-text) !important;
+  border-radius: 6px;
+  padding: 4px 0;
+}
+
+.elfinder-contextmenu-item {
+  color: var(--color-text);
+  padding: 6px 24px;
+}
+
+.elfinder-contextmenu-item.ui-state-hover {
+  background: var(--color-surface-hover) !important;
+  color: var(--color-heading) !important;
+}
+
+.elfinder-contextmenu-item.ui-state-active {
+  background: var(--color-primary-xlight) !important;
+  color: var(--color-primary-dark) !important;
+}
+
+.elfinder-contextmenu-separator {
+  background: var(--color-border) !important;
+  height: 1px;
+  margin: 4px 8px;
+}
+
+.elfinder-contextmenu-header {
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+/* ========================================================= */
+/*  8. DIALOGS                                               */
+/* ========================================================= */
+
+.std42-dialog {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border) !important;
+  box-shadow: var(--shadow-lg);
+  border-radius: 8px;
+}
+
+.std42-dialog .ui-dialog-titlebar {
+  background: var(--color-bg-mid);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-heading);
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+}
+
+.std42-dialog .ui-dialog-titlebar .ui-dialog-title {
+  color: var(--color-heading);
+}
+
+.std42-dialog .ui-dialog-content {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.std42-dialog .ui-dialog-buttonpane {
+  background: var(--color-bg-mid);
+  border-top: 1px solid var(--color-border);
+  padding: 8px 12px;
+}
+
+/* Dialog buttons */
+.std42-dialog .ui-dialog-buttonpane .ui-button {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: 4px;
+  padding: 6px 16px;
+  transition: background 0.15s;
+}
+
+.std42-dialog .ui-dialog-buttonpane .ui-button.ui-state-hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-bright);
+}
+
+.std42-dialog .ui-dialog-buttonpane .ui-button.ui-state-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+/* Titlebar close button */
+.std42-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+}
+
+.std42-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close:hover {
+  background: var(--color-danger);
+}
+
+.std42-dialog .ui-dialog-titlebar .elfinder-titlebar-button {
+  background: transparent;
+  border: none;
+}
+
+.std42-dialog .ui-dialog-titlebar .elfinder-titlebar-button .ui-icon {
+  border-radius: 50%;
+}
+
+/* Info dialog */
+.elfinder .elfinder-info-title {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+/* Tabs in dialogs (help, preference) */
+.elfinder .elfinder-dialog .ui-tabs-nav {
+  background: var(--color-bg-mid);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.elfinder .elfinder-dialog .ui-tabs-nav li {
+  border: none;
+  background: transparent;
+}
+
+.elfinder .elfinder-dialog .ui-tabs-nav li a {
+  color: var(--color-text-muted);
+  padding: 6px 12px;
+}
+
+.elfinder .elfinder-dialog .ui-tabs-nav li.ui-tabs-active {
+  background: var(--color-surface);
+}
+
+.elfinder .elfinder-dialog .ui-tabs-nav li.ui-tabs-active a {
+  color: var(--color-heading);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+/* ========================================================= */
+/*  9. STATUSBAR                                             */
+/* ========================================================= */
+
+.elfinder .elfinder-statusbar {
+  background: var(--color-bg-mid);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  padding: 4px 12px;
+}
+
+.elfinder .elfinder-statusbar a {
+  color: var(--color-primary-light);
+}
+
+.elfinder .elfinder-statusbar a:hover {
+  color: var(--color-primary);
+}
+
+.elfinder .elfinder-statusbar .elfinder-stat-selected {
+  color: var(--color-text);
+}
+
+/* ========================================================= */
+/*  10. QUICKLOOK                                            */
+/* ========================================================= */
+
+.elfinder .elfinder-quicklook {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  border-radius: 8px;
+}
+
+.elfinder .elfinder-quicklook-titlebar {
+  background: var(--color-bg-mid);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-heading);
+  border-radius: 8px 8px 0 0;
+}
+
+.elfinder .elfinder-quicklook-title {
+  color: var(--color-heading);
+}
+
+.elfinder .elfinder-quicklook-titlebar-icon .ui-icon {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.elfinder .elfinder-quicklook-titlebar-icon .ui-icon.elfinder-icon-close:hover {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.elfinder .elfinder-quicklook-preview {
+  background: var(--color-bg);
+}
+
+.elfinder .elfinder-quicklook-info-data {
+  color: var(--color-text);
+}
+
+.elfinder .elfinder-quicklook-info-data:first-child {
+  color: var(--color-heading);
+}
+
+/* Navbar at bottom of quicklook */
+.elfinder .elfinder-quicklook-navbar {
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 19px;
+}
+
+.elfinder .elfinder-quicklook-fullscreen .elfinder-quicklook-navbar {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-border);
+}
+
+/* Text preview background */
+.elfinder .elfinder-quicklook-preview-text-wrapper,
+.elfinder .elfinder-quicklook-preview-archive-wrapper {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+/* ========================================================= */
+/*  11. TOAST NOTIFICATIONS                                  */
+/* ========================================================= */
+
+.elfinder .elfinder-toast > div {
+  box-shadow: var(--shadow-md);
+  border-radius: 6px;
+}
+
+.elfinder .elfinder-toast > .toast-info {
+  background-color: var(--color-info);
+  color: #fff;
+}
+
+.elfinder .elfinder-toast > .toast-success {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+.elfinder .elfinder-toast > .toast-warning {
+  background-color: var(--color-warning);
+  color: #1a1a1a;
+}
+
+.elfinder .elfinder-toast > .toast-error {
+  background-color: var(--color-danger);
+  color: #fff;
+}
+
+/* ========================================================= */
+/*  12. BUTTON MENUS (sort, new file, archive, etc.)         */
+/* ========================================================= */
+
+.elfinder .elfinder-button-menu {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  border-radius: 6px;
+}
+
+.elfinder .elfinder-button-menu-item {
+  color: var(--color-text);
+  padding: 6px 16px;
+}
+
+.elfinder .elfinder-button-menu-item.ui-state-hover {
+  background: var(--color-surface-hover);
+  color: var(--color-heading);
+}
+
+.elfinder .elfinder-button-menu-item-selected {
+  background: var(--color-primary-xlight);
+  color: var(--color-primary-dark);
+}
+
+.elfinder .elfinder-button-menu-item-separated {
+  border-top: 1px solid var(--color-border);
+}
+
+/* ========================================================= */
+/*  13. PROGRESSBAR / SPINNER                               */
+/* ========================================================= */
+
+.elfinder .elfinder-ui-progressbar {
+  background: var(--color-surface);
+}
+
+.elfinder .elfinder-ui-progressbar .ui-progressbar-value {
+  background: var(--color-primary);
+}
+
+/* ========================================================= */
+/*  14. INPUTS / TEXTAREAS / SELECTS                         */
+/* ========================================================= */
+
+.elfinder input,
+.elfinder textarea,
+.elfinder select,
+.elfinder .elfinder-file-edit {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.elfinder input:focus,
+.elfinder textarea:focus,
+.elfinder select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-xlight);
+}
+
+/* ========================================================= */
+/*  15. UPLOAD DROP ZONE                                     */
+/* ========================================================= */
+
+.elfinder .elfinder-upload-dropbox {
+  border: 2px dashed var(--color-border-bright);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border-radius: 8px;
+}
+
+.elfinder .elfinder-upload-dropbox.ui-state-hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-xlight);
+}
+
+/* ========================================================= */
+/*  16. OVERLAY                                              */
+/* ========================================================= */
+
+.ui-widget-overlay {
+  background: #000;
+  opacity: 0.4;
+}
+
+/* ========================================================= */
+/*  17. SCROLLBARS (Webkit — Chrome, Safari, Edge)           */
+/* ========================================================= */
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar-thumb:active {
+  background: var(--color-text);
+}
+
+.elfinder:not(.elfinder-mobile) *::-webkit-scrollbar-corner {
+  background: transparent;
+}
