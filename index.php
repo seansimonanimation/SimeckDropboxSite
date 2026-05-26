@@ -17,6 +17,27 @@ ob_start();
       header("Location: index.php");
       exit;
    }
+
+// ——— Impersonation ———
+if (isset($_GET['action']) && $_GET['action'] === 'impersonate' && isset($_GET['artist']) && GetRole() === 'admin') {
+    $artistData = pull_artistAdmin_data($_GET['artist']);
+    if ($artistData) {
+        ImpersonateArtist($artistData);
+    }
+    header("Location: index.php");
+    exit;
+}
+if (isset($_GET['action']) && $_GET['action'] === 'stop_impersonating') {
+    StopImpersonating();
+    // Reset to admin dashboard so we don't try loading artist modules as admin
+    SetActiveModule('Dashboard');
+    header("Location: index.php");
+    exit;
+}
+
+
+
+
    if(isset($_GET['action']) && $_GET['action'] === 'logout'){
       logout();
       header("Location: login.php");
@@ -66,13 +87,14 @@ function adminViewToggle(){
         SetActiveModule('Dashboard'); // Default to Dashboard if there's an issue
     }
 }
-   function adminSwitchViewButtonActivation(){
-      if(GetRole() == 'admin'){
-         return '<a href="index.php?action=switch_role">Switch Role</a>';
-      } else {
-         return '';
-      }
-   }
+function adminSwitchViewButtonActivation(){
+    if(GetRole() == 'admin' && !IsImpersonating()){
+        return '<a href="index.php?action=switch_role">Switch Role</a>';
+    } else {
+        return '';
+    }
+}
+
    ob_end_flush();
 ?>
 <!DOCTYPE html>
@@ -101,7 +123,29 @@ function adminViewToggle(){
    <!-- Sidebar content goes here -->
     <?php echo LoadNavbarContent(); ?>
 </nav>
-    <div class="sidebar-footer"><a href="index.php?action=logout">Logout</a></div>
+         <div class="sidebar-footer">
+         <?php if(IsImpersonating()): ?>
+             <a href="index.php?action=stop_impersonating" class="stop-impersonate-btn">← Stop Impersonating</a>
+         <?php elseif(GetRole() === 'admin' && GetTempRole() === 'admin'): ?>
+             <form method="GET" action="index.php" class="impersonate-form">
+                 <input type="hidden" name="action" value="impersonate" />
+                 <label class="sidebar-label">Impersonate Artist</label>
+                 <select name="artist" class="impersonate-select" onchange="this.form.submit()">
+                     <option value="">— Select —</option>
+                     <?php
+                         $artists = ListAllActiveArtists();
+                         foreach($artists as $a){
+                             echo '<option value="' . htmlspecialchars($a['username']) . '">'
+                                  . htmlspecialchars($a['firstname'] . ' ' . $a['lastname'])
+                                  . '</option>';
+                         }
+                     ?>
+                 </select>
+             </form>
+         <?php endif; ?>
+         <a href="index.php?action=logout">Logout</a>
+     </div>
+
    </aside>
    <header id="topbar" role="banner">
 <div class="topbar-title"> Hi, <?php echo GetHumanName('first'); ?>!</div>

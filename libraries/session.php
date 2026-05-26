@@ -70,3 +70,40 @@ function RefreshPortal(){
     }
     header("Location: index.php");
 }
+
+function ImpersonateArtist($artistData){
+    // Save original admin data
+    $_SESSION['_imp_orig_username']  = $_SESSION['username'];
+    $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
+    $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
+    $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+
+    // Override with impersonated artist's data
+    $_SESSION['username']  = $artistData['username'];
+    $_SESSION['firstname'] = $artistData['firstname'];
+    $_SESSION['lastname']  = $artistData['lastname'];
+    $_SESSION['userID']    = $artistData['userID'];
+    $_SESSION['impersonating'] = true;
+    $_SESSION['tempRole'] = 'artist'; // Shows artist modules
+}
+
+function StopImpersonating(){
+    if(!isset($_SESSION['_imp_orig_username'])) return;
+
+    $_SESSION['username']  = $_SESSION['_imp_orig_username'];
+    $_SESSION['firstname'] = $_SESSION['_imp_orig_firstname'];
+    $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
+    $_SESSION['userID']    = $_SESSION['_imp_orig_userID'];
+
+    unset($_SESSION['_imp_orig_username']);
+    unset($_SESSION['_imp_orig_firstname']);
+    unset($_SESSION['_imp_orig_lastname']);
+    unset($_SESSION['_imp_orig_userID']);
+    unset($_SESSION['impersonating']);
+
+    $_SESSION['tempRole'] = 'admin'; // Back to admin view
+}
+
+function IsImpersonating(){
+    return $_SESSION['impersonating'] ?? false;
+}
