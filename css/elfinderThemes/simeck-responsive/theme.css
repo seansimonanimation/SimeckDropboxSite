@@ -1,6 +1,3 @@
-Here's the complete `theme.css` for `css/elfinderThemes/simeck-responsive/theme.css`. It maps **all** elFinder UI areas to your site's CSS custom properties (`--color-*`, `--glass-*`, `--shadow-*`, `--color-primary`, etc.) so it automatically adapts to whichever site theme is active.
-
-```css
 /**
  * Simeck Responsive Theme for elFinder
  * 

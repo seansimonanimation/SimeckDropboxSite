@@ -61,7 +61,7 @@ define('EF_ROOT', 'libraries/elfinder');
             cssAutoLoad: false,
             baseUrl: 'libraries/elfinder/',
             url: 'modules/artist/artistFileBrowser/artistConnector.php',
-            height: $(window).height() - $('#elfinder').offset().top - 15,
+            height: $(window).height() - $('#elfinder').offset().top,
         });
         
         $(window).on('resize', resizeElfinder);
