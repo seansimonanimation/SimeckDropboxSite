@@ -16,6 +16,19 @@ include_once __ROOT__ . '/libraries/auth.php';
 include_once __ROOT__ . '/libraries/projectlib.php';
 
 
+// Handle comment submission BEFORE loading project data
+if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content'])){
+    $pdo = DBConnect();
+    $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");
+    $orderStmt->execute([$_POST['dir_comment_path']]);
+    $nextOrder = $orderStmt->fetchColumn();
+    
+    $stmt = $pdo->prepare("INSERT INTO filecomments (owner, comment_time, parent_file_url, comment_order, comment_content)
+                           VALUES (?, NOW(), ?, ?, ?)");
+    $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $_POST['dir_comment_content']]);
+    // No redirect — fall through to load project data below
+}
+
 if(isset($_POST['See_Project'])){
     $CurrentProjectData = GetAllDataForProject($_POST['See_Project']);
 } else {
@@ -64,24 +77,55 @@ if(isset($_POST['See_Project'])){
                     <h3 class="module-card__title">Team Members</h3>
                 </div>
                 <div class="module-card__content">
-                    <?php echo DisplayProjectTeamMembers($CurrentProjectData['artists'],$CurrentProjectData['project']['leader']); ?>
+                    <?php if(empty($CurrentProjectData['project'])): ?>
+                        <p>This is where you will be able to see who the rest of your team is!</p>
+                    <?php else: ?>
+                        <?php echo DisplayProjectTeamMembers($CurrentProjectData['artists'],$CurrentProjectData['project']['leader']); ?>
+                    <?php endif; ?>
                 </div>
+
             </div>
                         <div class="module-card module-card--span-1">
                 <div class="module-card__header">
                     <h3 class="module-card__title">Project Clients</h3>
                 </div>
                 <div class="module-card__content">
-                    <?php echo DisplayProjectClients($CurrentProjectData['clients']); ?>
+                    <?php if(empty($CurrentProjectData['project'])): ?>
+                        <p>This is where you will be able to see the clients assigned to a project!</p>
+                    <?php else: ?>
+                        <?php echo DisplayProjectClients($CurrentProjectData['clients'], $CurrentProjectData['project']['leader']); ?>
+                    <?php endif; ?>
                 </div>
+
             </div>
             <div class="elfinder module-card module-card--span-2">
                 <h1> Project Comments</h1>
-                <?php echo DisplayProjectDirComments($CurrentProjectData['projectDirComments']); ?>
+                <?php if(empty($CurrentProjectData['project'])): ?>
+                    <p>This is where you will be able to see comments on the project directory!</p>
+                <?php else: ?>
+                    <?php echo DisplayProjectDirComments($CurrentProjectData['projectDirComments'], $CurrentProjectData['projectDirLoc']['active_path']); ?>
+                <?php endif; ?>
+                <?php if(!empty($CurrentProjectData['project'])): ?>
+                    <hr style="margin:16px 0;border-color:var(--color-border);">
+                    <form method="post" action="index.php">
+                        <input type="hidden" name="See_Project" value="<?= htmlspecialchars($_POST['See_Project'] ?? '') ?>">
+                        <input type="hidden" name="dir_comment_path" value="<?= htmlspecialchars($CurrentProjectData['projectDirLoc']['active_path']) ?>">
+                        <label class="module-form-group">
+                            <span style="font-size:0.85rem;font-weight:500;margin-bottom:4px;">Add a comment</span>
+                            <textarea name="dir_comment_content" rows="3" class="module-input" placeholder="Type your comment here..." required></textarea>
+                        </label>
+                        <button type="submit" name="submit_dir_comment" class="module-input" style="margin-top:8px;cursor:pointer;width:auto;padding:6px 18px;">Post Comment</button>
+                    </form>
+                <?php endif; ?>
             </div>
             <div class="module-card module-card--span-2">
                 <h1>New Comments</h1>
-                <?php echo DisplayProjectFileComments($CurrentProjectData['projectFileComments']); ?>
+                <?php if(empty($CurrentProjectData['project'])): ?>
+                    <p>This is where you will be able to see the most recent comments in the project.</p>
+                <?php else: ?>
+                    <?php echo DisplayProjectFileComments($CurrentProjectData['projectFileComments']); ?>
+                <?php endif; ?>
+
             </div>
         </div>
     </div>

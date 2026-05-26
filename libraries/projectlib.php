@@ -134,32 +134,31 @@ function GetAllDataForProject($pid){
     $projectDirData = array();
     $pdo = DBConnect();
     $ProjectDataString = "SELECT * FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
-    $ProjectFileCommentsString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? ORDER BY comment_time DESC";
-    $ProjectArtistListString = "SELECT username, firstname, lastname FROM artists WHERE project_assignments LIKE ?";
-    $ProjectClientListString = "SELECT email, firstname, lastname FROM clients WHERE project_assignments LIKE ?";
+    $ProjectFileCommentsString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? AND parent_file_url != ? ORDER BY comment_time DESC";
+    $ProjectArtistListString = "SELECT username, firstname, lastname FROM artists WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
+    $ProjectClientListString = "SELECT email, firstname, lastname FROM clients WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
     $projectDirLocString = "SELECT active_path FROM projects WHERE pid = ?";
     $ProjectDirCommentString = "SELECT * FROM filecomments WHERE parent_file_url = ? ORDER BY comment_time DESC";
 
+    $projectDirLocStmt = $pdo->prepare($projectDirLocString);
+    $projectDirLocStmt->execute([$pid]);
+    $projectDirLocData = $projectDirLocStmt->fetch(PDO::FETCH_ASSOC);
 
     $projstmt = $pdo->prepare($ProjectDataString);
     $projstmt->execute([$pid]);
     $projData = $projstmt->fetch(PDO::FETCH_ASSOC);
 
-    $projectFileCommentstmt = $pdo->prepare($ProjectFileCommentsString);
-    $projectFileCommentstmt->execute(['%'.$pid.'%']);
-    $projectFileCommentData = $projectFileCommentstmt->fetchAll(PDO::FETCH_ASSOC);
-
     $artiststmt = $pdo->prepare($ProjectArtistListString);
-    $artiststmt->execute(['%'.$pid.'%']);
+    $artiststmt->execute([$pid]);  // No more % wildcards, they're in the SQL
     $artistData = $artiststmt->fetchAll(PDO::FETCH_ASSOC);
 
     $clientstmt = $pdo->prepare($ProjectClientListString);
-    $clientstmt->execute(['%'.$pid.'%']);
+    $clientstmt->execute([$pid]);
     $clientData = $clientstmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $projectDirLocStmt = $pdo->prepare($projectDirLocString);
-    $projectDirLocStmt->execute([$pid]);
-    $projectDirLocData = $projectDirLocStmt->fetch(PDO::FETCH_ASSOC);
+    $projectFileCommentstmt = $pdo->prepare($ProjectFileCommentsString);
+    $projectFileCommentstmt->execute([$projectDirLocData['active_path'] . '%', $projectDirLocData['active_path']]);
+    $projectFileCommentData = $projectFileCommentstmt->fetchAll(PDO::FETCH_ASSOC);
 
     $ProjectDirCommentstmt = $pdo->prepare($ProjectDirCommentString);
     $ProjectDirCommentstmt->execute([$projectDirLocData['active_path']]);
@@ -175,71 +174,100 @@ function GetAllDataForProject($pid){
     );
 }
 function DisplayProjectTeamMembers($artists, $lead){
-    if($artists === array()){
-        return 'This is where you will see who is on your team.';
-    }
-    if($artists === ''){
+    if(empty($artists)){
         return 'This project has no assigned artists.';
     }
 
     foreach($artists as $artist){
-
         echo '<p>';
+
         if($lead === $artist['username']){
             echo '⭐';
         }
+        $isAdmin = ($_SESSION['role'] === 'admin');
         echo htmlspecialchars($artist['firstname'] . ' ' . $artist['lastname'] . ' (' . $artist['username'] . ')');
-        if($lead == $_SESSION['username'] && $artist['username'] != $_SESSION['username']){
+        if(($isAdmin || $lead === $_SESSION['username']) && $artist['username'] !== $_SESSION['username']){
             echo ' <button onclick="removeTeamMember(\''.$artist['username'].'\')">❌</button>';
-
         }
         echo '</p>';
     }
 }
-function DisplayProjectDirComments($comments){
-    echo $comments['parent_file_url'];
-    if($comments === array()){
-        //return 'This is where you will see comments on the project.';
+
+function DisplayProjectDirComments($comments, $projectPath){
+    if(empty($comments)){
+        echo '<p>No comments on the project directory yet.</p>';
+        return;
     }
-    if($comments === ''){
-        //return 'This project has no comments.';
-    }
+    
+    echo '<table class="module-tablecell" style="width:100%;border-collapse:collapse;">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>Author</th>';
+    echo '<th>Date / Time</th>';
+    echo '<th>Comment</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     foreach($comments as $comment){
-        echo '<div class="project-comment">';
-        echo '<p><strong>'.htmlspecialchars($comment['owner']).'</strong> commented on '.htmlspecialchars($comment['comment_time']).'</p>';
-        echo '<p>'.htmlspecialchars($comment['comment_content']).'</p>';
-        echo '</div>';
+        echo '<tr>';
+        echo '<td>'.htmlspecialchars($comment['owner']).'</td>';
+        echo '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
+        echo '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
+        echo '</tr>';
     }
+    echo '</tbody>';
+    echo '</table>';
 }
 
+
+
 function DisplayProjectFileComments($comments){
-    if($comments === array()){
-        return 'This is where you will see comments on files in the project.';
+    if(empty($comments)){
+        return '<p>This project has no file comments yet.</p>';
     }
-    if($comments === ''){
-        return 'This project has no file comments.';
-    }
+    $html = '<table class="module-tablecell" style="width:100%;border-collapse:collapse;">';
+    $html .= '<thead>';
+    $html .= '<tr>';
+    $html .= '<th>Author</th>';
+    $html .= '<th>Date / Time</th>';
+    $html .= '<th>File</th>';
+    $html .= '<th>Comment</th>';
+    $html .= '</tr>';
+    $html .= '</thead>';
+    $html .= '<tbody>';
     foreach($comments as $comment){
-        echo '<div class="project-comment">';
-        echo '<p><strong>'.htmlspecialchars($comment['owner']).'</strong> commented on '.htmlspecialchars($comment['comment_time']).' regarding file: '.htmlspecialchars($comment['parent_file_url']).'</p>';
-        echo '<p>'.htmlspecialchars($comment['comment_content']).'</p>';
-        echo '</div>';
+        // Extract just the filename from the full path
+        $filename = basename($comment['parent_file_url']);
+        $html .= '<tr>';
+        $html .= '<td>'.htmlspecialchars($comment['owner']).'</td>';
+        $html .= '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
+        $html .= '<td>'.htmlspecialchars($filename).'</td>';
+        $html .= '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
+        $html .= '</tr>';
     }
+    $html .= '</tbody>';
+    $html .= '</table>';
+    return $html;
 }
-function DisplayProjectClients($clients){
-    if($clients === array()){
-        return 'This is where you will see clients attached to the project.';
-    }
-    if($clients === ''){
+
+
+function DisplayProjectClients($clients, $lead){
+    if(empty($clients)){
         return 'This project has no assigned clients.';
     }
+    $isAdmin = ($_SESSION['role'] === 'admin');
+    $isLead = ($lead === $_SESSION['username']); // Check if the current user is the lead
+    
     foreach($clients as $client){
         echo '<p>';
         echo htmlspecialchars($client['firstname'] . ' ' . $client['lastname'] . ' (' . $client['email'] . ')');
-        echo ' <button onclick="removeClient(\''.$client['email'].'\')">❌</button>';
+        if($isAdmin || $isLead){
+            echo ' <button onclick="removeClient(\''.$client['email'].'\')">❌</button>';
+        }
         echo '</p>';
     }
 }
+
 
 
 function DisplayArtistProject($pid){
