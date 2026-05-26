@@ -108,3 +108,9 @@ function GetDataFromDB($SQLString, $params = []){
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+function ListAllActiveArtists(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists WHERE active = 1 ORDER BY username");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
