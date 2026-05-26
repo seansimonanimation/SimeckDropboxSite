@@ -34,6 +34,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'stop_impersonating') {
     header("Location: index.php");
     exit;
 }
+if (isset($_GET['action']) && $_GET['action'] === 'impersonate_client' && isset($_GET['client']) && GetRole() === 'admin') {
+    $clientData = pull_client_data($_GET['client']);
+    if ($clientData) {
+        ImpersonateClient($clientData);
+    }
+    header("Location: index.php");
+    exit;
+}
 
 
 
@@ -123,10 +131,26 @@ function adminSwitchViewButtonActivation(){
    <!-- Sidebar content goes here -->
     <?php echo LoadNavbarContent(); ?>
 </nav>
-         <div class="sidebar-footer">
+
+     <div class="sidebar-footer">
          <?php if(IsImpersonating()): ?>
              <a href="index.php?action=stop_impersonating" class="stop-impersonate-btn">← Stop Impersonating</a>
          <?php elseif(GetRole() === 'admin' && GetTempRole() === 'admin'): ?>
+             <form method="GET" action="index.php" class="impersonate-form">
+                 <input type="hidden" name="action" value="impersonate_client" />
+                 <label class="sidebar-label">Impersonate Client</label>
+                 <select name="client" class="impersonate-select" onchange="this.form.submit()">
+                     <option value="">— Select —</option>
+                     <?php
+                         $clients = ListAllActiveClients();
+                         foreach($clients as $c){
+                             echo '<option value="' . htmlspecialchars($c['email']) . '">'
+                                  . htmlspecialchars($c['firstname'] . ' ' . $c['lastname'])
+                                  . '</option>';
+                         }
+                     ?>
+                 </select>
+             </form>
              <form method="GET" action="index.php" class="impersonate-form">
                  <input type="hidden" name="action" value="impersonate" />
                  <label class="sidebar-label">Impersonate Artist</label>
@@ -145,6 +169,7 @@ function adminSwitchViewButtonActivation(){
          <?php endif; ?>
          <a href="index.php?action=logout">Logout</a>
      </div>
+
 
    </aside>
    <header id="topbar" role="banner">

@@ -114,3 +114,11 @@ function ListAllActiveArtists(){
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function ListAllActiveClients(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT email, firstname, lastname FROM clients WHERE active = 1 ORDER BY lastname");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+

@@ -86,6 +86,21 @@ function ImpersonateArtist($artistData){
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'artist'; // Shows artist modules
 }
+function ImpersonateClient($clientData){
+    // Save original admin data
+    $_SESSION['_imp_orig_username']  = $_SESSION['username'];
+    $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
+    $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
+    $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+
+    // Override with impersonated client's data
+    $_SESSION['username']      = $clientData['email'];
+    $_SESSION['firstname']     = $clientData['firstname'];
+    $_SESSION['lastname']      = $clientData['lastname'];
+    $_SESSION['clientProjects'] = $clientData['project_assignments'];
+    $_SESSION['impersonating'] = true;
+    $_SESSION['tempRole'] = 'client';
+}
 
 function StopImpersonating(){
     if(!isset($_SESSION['_imp_orig_username'])) return;
@@ -100,9 +115,11 @@ function StopImpersonating(){
     unset($_SESSION['_imp_orig_lastname']);
     unset($_SESSION['_imp_orig_userID']);
     unset($_SESSION['impersonating']);
+    unset($_SESSION['clientProjects']);
 
-    $_SESSION['tempRole'] = 'admin'; // Back to admin view
+    $_SESSION['tempRole'] = 'admin';
 }
+
 
 function IsImpersonating(){
     return $_SESSION['impersonating'] ?? false;
