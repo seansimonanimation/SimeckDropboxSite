@@ -1,17 +1,24 @@
 
 $(function() {
-    function resizeElfinder() {
-        var winH = $(window).height();
-        var offset = $('#elfinder').offset().top;
-        var h = winH - offset - 15; // 15px breathing room
-        if (h < 300) h = 300;
-        $('#elfinder').height(h);
-        
-        var instance = $('#elfinder').elfinder('instance');
-        if (instance) {
-            instance.resize();
-        }
+    // commands can stay here, resizeElfinder is now global
+    // Also call resizeElfinder on initial load
+    resizeElfinder();
+    // ... rest of elfinderInit.js ...
+});
+
+
+
+function resizeElfinder() {
+    var winH = $(window).height();
+    var offset = $('#elfinder').offset().top;
+    var h = winH - offset;
+    if (h < 300) h = 300;
+    $('#elfinder').height(h);
+    var instance = $('#elfinder').elfinder('instance');
+    if (instance) {
+        instance.resize();
     }
+}
 
 
 elFinder.prototype.commands.sendToMondayChat = function() {
@@ -146,4 +153,3 @@ elFinder.prototype.commands.seecm = function() {
 };
 
 elFinder.prototype.i18.en.cmdseecm = 'See Comments';
-});
