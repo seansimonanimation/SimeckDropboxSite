@@ -282,7 +282,7 @@ elFinder.prototype._options = {
 	 *
 	 * @type Array
 	 */
-	commands : ['*'],
+	commands : ['*', 'seecm', 'togglelock'],
 	// Available commands list
 	//commands : [
 	//	'archive', 'back', 'chmod', 'colwidth', 'copy', 'cut', 'download', 'duplicate', 'edit', 'extract',

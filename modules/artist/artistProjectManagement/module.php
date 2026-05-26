@@ -17,17 +17,20 @@ include_once __ROOT__ . '/libraries/projectlib.php';
 
 
 // Handle comment submission BEFORE loading project data
-if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content'])){
-    $pdo = DBConnect();
-    $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");
-    $orderStmt->execute([$_POST['dir_comment_path']]);
-    $nextOrder = $orderStmt->fetchColumn();
-    
-    $stmt = $pdo->prepare("INSERT INTO filecomments (owner, comment_time, parent_file_url, comment_order, comment_content)
-                           VALUES (?, NOW(), ?, ?, ?)");
-    $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $_POST['dir_comment_content']]);
-    // No redirect — fall through to load project data below
+// Handle comment submission BEFORE loading project data
+if(!IsReadOnly()){
+    if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content'])){
+        $pdo = DBConnect();
+        $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");
+        $orderStmt->execute([$_POST['dir_comment_path']]);
+        $nextOrder = $orderStmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("INSERT INTO filecomments (owner, comment_time, parent_file_url, comment_order, comment_content)
+                               VALUES (?, NOW(), ?, ?, ?)");
+        $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $_POST['dir_comment_content']]);
+    }
 }
+
 
 if(isset($_POST['See_Project'])){
     $CurrentProjectData = GetAllDataForProject($_POST['See_Project']);

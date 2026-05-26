@@ -51,7 +51,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'impersonate_client' && isset(
       header("Location: login.php");
       exit;
    }
-if(isset($_GET['action']) && $_GET['action'] === 'set_theme' && isset($_GET['theme'])){
+if(isset($_GET['action']) && $_GET['action'] === 'set_theme' && isset($_GET['theme']) && !IsImpersonating()){
     $theme = preg_replace('/[^a-zA-Z0-9\-_]/', '', $_GET['theme']);
     $themesDir = __ROOT__ . '/css/siteThemes';
     if(file_exists($themesDir . '/' . $theme . '.css')){
@@ -173,7 +173,12 @@ function adminSwitchViewButtonActivation(){
 
    </aside>
    <header id="topbar" role="banner">
-<div class="topbar-title"> Hi, <?php echo GetHumanName('first'); ?>!</div>
+<div class="topbar-title">
+    <?php if(IsImpersonating()): ?>
+        <span class="read-only-badge">❄️❄️READ ONLY MODE ENGAGED❄️❄️</span>
+    <?php endif; ?>
+    Hi, <?php echo GetHumanName('first'); ?>!
+</div>
 <div class="topbar-right"><?php echo DisplayRandomTopbarPhrase(); ?></div>
 </header>
 <main id="content">

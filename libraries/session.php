@@ -124,3 +124,6 @@ function StopImpersonating(){
 function IsImpersonating(){
     return $_SESSION['impersonating'] ?? false;
 }
+function IsReadOnly(){
+    return $_SESSION['impersonating'] ?? false;
+}

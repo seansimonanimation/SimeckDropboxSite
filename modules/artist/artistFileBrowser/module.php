@@ -18,6 +18,7 @@ define('EF_ROOT', 'libraries/elfinder');
 ?>
 <!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
+<link href="css/portal.css" rel="stylesheet">
 <link href="css/elfinderThemes/simeck-responsive/theme.css" rel="stylesheet">
 <link href="css/comments.css" rel="stylesheet">
 
@@ -62,11 +63,13 @@ define('EF_ROOT', 'libraries/elfinder');
             baseUrl: 'libraries/elfinder/',
             url: 'modules/artist/artistFileBrowser/artistConnector.php',
             height: $(window).height() - $('#elfinder').offset().top,
+            role: 'artist',
         });
         
         $(window).on('resize', resizeElfinder);
     });
 </script>
+
 
 
 <!-- Element where elFinder will be created -->

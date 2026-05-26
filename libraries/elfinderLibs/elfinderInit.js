@@ -153,3 +153,73 @@ elFinder.prototype.commands.seecm = function() {
 };
 
 elFinder.prototype.i18.en.cmdseecm = 'See Comments';
+
+// ── Lock/Unlock command ───────────────────────────────────────
+elFinder.prototype.commands.togglelock = function() {
+    this.contextmenu = true;
+
+    this.init = function(){
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length === 1) {
+            var url = fm.url(files[0].hash);
+            // Determine current lock state by checking the DOM
+            var hash = files[0].hash;
+            var $node = fm.getFile(hash);
+            // Use a cached lookup built from 'open' event
+            var filepath = url; // root-relative path from URL
+            this.title = fm.cache?.['lockedPaths']?.[filepath] 
+                ? 'Unlock File' : 'Lock File';
+        } else {
+            this.title = 'Lock File';
+        }
+    };
+
+    this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length !== 1) {
+            fm.error('You can only lock/unlock one file at a time.');
+            return $.Deferred().resolve();
+        }
+        var fileUrl = fm.url(files[0].hash);
+        // Make sure path starts with /files/
+        if (fileUrl.indexOf('/files/') !== 0) {
+            fm.error('Can only lock/unlock files under /files/');
+            return $.Deferred().resolve();
+        }
+
+        // Determine if currently locked by checking our cache
+        var isLocked = fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[fileUrl];
+        var action = isLocked ? 'unlock' : 'lock';
+
+        $.post('libraries/elfinderLibs/lockedfilesEndpoint.php', {
+            action: action,
+            filepath: fileUrl
+        }, function(response) {
+            if (response.success) {
+                // Refresh current directory to update lock icons
+                fm.exec('reload');
+            } else {
+                fm.error(response.error || 'Failed to ' + action + ' file.');
+            }
+        }, 'json').fail(function() {
+            fm.error('Server error while ' + action + 'ing file.');
+        });
+
+        return $.Deferred().resolve();
+    };
+
+    this.getstate = function() {
+        var fm = this.fm;
+        var sel = fm.selectedFiles();
+        if (sel.length !== 1) return -1; // disabled
+        // Only show for admin and artist roles
+        var role = fm.options.role || '';
+        if (role !== 'admin' && role !== 'artist') return -1;
+        return 0; // always enabled when one file selected
+    };
+};
+
+
+elFinder.prototype.i18.en.cmdtogglelock = 'Lock / Unlock File';

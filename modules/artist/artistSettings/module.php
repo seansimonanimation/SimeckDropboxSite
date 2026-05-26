@@ -22,27 +22,27 @@ if(isset($_GET['pw_changed'])){
     $successMessage = 'Password changed successfully.';
 }
 
-if(isset($_POST['ArtistChangePW'])){
-    $username = $_SESSION['username'];
-    $currentPW = $_POST['currentPW'];
-    $confirmPW = $_POST['ConfirmNewPW'];
-    $newPW = $_POST['newPW'];
-    $artistData = pull_artistAdmin_data($_SESSION['username']);
-    verifyConfirmation($newPW,$confirmPW);
-    if($errorMessage === ''){ verifyCurrentPW($currentPW, $artistData); }
+if(!IsReadOnly()){
+    if(isset($_POST['ArtistChangePW'])){
+        $username = $_SESSION['username'];
+        $currentPW = $_POST['currentPW'];
+        $confirmPW = $_POST['ConfirmNewPW'];
+        $newPW = $_POST['newPW'];
+        $artistData = pull_artistAdmin_data($_SESSION['username']);
+        verifyConfirmation($newPW,$confirmPW);
+        if($errorMessage === ''){ verifyCurrentPW($currentPW, $artistData); }
 
-
-
-if($errorMessage === ''){
-    if(SetArtistPassword($username, $newPW)){
-        header("Location: ?pw_changed=1");
-        exit;
-    } else {
-        $errorMessage = 'Database error. Password was not changed.';
+        if($errorMessage === ''){
+            if(SetArtistPassword($username, $newPW)){
+                header("Location: ?pw_changed=1");
+                exit;
+            } else {
+                $errorMessage = 'Database error. Password was not changed.';
+            }
+        }
     }
 }
 
-}
 
 function verifyConfirmation($newPW, $confirmPW){
     global $errorMessage;
