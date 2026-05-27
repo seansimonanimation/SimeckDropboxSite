@@ -19,7 +19,7 @@ include_once __ROOT__ . '/libraries/projectlib.php';
 // Handle comment submission BEFORE loading project data
 // Handle comment submission BEFORE loading project data
 if(!IsReadOnly()){
-    if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content'])){
+    if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content']) && isset($_POST['dir_comment_path'])){
         $pdo = DBConnect();
         $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");
         $orderStmt->execute([$_POST['dir_comment_path']]);
@@ -106,7 +106,7 @@ if(isset($_POST['See_Project'])){
                 <?php if(!empty($CurrentProjectData['project'])): ?>
                     <hr style="margin:16px 0;border-color:var(--color-border);">
                     <form method="post" action="index.php">
-                        <input type="hidden" name="See_Project" value="<?= htmlspecialchars($currentClientPid) ?>"
+                        <input type="hidden" name="See_Project" value="<?= htmlspecialchars($CurrentProjectData['project']['pid']) ?>">
                         <input type="hidden" name="dir_comment_path" value="<?= htmlspecialchars($CurrentProjectData['projectDirLoc']['active_path']) ?>">
                         <label class="module-form-group">
                             <span style="font-size:0.85rem;font-weight:500;margin-bottom:4px;">Add a comment</span>
