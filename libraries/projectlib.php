@@ -58,7 +58,6 @@ function GetAssignedProjectOptionList(){
 
 function GetAssignedClientProjectOptionList(){
     $pdo = DBConnect();
-    
     // Get the project_assignments string for the current user
     $stmt = $pdo->prepare("SELECT project_assignments FROM clients WHERE username = ?");
     $stmt->execute([$_SESSION['username']]);
@@ -72,17 +71,50 @@ function GetAssignedClientProjectOptionList(){
     if (empty($projectArr)) {
         return;
     }
-    
     // Get project names for the assigned PIDs
     $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
     $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
     $stmt->execute(array_values($projectArr));
-    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+}
+function GetAssignedArtistProjectOptionList(){
+    $pdo = DBConnect();
+    // Get the project_assignments string for the current user
+    $stmt = $pdo->prepare("SELECT project_assignments FROM artists WHERE username = ?");
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$result || empty($result['project_assignments'])) {
+        return; // No projects assigned
+    }
+    
+    $projectArr = array_filter(explode(",", $result['project_assignments']));
+    if (empty($projectArr)) {
+        return;
+    }
+    // Get project names for the assigned PIDs
+    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
+    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
+    $stmt->execute(array_values($projectArr));
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+}
+
+
+function GetAssignedArtistProjectOptionListHTML(){
+    $projects = GetAssignedArtistProjectOptionList();
     foreach ($projects as $p) {
         echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
     }
 }
+function GetAssignedClientProjectOptionListHTML(){
+    $projects = GetAssignedClientProjectOptionList();
+    foreach ($projects as $p) {
+        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+    }
+}
+
 
 
 
