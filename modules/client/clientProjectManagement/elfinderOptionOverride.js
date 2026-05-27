@@ -282,7 +282,8 @@ elFinder.prototype._options = {
 	 *
 	 * @type Array
 	 */
-	commands : ['*', 'seecm'],
+	commands : ['*', 'seecm', 'clientlockoverride'],
+
 	// Available commands list
 	//commands : [
 	//	'archive', 'back', 'chmod', 'colwidth', 'copy', 'cut', 'download', 'duplicate', 'edit', 'extract',
@@ -1310,7 +1311,7 @@ elFinder.prototype._options = {
 		// current directory menu
 		cwd    : ['undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort', 'selectall', '|','info'],
 		// current directory file menu
-		files  : ['seecm' , '|' , 'getfile', '|' ,'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste','|', 'rename', '|', 'selectall', 'selectinvert', '|','info']
+		files  : ['seecm', 'clientlockoverride', '|' , 'getfile', '|' ,'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste','|', 'rename', '|', 'selectall', 'selectinvert', '|','info']
 	},
 
 	/**
