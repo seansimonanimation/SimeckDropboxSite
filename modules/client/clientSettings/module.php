@@ -105,7 +105,7 @@ function verifyCurrentPW($currentPW, $artistData){
         <div class="module-card module-card--span-1">
             <h1>Password change</h1>
             <form method="POST" class="module-create-form" action="">
-                <input class="module-input" type="hidden" name="ArtistChangePW" placeholder="Change Password" />
+                <input class="module-input" type="hidden" name="ClientChangePW" placeholder="Change Password" />
                 <input class="module-input" type="password" name="currentPW" placeholder="Current Password" required/><br />
                 <input class="module-input" type="password" name="newPW" placeholder="New Password" required/><br />
                 <input class="module-input" type="password" name="ConfirmNewPW" placeholder="Confirm New Password" required/><br />
