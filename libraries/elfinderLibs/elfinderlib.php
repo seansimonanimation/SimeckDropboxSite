@@ -380,6 +380,32 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
         ? !($attr == 'read' || $attr == 'write')
         :  null;
 }
+/**
+ * elFinder accessControl callback for file locking.
+ * Returns array to set the `locked` flag based on the DB lockedfiles table.
+ * Pass this as the `accessControl` option on a volume root.
+ *
+ * @param  string $attr  Attribute name (read|write|locked|hidden)
+ * @param  string $path  Absolute filesystem path
+ * @param  mixed  $data  Volume option accessControlData
+ * @param  object $volume elFinder volume driver instance
+ * @param  bool   $isDir Is directory?
+ * @param  string $relpath Root-relative path
+ * @return array|null  Return ['locked' => true] to lock, null to defer
+ */
+function lockAccessControl($attr, $path, $data, $volume, $isDir, $relpath) {
+    // Only apply the 'locked' attribute to files (not directories)
+    if ($attr === 'locked' && !$isDir) {
+        $normalized = NormalizeFilePath($path);
+        if ($normalized && strpos($normalized, '/files/Projects') === 0) {
+            $lock = IsFileLocked($normalized);
+            if ($lock) {
+                return array('locked' => true);
+            }
+        }
+    }
+    return null;
+}
 
 
 
