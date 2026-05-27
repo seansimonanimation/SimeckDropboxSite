@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
     }
 }
 ?>
-<script>
+<script> //case fix. making a nonuseful comment.
 // ==========================================================
 // AJAX helper — sends a GET request with the XHR header
 // so RefreshPortal() returns JSON instead of redirecting
