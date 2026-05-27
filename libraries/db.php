@@ -22,10 +22,10 @@ function DBConnect(){
     }
 
     $possibleConfigPaths = [
-        __DIR__ . '/dbconfig.php', // default location
         'C:/Users/rsimon_ptaa/Documents/dropbox.simeck.com/libraries/dbconfig.php', //school location for Iwerks
         'C:/Users/randy/Documents/dropbox.simeck.com/libraries/dbconfig.php', //home location for Fabio
-        '/var/www/dbconfig.php' // typical Linux server location
+        __DIR__ . '/dbconfig.php', // default location
+
     ];
 
     $dbconfig = null;
