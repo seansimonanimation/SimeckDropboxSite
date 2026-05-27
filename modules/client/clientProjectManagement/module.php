@@ -5,7 +5,7 @@
  * @module clientProjectManagement
  * @name ProjectManagement
  * @role client
- * @nav-text Project Management
+ * @nav-text Project Files
  * @nav-icon Files
  * @nav-order 10
  */

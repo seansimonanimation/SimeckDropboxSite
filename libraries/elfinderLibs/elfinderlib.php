@@ -222,7 +222,7 @@ foreach ($projects as $project){
 function GetClientProjectAssignments(){
     $clientassignments = [];
     $clientid = $_SESSION['username'];
-    $query = "SELECT project_assignments FROM clients WHERE email = ?";
+    $query = "SELECT project_assignments FROM clients WHERE username = ?";
     $stmt = $GLOBALS['db']->prepare($query);
     $stmt->execute([$_SESSION['username']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -291,29 +291,29 @@ function GetLockedFilesForDirectory($directory) {
 
 /**
  * Get a client's available lock overrides.
- * @param string $email  Client's email (username).
+ * @param string $username  Client's username.
  * @return int
  */
-function GetClientLockOverrides($email) {
+function GetClientLockOverrides($username) {
     $stmt = $GLOBALS['db']->prepare(
-        'SELECT lock_overrides FROM clients WHERE email = ?'
+        'SELECT lock_overrides FROM clients WHERE username = ?'
     );
-    $stmt->execute([$email]);
+    $stmt->execute([$username]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row ? (int)$row['lock_overrides'] : 0;
 }
 
 /**
  * Consume (decrement by 1) a client's lock override.
- * @param string $email  Client's email (username).
+ * @param string $username  Client's username.
  * @return void
  */
-function ConsumeClientLockOverride($email) {
+function ConsumeClientLockOverride($username) {
     $stmt = $GLOBALS['db']->prepare(
         'UPDATE clients SET lock_overrides = lock_overrides - 1 
-         WHERE email = ? AND lock_overrides > 0'
+         WHERE username = ? AND lock_overrides > 0'
     );
-    $stmt->execute([$email]);
+    $stmt->execute([$username]);
 }
 
 /**

@@ -33,10 +33,19 @@ function SetArtistPassword($username, $newpass){
     $stmt->execute([$hashpass,$username]);
     return true;
 }
+
+function SetClientPassword($username, $newpass){
+    $hashpass = password_hash($newpass, PASSWORD_BCRYPT);
+    $SQLString = "UPDATE clients SET password = ? WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$hashpass,$username]);
+    return true;
+}
+
 function SetUserTheme($username, $theme, $role){
     $table = ($role === 'client') ? 'clients' : 'artists';
-    $idCol = ($role === 'client') ? 'email' : 'username';
-    $SQLString = "UPDATE $table SET theme = ? WHERE $idCol = ?";
+    $SQLString = "UPDATE $table SET theme = ? WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $result = $stmt->execute([$theme, $username]);

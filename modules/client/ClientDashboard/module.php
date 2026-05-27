@@ -6,7 +6,7 @@
  * @module clientDashboard
  * @name Dashboard
  * @role client
- * @nav-text Client Dashboard
+ * @nav-text Dashboard
  * @nav-icon dashboard
  * @nav-order 1
  */

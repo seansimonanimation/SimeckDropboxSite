@@ -12,7 +12,7 @@
 // $DBConfigLoc = 'C:\Users\rsimon_ptaa\Documents\dropbox.simeck.com\dbconfig.php'; //Iwerks only
 // $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
-$clientSQL = "Select * from clients where email = ? AND active = 1";
+$clientSQL = "Select * from clients where username = ? AND active = 1";
 
 $db_instance = null;
 function DBConnect(){
@@ -119,7 +119,7 @@ function ListAllActiveArtists(){
 
 function ListAllActiveClients(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT email, firstname, lastname FROM clients WHERE active = 1 ORDER BY lastname");
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM clients WHERE active = 1 ORDER BY lastname");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

@@ -56,6 +56,36 @@ function GetAssignedProjectOptionList(){
 
 
 
+function GetAssignedClientProjectOptionList(){
+    $pdo = DBConnect();
+    
+    // Get the project_assignments string for the current user
+    $stmt = $pdo->prepare("SELECT project_assignments FROM clients WHERE username = ?");
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$result || empty($result['project_assignments'])) {
+        return; // No projects assigned
+    }
+    
+    $projectArr = array_filter(explode(",", $result['project_assignments']));
+    if (empty($projectArr)) {
+        return;
+    }
+    
+    // Get project names for the assigned PIDs
+    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
+    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
+    $stmt->execute(array_values($projectArr));
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($projects as $p) {
+        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+    }
+}
+
+
+
 function ToggleProjectActivation($pid){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT active FROM projects WHERE pid = ?");
@@ -136,7 +166,7 @@ function GetAllDataForProject($pid){
     $ProjectDataString = "SELECT * FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
     $ProjectFileCommentsString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? AND parent_file_url != ? ORDER BY comment_time DESC";
     $ProjectArtistListString = "SELECT username, firstname, lastname FROM artists WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
-    $ProjectClientListString = "SELECT email, firstname, lastname FROM clients WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
+    $ProjectClientListString = "SELECT username, firstname, lastname FROM clients WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
     $projectDirLocString = "SELECT active_path FROM projects WHERE pid = ?";
     $ProjectDirCommentString = "SELECT * FROM filecomments WHERE parent_file_url = ? ORDER BY comment_time DESC";
 
@@ -192,6 +222,19 @@ function DisplayProjectTeamMembers($artists, $lead){
         echo '</p>';
     }
 }
+
+function GetClientPoC($poc){
+    if (empty($poc)) {
+        return 'No client point of contact assigned.';
+    }
+    $SQLstring = "SELECT firstname, lastname FROM artists WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLstring);
+    $stmt->execute([$poc]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return htmlspecialchars($result['firstname'] . ' ' . $result['lastname']);
+}
+
 
 function DisplayProjectDirComments($comments, $projectPath){
     if(empty($comments)){
@@ -256,13 +299,14 @@ function DisplayProjectClients($clients, $lead){
         return 'This project has no assigned clients.';
     }
     $isAdmin = ($_SESSION['role'] === 'admin');
+    $isclient = ($_SESSION['role'] === 'client');
     $isLead = ($lead === $_SESSION['username']); // Check if the current user is the lead
     
     foreach($clients as $client){
         echo '<p>';
-        echo htmlspecialchars($client['firstname'] . ' ' . $client['lastname'] . ' (' . $client['email'] . ')');
-        if($isAdmin || $isLead){
-            echo ' <button onclick="removeClient(\''.$client['email'].'\')">❌</button>';
+        echo htmlspecialchars($client['firstname'] . ' ' . $client['lastname'] . ' (' . $client['username'] . ')');
+        if($isAdmin || $isLead && !$isclient){
+            echo ' <button onclick="removeClient(\''.$client['username'].'\')">❌</button>';
         }
         echo '</p>';
     }
