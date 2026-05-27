@@ -1,10 +1,39 @@
-
 $(function() {
-    // commands can stay here, resizeElfinder is now global
     // Also call resizeElfinder on initial load
     resizeElfinder();
     // ... rest of elfinderInit.js ...
 });
+
+
+function populateLockCache(fm) {
+    // Query all locked file info under /files/Projects/
+    $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+        action: 'query',
+        directory: '/files/Projects'
+    }, function(response) {
+        if (response.success && response.locked) {
+            if (!fm.cache) fm.cache = {};
+            fm.cache.lockedPaths = {};
+            $.each(response.locked, function(i, lock) {
+                fm.cache.lockedPaths[lock.filepath] = {
+                    assetlock: lock.assetlock,
+                    commentlock: lock.commentlock
+                };
+            });
+        }
+    }, 'json');
+
+    // Fetch client's override count
+    $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+        action: 'get_client_overrides'
+    }, function(response) {
+        if (response.success && typeof response.overrides !== 'undefined') {
+            if (!fm.cache) fm.cache = {};
+            fm.cache.clientOverrides = parseInt(response.overrides, 10);
+        }
+    }, 'json');
+}
+
 
 
 
@@ -102,12 +131,39 @@ elFinder.prototype.commands.seecm = function() {
                                 '</div>';
                         });
                     }
-                    html += '</div>' +
-                        '<hr class="seecm-divider">' +
-                        '<div class="seecm-add-form" style="margin-top: 8px;">' +
-                        '<textarea id="seecm-new-comment" placeholder="Write a comment..."></textarea>' +
-                        '<button id="seecm-submit">Add Comment</button>' +
-                        '</div>';
+                    // After building comments HTML and before the dialog.html(html) line,
+                    // determine if the comment form should be shown
+
+                    // ── Check if comment input should be disabled ──
+                    var showCommentForm = true;
+                    var role = fm.options.role || '';
+                    if (role === 'client') {
+                        var lockInfo = fm.cache?.lockedPaths?.[fileUrl];  // use existing fileUrl
+                        var lockInfo = fm.cache?.lockedPaths?.[fileUrl];
+                        if (lockInfo && lockInfo.commentlock) {
+                            showCommentForm = false;
+                        }
+                    }
+
+                    // Then in the HTML:
+                    var formHtml = '';
+                    if (showCommentForm) {
+                        formHtml = '<hr class="seecm-divider">' +
+                            '<div class="seecm-add-form" style="margin-top: 8px;">' +
+                            '<textarea id="seecm-new-comment" placeholder="Write a comment..."></textarea>' +
+                            '<button id="seecm-submit">Add Comment</button>' +
+                            '</div>';
+                    } else {
+                        // Client can see comments but not add more — show a notice instead
+                        formHtml = '<hr class="seecm-divider">' +
+                            '<p class="seecm-locked-notice" style="color: #888; font-style: italic; margin-top: 8px;">' +
+                            'Comments are locked for this file. Use "Lock Override" from the context menu to unlock comments.' +
+                            '</p>';
+                    }
+
+                    // Replace the hardcoded form in the html string construction:
+                    html += '</div>' + formHtml;
+
                     
                     dialog.html(html);
                     $('#seecm-submit').on('click', function() {
@@ -219,7 +275,86 @@ elFinder.prototype.commands.togglelock = function() {
         if (role !== 'admin' && role !== 'artist') return -1;
         return 0; // always enabled when one file selected
     };
+
 };
 
+// ── Client Lock Override command ──────────────────────────────
+elFinder.prototype.commands.clientlockoverride = function() {
+    this.contextmenu = true;
+
+    this.init = function(){
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length === 1) {
+            var fileUrl = fm.url(files[0].hash);
+            var lockInfo = fm.cache?.lockedPaths?.[fileUrl];
+            if (lockInfo && lockInfo.commentlock) {
+                // Show remaining override count in the title
+                var overrides = fm.cache?.clientOverrides ?? 0;
+                this.title = 'Lock Override (' + overrides + ' remaining)';
+            } else {
+                this.title = 'Lock Override';
+            }
+        } else {
+            this.title = 'Lock Override';
+        }
+    };
+
+    this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length !== 1) {
+            fm.error('You can only override one file at a time.');
+            return $.Deferred().resolve();
+        }
+        var fileUrl = fm.url(files[0].hash);
+        
+        // Show confirmation
+        var overrides = fm.cache?.clientOverrides ?? 0;
+        if (!confirm('Use one lock override (' + overrides + ' remaining) to unlock comments on "' + files[0].name + '"?')) {
+            return $.Deferred().resolve();
+        }
+
+        $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+            action: 'override',
+            filepath: fileUrl
+        }, function(response) {
+            if (response.success) {
+                // Update the cache
+                if (fm.cache?.lockedPaths?.[fileUrl]) {
+                    fm.cache.lockedPaths[fileUrl].commentlock = 0;
+                }
+                if (typeof response.remaining_overrides !== 'undefined') {
+                    fm.cache.clientOverrides = response.remaining_overrides;
+                }
+                // Refresh to update lock state display
+                fm.exec('reload');
+            } else {
+                fm.error(response.error || 'Override failed.');
+            }
+        }, 'json').fail(function() {
+            fm.error('Server error while performing override.');
+        });
+
+        return $.Deferred().resolve();
+    };
+
+this.getstate = function() {
+    var fm = this.fm;
+    var sel = fm.selectedFiles();
+    if (sel.length !== 1) return -1;
+    var role = fm.options.role || '';
+    if (role !== 'client') return -1;
+    
+    var url = fm.url(sel[0].hash);
+    var lockInfo = fm.cache?.lockedPaths?.[url];
+    if (!lockInfo) return -1;
+    if (!lockInfo.commentlock) return -1;
+    return 0;
+};
+
+};
+
+elFinder.prototype.i18.en.cmdclientlockoverride = 'Lock Override';
 
 elFinder.prototype.i18.en.cmdtogglelock = 'Lock / Unlock File';

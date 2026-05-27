@@ -58,18 +58,29 @@ define('EF_ROOT', 'libraries/elfinder');
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
 <script>
-    $(function() {
-        $('#elfinder').elfinder({
-            cssAutoLoad: false,
-            baseUrl: 'libraries/elfinder/',
-            url: 'modules/client/clientProjectManagement/clientConnector.php',
-            height: $(window).height() - $('#elfinder').offset().top,
-            role: 'client',
-        });
-        
-        $(window).on('resize', resizeElfinder);
+$(function() {
+    $('#elfinder').elfinder({
+        cssAutoLoad: false,
+        baseUrl: 'libraries/elfinder/',
+        url: 'modules/client/clientProjectManagement/clientConnector.php',
+        height: $(window).height() - $('#elfinder').offset().top,
+        role: 'client'
     });
+    
+    // Populate lock cache immediately after elFinder is created
+    var instance = $('#elfinder').elfinder('instance');
+    if (instance) {
+        populateLockCache(instance);
+        instance.bind('open', function() {
+            populateLockCache(this);
+        });
+    }
+    
+    $(window).on('resize', resizeElfinder);
+});
+
 </script>
+
 
 <!-- Element where elFinder will be created -->
 <div id="elfinder" style="height: 100%;"><center><h1>Thank you for your patience while your filebrowser is loading...</h1></center></div>

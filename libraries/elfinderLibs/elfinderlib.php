@@ -203,8 +203,9 @@ foreach ($projects as $project){
         $roots[] = array(
             'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'alias'        => $project['project_name'],                    // display this instead of real root name
-            'path' => __ROOT__ . $project['active_path'] . '/clientUpload/',                 // path to files (REQUIRED)
-            'URL'  => $project['active_path'] . '/clientUpload/', // URL to files (REQUIRED)
+            'path' => __ROOT__ . rtrim($project['active_path'], '/') . '/clientUpload/',
+            'URL'  => rtrim($project['active_path'], '/') . '/clientUpload/',
+
             'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
             //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
@@ -276,18 +277,19 @@ function IsFileLocked($filepath) {
 }
 
 /**
- * Get all locked file paths under a given directory.
+ * Get all locked file info under a given directory.
  * @param string $directory  Root-relative dir, e.g. "/files/Projects/internal/P01_C City/"
- * @return array  List of locked file paths.
+ * @return array  Array of lock rows (lockid, filepath, locktime, assetlock, commentlock).
  */
 function GetLockedFilesForDirectory($directory) {
     $directory = rtrim($directory, '/') . '/%';
     $stmt = $GLOBALS['db']->prepare(
-        'SELECT filepath FROM lockedfiles WHERE filepath LIKE ?'
+        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?'
     );
     $stmt->execute([$directory]);
-    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 /**
  * Get a client's available lock overrides.
