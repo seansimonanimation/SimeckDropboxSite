@@ -87,6 +87,7 @@ function CloseTimeclockShift($shiftID){
     $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE shift_id = ?';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
+    if(IsReadOnly()){ return false;}
     $stmt->execute([$shiftID]);
 }
 
@@ -99,6 +100,7 @@ function UpdateTimeclockShiftField($shiftId, $field, $value){
     $SQLString = "UPDATE timeclockshifts SET $field = ? WHERE shift_id = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
+    if(IsReadOnly()){ return false;}
     return $stmt->execute([$value, $shiftId]);
 }
 

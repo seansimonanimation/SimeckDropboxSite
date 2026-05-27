@@ -394,3 +394,40 @@ button:disabled {
     padding-left: 18px;
     padding-right: 18px;
 }
+/* ─── Read-Only Badge ──────────────────────────────────────────────────── */
+.read-only-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--color-warning);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    margin-right: 8px;
+    vertical-align: middle;
+}
+/* ── elFinder locked file overlay ──────────────────────────── */
+.elfinder-lock:before{ content: '\1F512'; font-size: 85%; }
+
+.elfinder-cwd-file.elfinder-locked .elfinder-cwd-icon::after {
+    content: '\1F512';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 14px;
+    line-height: 1;
+    color: #e74c3c;
+    text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* List view variant */
+.elfinder-cwd table tr.elfinder-locked td.elfinder-col-name .elfinder-cwd-icon::after {
+    content: '\1F512';
+    margin-left: 4px;
+    font-size: 12px;
+    color: #e74c3c;
+}

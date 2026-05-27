@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `artists` (
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
 INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'dark-boo'),
+	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'fat-butters'),
 	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo'),
 	('rsimon', 'Randy', 'Simon', NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo');
 
@@ -84,7 +84,23 @@ CREATE TABLE IF NOT EXISTS `filecomments` (
 
 -- Dumping data for table simeckdb.filecomments: ~0 rows (approximately)
 INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `comment_order`, `comment_content`) VALUES
-	('client', '2026-05-24 15:02:51', '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', 1, 'It\'s Simeck\'s logo.');
+	('client', '2026-05-24 15:02:51', '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', 1, 'It\'s Simeck\'s logo.'),
+	('admin', '2026-05-25 17:02:25', '/files/Projects/clientProjects/C01_SetSail', 1, 'Test Comment!'),
+	('admin', '2026-05-25 18:53:52', '/files/Projects/clientProjects/C01_SetSail/', 1, 'Testing my limits!'),
+	('admin', '2026-05-25 18:56:52', '/files/Projects/internal/P01_C City/', 1, 'Test!'),
+	('admin', '2026-05-25 19:00:33', '/files/Projects/internal/P01_C City/', 2, 'Test!');
+
+-- Dumping structure for table simeckdb.lockedfiles
+CREATE TABLE IF NOT EXISTS `lockedfiles` (
+  `lockid` int NOT NULL AUTO_INCREMENT,
+  `filepath` varchar(300) DEFAULT NULL,
+  `locktime` datetime DEFAULT NULL,
+  `assetlock` int DEFAULT '0',
+  `commentlock` int DEFAULT '0',
+  KEY `lockid` (`lockid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table simeckdb.lockedfiles: ~0 rows (approximately)
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -92,23 +108,13 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `time` datetime DEFAULT NULL,
   `user_action` varchar(500) DEFAULT NULL,
   `ip_address` varchar(20) DEFAULT NULL,
-  `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+  `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `project_target` varchar(10) DEFAULT 'system'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~0 rows (approximately)
-INSERT IGNORE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`) VALUES
-	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL);
-
--- Dumping structure for table simeckdb.modules
-CREATE TABLE IF NOT EXISTS `modules` (
-  `id` varchar(50) DEFAULT NULL,
-  `module_name` varchar(50) DEFAULT NULL,
-  `enabled` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table simeckdb.modules: ~0 rows (approximately)
-INSERT IGNORE INTO `modules` (`id`, `module_name`, `enabled`) VALUES
-	('Admin User', 'buffer', 1);
+-- Dumping data for table simeckdb.logs: ~1 rows (approximately)
+INSERT IGNORE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`) VALUES
+	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system');
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -119,14 +125,15 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `inactive_zip_path` varchar(200) DEFAULT NULL,
   `transitioning` int DEFAULT '0',
   `type` varchar(10) DEFAULT NULL COMMENT 'internal or client',
-  `description` varchar(500) DEFAULT NULL COMMENT 'A short project description'
+  `description` varchar(500) DEFAULT NULL COMMENT 'A short project description',
+  `leader` varchar(50) DEFAULT NULL COMMENT 'Who is the project lead?'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.projects: ~7 rows (approximately)
-INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`) VALUES
-	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail/', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project'),
-	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.'),
-	('P01', 'C City', 1, '/files/Projects/internal/P01_C City/', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.');
+-- Dumping data for table simeckdb.projects: ~3 rows (approximately)
+INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`, `leader`) VALUES
+	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail/', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client'),
+	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk/', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.', 'admin'),
+	('P01', 'C City', 0, '/files/Projects/internal/P01_C City/', '/files/Projects/internal/archive/P01_CCity.zip', 1, 'internal', 'A tragic tale set in a dying world.', 'admin');
 
 -- Dumping structure for table simeckdb.timeclockshifts
 CREATE TABLE IF NOT EXISTS `timeclockshifts` (
@@ -135,7 +142,7 @@ CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   `time_in` datetime DEFAULT NULL,
   `time_out` datetime DEFAULT NULL,
   KEY `shift_id` (`shift_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.timeclockshifts: ~6 rows (approximately)
 INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
@@ -144,7 +151,8 @@ INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`)
 	('admin', 3, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
 	('artist', 1, '2026-05-11 19:10:06', '2026-05-12 13:32:30'),
 	('admin', 5, '2026-05-11 19:10:06', '2026-05-12 13:48:03'),
-	('admin', 8, '2026-05-12 14:36:21', '2026-05-12 14:44:00');
+	('admin', 8, '2026-05-12 14:36:21', '2026-05-12 14:44:00'),
+	('admin', 9, '2026-05-26 13:59:36', '2026-05-26 13:59:39');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

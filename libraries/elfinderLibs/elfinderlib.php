@@ -259,14 +259,155 @@ function AttachOrCreateDropbox(){
 function DetermineMyDropboxURL(){
     return '/files/Dropboxes/' . $_SESSION['lastname'] . '%2C%20' . $_SESSION['firstname'];
 }
+// ── Lock helpers ──────────────────────────────────────────────
+
+/**
+ * Check if a file is locked.
+ * @param string $filepath  Root-relative path, e.g. "/files/Projects/..."
+ * @return array|false  Lock row if locked, false otherwise.
+ */
+function IsFileLocked($filepath) {
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT lockid, locktime, assetlock, commentlock 
+         FROM lockedfiles WHERE filepath = ?'
+    );
+    $stmt->execute([$filepath]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
+}
+
+/**
+ * Get all locked file paths under a given directory.
+ * @param string $directory  Root-relative dir, e.g. "/files/Projects/internal/P01_C City/"
+ * @return array  List of locked file paths.
+ */
+function GetLockedFilesForDirectory($directory) {
+    $directory = rtrim($directory, '/') . '/%';
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT filepath FROM lockedfiles WHERE filepath LIKE ?'
+    );
+    $stmt->execute([$directory]);
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+/**
+ * Get a client's available lock overrides.
+ * @param string $email  Client's email (username).
+ * @return int
+ */
+function GetClientLockOverrides($email) {
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT lock_overrides FROM clients WHERE email = ?'
+    );
+    $stmt->execute([$email]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ? (int)$row['lock_overrides'] : 0;
+}
+
+/**
+ * Consume (decrement by 1) a client's lock override.
+ * @param string $email  Client's email (username).
+ * @return void
+ */
+function ConsumeClientLockOverride($email) {
+    $stmt = $GLOBALS['db']->prepare(
+        'UPDATE clients SET lock_overrides = lock_overrides - 1 
+         WHERE email = ? AND lock_overrides > 0'
+    );
+    $stmt->execute([$email]);
+}
+
+/**
+ * Normalize an absolute filesystem path to a root-relative /files/… path.
+ * @param string $absPath  Absolute path, e.g. "C:/xampp/htdocs/files/Projects/…"
+ * @return string|false    e.g. "/files/Projects/…" or false if outside __ROOT__.
+ */
+function NormalizeFilePath($absPath) {
+    $absPath = str_replace('\\', '/', $absPath);
+    $root    = str_replace('\\', '/', __ROOT__);
+    if (strpos($absPath, $root) !== 0) {
+        return false;
+    }
+    $relative = substr($absPath, strlen($root));
+    // Ensure leading slash
+    if (strpos($relative, '/') !== 0) {
+        $relative = '/' . $relative;
+    }
+    return $relative;
+}
+
+
 
 function access($attr, $path, $data, $volume, $isDir, $relpath) {
     $basename = basename($path);
+    
+    // Deny write operations when impersonating
+    if (isset($_SESSION['impersonating']) && $_SESSION['impersonating'] === true) {
+        if ($attr == 'write' || $attr == 'locked') {
+            return false;
+        }
+        return $attr == 'read' ? true : null;
+    }
+    
+    // ── File locking enforcement (only on write, for files, under /files/Projects) ──
+    if ($attr === 'write' && !$isDir) {
+        $normalized = NormalizeFilePath($path);
+        // Only enforce locks under /files/Projects
+        if ($normalized && strpos($normalized, '/files/Projects') === 0) {
+            $lock = IsFileLocked($normalized);
+            if ($lock) {
+                $role = $_SESSION['role'] ?? '';
+                // Admins and artists bypass the lock
+                if ($role === 'admin' || $role === 'artist') {
+                    // allow — fall through to dotfile check
+                } elseif ($role === 'client') {
+                    $overrides = GetClientLockOverrides($_SESSION['username']);
+                    if ($overrides > 0) {
+                        ConsumeClientLockOverride($_SESSION['username']);
+                        // allow — fall through to dotfile check
+                    } else {
+                        return false; // deny write
+                    }
+                } else {
+                    return false; // unknown role, deny
+                }
+            }
+        }
+    }
+    
+    // Dot-file hiding (existing logic)
     return $basename[0] === '.'
              && strlen($relpath) !== 1
         ? !($attr == 'read' || $attr == 'write')
         :  null;
 }
+/**
+ * elFinder accessControl callback for file locking.
+ * Returns array to set the `locked` flag based on the DB lockedfiles table.
+ * Pass this as the `accessControl` option on a volume root.
+ *
+ * @param  string $attr  Attribute name (read|write|locked|hidden)
+ * @param  string $path  Absolute filesystem path
+ * @param  mixed  $data  Volume option accessControlData
+ * @param  object $volume elFinder volume driver instance
+ * @param  bool   $isDir Is directory?
+ * @param  string $relpath Root-relative path
+ * @return array|null  Return ['locked' => true] to lock, null to defer
+ */
+function lockAccessControl($attr, $path, $data, $volume, $isDir, $relpath) {
+    // Only apply the 'locked' attribute to files (not directories)
+    if ($attr === 'locked' && !$isDir) {
+        $normalized = NormalizeFilePath($path);
+        if ($normalized && strpos($normalized, '/files/Projects') === 0) {
+            $lock = IsFileLocked($normalized);
+            if ($lock) {
+                return array('locked' => true);
+            }
+        }
+    }
+    return null;
+}
+
+
 
 function ScanForPlugins() {
     $config = ['plugin' => [], 'bind' => []];
