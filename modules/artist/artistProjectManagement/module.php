@@ -106,7 +106,7 @@ if(isset($_POST['See_Project'])){
                 <?php if(!empty($CurrentProjectData['project'])): ?>
                     <hr style="margin:16px 0;border-color:var(--color-border);">
                     <form method="post" action="index.php">
-                        <input type="hidden" name="See_Project" value="<?= htmlspecialchars($_POST['See_Project'] ?? '') ?>">
+                        <input type="hidden" name="See_Project" value="<?= htmlspecialchars($currentClientPid) ?>"
                         <input type="hidden" name="dir_comment_path" value="<?= htmlspecialchars($CurrentProjectData['projectDirLoc']['active_path']) ?>">
                         <label class="module-form-group">
                             <span style="font-size:0.85rem;font-weight:500;margin-bottom:4px;">Add a comment</span>

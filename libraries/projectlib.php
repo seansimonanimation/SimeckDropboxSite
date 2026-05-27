@@ -199,8 +199,8 @@ function GetAllDataForProject($pid){
     $ProjectFileCommentsString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? AND parent_file_url != ? ORDER BY comment_time DESC";
     $ProjectArtistListString = "SELECT username, firstname, lastname FROM artists WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
     $ProjectClientListString = "SELECT username, firstname, lastname FROM clients WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
-    $projectDirLocString = "SELECT active_path FROM projects WHERE pid = ?";
-    $ProjectDirCommentString = "SELECT * FROM filecomments WHERE parent_file_url = ? ORDER BY comment_time DESC";
+    $projectDirLocString = "SELECT active_path FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
+    $ProjectDirCommentString = "SELECT * FROM filecomments WHERE parent_file_url = ? ORDER BY comment_time ASC";
 
     $projectDirLocStmt = $pdo->prepare($projectDirLocString);
     $projectDirLocStmt->execute([$pid]);
@@ -226,6 +226,18 @@ function GetAllDataForProject($pid){
     $ProjectDirCommentstmt->execute([$projectDirLocData['active_path']]);
     $projectDirComments = $ProjectDirCommentstmt->fetchAll(PDO::FETCH_ASSOC);
 
+    if ($projectDirLocData === false || $projData === false) {
+        return array(
+            'project' => array(),
+            'projectFileComments' => array(),
+            'artists' => $artistData,
+            'clients' => $clientData,
+            'projectDirLoc' => array('active_path' => ''),
+            'projectDirComments' => array()
+        );
+    }
+
+    // Add this missing return for the normal case:
     return array(
         'project' => $projData,
         'projectFileComments' => $projectFileCommentData,
