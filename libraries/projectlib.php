@@ -211,21 +211,14 @@ function GetAllDataForProject($pid){
     $projData = $projstmt->fetch(PDO::FETCH_ASSOC);
 
     $artiststmt = $pdo->prepare($ProjectArtistListString);
-    $artiststmt->execute([$pid]);  // No more % wildcards, they're in the SQL
+    $artiststmt->execute([$pid]);
     $artistData = $artiststmt->fetchAll(PDO::FETCH_ASSOC);
 
     $clientstmt = $pdo->prepare($ProjectClientListString);
     $clientstmt->execute([$pid]);
     $clientData = $clientstmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $projectFileCommentstmt = $pdo->prepare($ProjectFileCommentsString);
-    $projectFileCommentstmt->execute([$projectDirLocData['active_path'] . '%', $projectDirLocData['active_path']]);
-    $projectFileCommentData = $projectFileCommentstmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $ProjectDirCommentstmt = $pdo->prepare($ProjectDirCommentString);
-    $ProjectDirCommentstmt->execute([$projectDirLocData['active_path']]);
-    $projectDirComments = $ProjectDirCommentstmt->fetchAll(PDO::FETCH_ASSOC);
-
+    // Move this check BEFORE accessing $projectDirLocData['active_path']
     if ($projectDirLocData === false || $projData === false) {
         return array(
             'project' => array(),
@@ -237,7 +230,15 @@ function GetAllDataForProject($pid){
         );
     }
 
-    // Add this missing return for the normal case:
+    // These lines now execute safely because we know $projectDirLocData is not false
+    $projectFileCommentstmt = $pdo->prepare($ProjectFileCommentsString);
+    $projectFileCommentstmt->execute([$projectDirLocData['active_path'] . '%', $projectDirLocData['active_path']]);
+    $projectFileCommentData = $projectFileCommentstmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $ProjectDirCommentstmt = $pdo->prepare($ProjectDirCommentString);
+    $ProjectDirCommentstmt->execute([$projectDirLocData['active_path']]);
+    $projectDirComments = $ProjectDirCommentstmt->fetchAll(PDO::FETCH_ASSOC);
+
     return array(
         'project' => $projData,
         'projectFileComments' => $projectFileCommentData,
@@ -247,6 +248,7 @@ function GetAllDataForProject($pid){
         'projectDirComments' => $projectDirComments
     );
 }
+
 function DisplayProjectTeamMembers($artists, $lead){
     if(empty($artists)){
         return 'This project has no assigned artists.';
