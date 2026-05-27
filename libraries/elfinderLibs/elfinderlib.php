@@ -191,7 +191,7 @@ function getClientFileBrowserOptions(){
 
 foreach ($projects as $project){
     $ProjectPath = __ROOT__ . $project['active_path'];
-    $clientUploadPath = __ROOT__ . $project['active_path'] . 'clientUpload/';
+    $clientUploadPath = __ROOT__ . $project['active_path'] . '/clientUpload/';
     if(!is_dir($ProjectPath)){ //Create the project folder if it doesn't exist, this should always be true since the project is active, but just in case.
         mkdir($ProjectPath, 0777, true);
     }
@@ -203,8 +203,8 @@ foreach ($projects as $project){
         $roots[] = array(
             'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
             'alias'        => $project['project_name'],                    // display this instead of real root name
-            'path' => __ROOT__ . $project['active_path'] . 'clientUpload/',                 // path to files (REQUIRED)
-            'URL'  => $project['active_path'] . 'clientUpload/', // URL to files (REQUIRED)
+            'path' => __ROOT__ . $project['active_path'] . '/clientUpload/',                 // path to files (REQUIRED)
+            'URL'  => $project['active_path'] . '/clientUpload/', // URL to files (REQUIRED)
             'trashHash'     => 't1_Lw',                     // elFinder's hash of trash folder
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/', // to make hash same to Linux one on windows too
             //'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
