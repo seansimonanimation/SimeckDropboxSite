@@ -55,11 +55,8 @@ function GetHumanName($format){
     }
 }
 function GetRole(){
-    if(isset($_SESSION['tempRole'])){
-        return $_SESSION['tempRole'];
-    } else {
-        return $_SESSION['role'] ?? null;
-    }
+
+        return $_SESSION['role'];
 }
 
 function GetTempRole(){
