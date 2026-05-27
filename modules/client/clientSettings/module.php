@@ -101,7 +101,7 @@ function verifyCurrentPW($currentPW, $artistData){
             </div>
         </div>
         <div class="module-card module-card--placeholder"></div>
-        <div class="module-card module-card--placeholder"></div>
+        <div class="module-card module-card--span-1"><center><h1> File Lock Overrides remaining:</h1><h2><?php echo GetClientLockOverrideCount(); ?></h2>Please speak to Randy or Carl to purchase new overrides.</center></div>
         <div class="module-card module-card--span-1">
             <h1>Password change</h1>
             <form method="POST" class="module-create-form" action="">
