@@ -33,6 +33,8 @@ if(isset($_POST['See_Project'])){
     $CurrentProjectData = GetAllDataForProject($_POST['See_Project']);
 } else {
     $CurrentProjectData = GetAllDataForProject(GetAssignedClientProjectOptionList()[0]['pid']);
+    $currentClientPid = $CurrentProjectData['project']['pid'] ?? '';
+
 }
 ?>
 
