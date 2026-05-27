@@ -144,7 +144,7 @@ function adminSwitchViewButtonActivation(){
                      <?php
                          $clients = ListAllActiveClients();
                          foreach($clients as $c){
-                             echo '<option value="' . htmlspecialchars($c['email']) . '">'
+                             echo '<option value="' . htmlspecialchars($c['username']) . '">'
                                   . htmlspecialchars($c['firstname'] . ' ' . $c['lastname'])
                                   . '</option>';
                          }
@@ -174,10 +174,14 @@ function adminSwitchViewButtonActivation(){
    </aside>
    <header id="topbar" role="banner">
 <div class="topbar-title">
-    <?php if(IsImpersonating()): ?>
-        <span class="read-only-badge">❄️❄️READ ONLY MODE ENGAGED❄️❄️</span>
-    <?php endif; ?>
-    Hi, <?php echo GetHumanName('first'); ?>!
+            <?php if(IsImpersonating()){
+                echo '<span class="read-only-badge">❄️❄️READ ONLY MODE ENGAGED!!! Impersonating: ' . GetHumanName('firstlast') . ' (' . GetTempRole() . ')❄️❄️</span>';
+            } else {
+                echo 'Hi, ' . GetHumanName('first') . '!';
+            }
+             ?>
+             </div>
+             <div class="topbar-phrase">
 </div>
 <div class="topbar-right"><?php echo DisplayRandomTopbarPhrase(); ?></div>
 </header>

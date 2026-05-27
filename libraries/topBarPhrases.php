@@ -30,7 +30,7 @@
             "We appreciate your patronage and look forward to delivering great work for you!",
             "Proudly hand-coded by a human."
         ];
-        switch(GetRole()){
+        switch(GetTempRole()){
             case 'admin':
                 return GetRandomPhrase($topbarArtistPhrases);
             case 'artist':

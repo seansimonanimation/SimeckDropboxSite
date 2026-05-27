@@ -20,10 +20,11 @@ function PutArtistDataInSession($artistData){
 }
 
 function PutClientDataInSession($clientData){
-    $_SESSION['username'] = $clientData['email'];
+    $_SESSION['username'] = $clientData['username'];
     $_SESSION['firstname'] = $clientData['firstname'];
     $_SESSION['lastname'] = $clientData['lastname'];
-    $_SESSION['clientProjects'] = $clientData['project_assignments'];
+    $_SESSION['project_assignments'] = $clientData['project_assignments'];
+    $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['role'] = 'client';
     $_SESSION['theme'] = $clientData['theme'] ?? 'dark-boo';
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
@@ -54,7 +55,11 @@ function GetHumanName($format){
     }
 }
 function GetRole(){
-    return $_SESSION['role'];
+    if(isset($_SESSION['tempRole'])){
+        return $_SESSION['tempRole'];
+    } else {
+        return $_SESSION['role'] ?? null;
+    }
 }
 
 function GetTempRole(){
@@ -94,10 +99,11 @@ function ImpersonateClient($clientData){
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
 
     // Override with impersonated client's data
-    $_SESSION['username']      = $clientData['email'];
+    $_SESSION['username']      = $clientData['username'];
     $_SESSION['firstname']     = $clientData['firstname'];
     $_SESSION['lastname']      = $clientData['lastname'];
-    $_SESSION['clientProjects'] = $clientData['project_assignments'];
+    $_SESSION['project_assignments'] = $clientData['project_assignments'];
+    $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
 }
@@ -110,6 +116,7 @@ function StopImpersonating(){
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
     $_SESSION['userID']    = $_SESSION['_imp_orig_userID'];
 
+    if(isset($_SESSION['point_of_contact'])) unset($_SESSION['point_of_contact']);
     unset($_SESSION['_imp_orig_username']);
     unset($_SESSION['_imp_orig_firstname']);
     unset($_SESSION['_imp_orig_lastname']);

@@ -17,10 +17,10 @@ function GenerateArtistClientCards($artist){
 
     echo '<div class="module-card module-card--span-1">';
         echo '<table>';
-        echo '<tr><td>Email</td><td>'.$client['email'].'</td></tr>';
+        echo '<tr><td>Email</td><td>'.$client['username'].'</td></tr>';
         echo '<tr><td>Name</td><td>'.$client['firstname'].' '.$client['lastname'].'</td></tr>';
-        echo '<tr><td>PW Reset</td><td><button onclick="resetClientPassword(\''.$client['email'].'\')">Reset Password</button></td></tr>';
-        echo '<tr><td>Current projects: <br />' . GetClientProjects($client['email'], $client['project_assignments']) . '</td></tr>';
+        echo '<tr><td>PW Reset</td><td><button onclick="resetClientPassword(\''.$client['username'].'\')">Reset Password</button></td></tr>';
+        echo '<tr><td>Current projects: <br />' . GetClientProjects($client['username'], $client['project_assignments']) . '</td></tr>';
         echo '</table>';
     echo '</div>';
     }
@@ -35,13 +35,13 @@ function GetAllArtistClients($artist){
 
 function GetSearchedArtistClient($searchterm){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT * FROM clients WHERE email LIKE ? OR firstname LIKE ? OR lastname LIKE ? AND active = 1 AND point_of_contact = ?");
+    $stmt = $pdo->prepare("SELECT * FROM clients WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ? AND active = 1 AND point_of_contact = ?");
     $likeTerm = '%' . $searchterm . '%';
     $stmt->execute([$likeTerm, $likeTerm, $likeTerm, $_SESSION['username']]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function GetClientProjects($clientEmail, $clientProjects){
+function GetClientProjects($clientUsername, $clientProjects){
     $clientProjArr = explode(',', $clientProjects);
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT project_name, pid from projects");
