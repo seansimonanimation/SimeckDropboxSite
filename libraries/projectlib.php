@@ -3,6 +3,7 @@
 include_once __DIR__ . '/session.php';
 include_once __DIR__ . '/db.php';
 include_once __ROOT__ . '/libraries/sharedlib.php';
+include_once __ROOT__ . '/libraries/helpers.php';
 
 function GenerateProjectCards(){
     $projects = GetAllProjects();
@@ -299,7 +300,7 @@ function DisplayProjectDirComments($comments, $projectPath){
     echo '<tbody>';
     foreach($comments as $comment){
         echo '<tr>';
-        echo '<td>'.htmlspecialchars($comment['owner']).'</td>';
+        echo '<td>'.htmlspecialchars(GetUserDisplayName($comment['owner'])).'</td>';
         echo '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
         echo '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
         echo '</tr>';
@@ -308,35 +309,52 @@ function DisplayProjectDirComments($comments, $projectPath){
     echo '</table>';
 }
 
-
+function GetUserDisplayName($username) {
+    $pdo = DBConnect();
+    // Check artists first
+    $stmt = $pdo->prepare("SELECT firstname, lastname FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        return $result['firstname'] . ' ' . $result['lastname'];
+    }
+    // Check clients
+    $stmt = $pdo->prepare("SELECT firstname, lastname FROM clients WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        return $result['firstname'] . ' ' . $result['lastname'];
+    }
+    // Fallback to username
+    return $username;
+}
 
 function DisplayProjectFileComments($comments){
     if(empty($comments)){
         return '<p>This project has no file comments yet.</p>';
     }
-    $html = '<table class="module-tablecell" style="width:100%;border-collapse:collapse;">';
-    $html .= '<thead>';
-    $html .= '<tr>';
-    $html .= '<th>Author</th>';
-    $html .= '<th>Date / Time</th>';
-    $html .= '<th>File</th>';
-    $html .= '<th>Comment</th>';
-    $html .= '</tr>';
-    $html .= '</thead>';
-    $html .= '<tbody>';
+    echo '<table class="module-tablecell" style="width:100%;border-collapse:collapse;">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>Author</th>';
+    echo '<th>Date / Time</th>';
+    echo '<th>File</th>';
+    echo '<th>Comment</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     foreach($comments as $comment){
         // Extract just the filename from the full path
         $filename = basename($comment['parent_file_url']);
-        $html .= '<tr>';
-        $html .= '<td>'.htmlspecialchars($comment['owner']).'</td>';
-        $html .= '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
-        $html .= '<td>'.htmlspecialchars($filename).'</td>';
-        $html .= '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
-        $html .= '</tr>';
+        echo '<tr>';
+        echo '<td>'.htmlspecialchars(GetUserDisplayName($comment['owner'])).'</td>';
+        echo '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
+        echo '<td>'.htmlspecialchars($filename).'</td>';
+        echo '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
+        echo '</tr>';
     }
-    $html .= '</tbody>';
-    $html .= '</table>';
-    return $html;
+    echo '</tbody>';
+    echo '</table>';
 }
 
 
