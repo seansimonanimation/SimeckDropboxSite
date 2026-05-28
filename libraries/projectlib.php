@@ -144,7 +144,7 @@ function GetToggleButtonText($pid, $activestatus, $transitioning){
 }
 function CreateNewProject($name, $description, $type) {
     // Sanitize: remove all whitespace for folder paths
-    $fsName = preg_replace('/\s+/', '', $name);
+    $fsName = preg_replace('/\s+/', '_', $name);
 
     $pdo = DBConnect();
 
@@ -168,10 +168,10 @@ function CreateNewProject($name, $description, $type) {
 
     // Build folder path
     if ($type === 'internal') {
-        $activePath = "/files/Projects/internal/{$newPid}_{$name}/";
+        $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}/";
         $inactiveZipPath = "/files/Projects/internal/archive/{$newPid}_{$fsName}.zip";
     } else {
-        $activePath = "/files/Projects/clientProjects/{$newPid}_{$name}/";
+        $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}/";
         $inactiveZipPath = "/files/Projects/clientProjects/archive/{$newPid}_{$fsName}.zip";
     }
 
