@@ -142,11 +142,13 @@ function ShowArtistFilesForTimeclock(){
     }
 }
 function GetArtistShiftDurationSeconds($timeIn, $timeOut){
-    $start = new DateTime($timeIn, new DateTimeZone('UTC'));
-    $end = $timeOut ? new DateTime($timeOut, new DateTimeZone('UTC')) : new DateTime('now', new DateTimeZone('UTC'));
+    $tz = new DateTimeZone($_SESSION['timezone'] ?? 'America/Phoenix');
+    $start = new DateTime($timeIn, $tz);
+    $end = $timeOut ? new DateTime($timeOut, $tz) : new DateTime('now', $tz);
     $interval = $start->diff($end);
     return $interval->days * 86400 + $interval->h * 3600 + $interval->i * 60 + $interval->s;
 }
+
 
 
 function GetArtistStats($artistID){
@@ -221,6 +223,7 @@ function FormatDurationHours($totalSeconds){
 function DisplayArtistStats($artistID){
     $stats = GetArtistStats($artistID);
     echo '<div class="stats-grid">';
+    echo '<p><strong>Timezone</strong>: ' . ($_SESSION['timezone'] ?? 'UTC') . '</p>';
     echo '<p><strong>Today:</strong> ' . FormatDurationHours($stats['today']) . '</p>';
     echo '<p><strong>This Week:</strong> ' . FormatDurationHours($stats['week']) . '</p>';
     echo '<p><strong>Last 2 Weeks:</strong> ' . FormatDurationHours($stats['twoWeeks']) . '</p>';
