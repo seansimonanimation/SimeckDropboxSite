@@ -327,3 +327,86 @@
   background: var(--glass-bg, #f0f0f0);
   border-color: var(--color-link, #1a73e8);
 }
+/* ── Project Management Card Layout ── */
+.proj-card__title-row {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--glass-border, #e0e0e0);
+}
+
+.proj-card__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.proj-card__data-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.proj-card__col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.proj-card__col-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted, #6c7280);
+}
+
+.proj-card__col-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Project Lead Dropdown */
+.proj-card__dropdown {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-bright, #ccc);
+  border-radius: 8px;
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.proj-card__dropdown:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.proj-card__dropdown option {
+  color: #000;
+  background: #fff;
+}
+
+/* Size on disk */
+.proj-card__size {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Responsive: stack columns on narrow screens */
+@media (max-width: 860px) {
+  .proj-card__data-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .proj-card__data-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
