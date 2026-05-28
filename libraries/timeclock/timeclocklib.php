@@ -142,12 +142,12 @@ function ShowArtistFilesForTimeclock(){
     }
 }
 function GetArtistShiftDurationSeconds($timeIn, $timeOut){
-    $start = new DateTime($timeIn);
-    $end = $timeOut ? new DateTime($timeOut) : new DateTime('now', new DateTimeZone('UTC'));
+    $start = new DateTime($timeIn, new DateTimeZone('UTC'));
+    $end = $timeOut ? new DateTime($timeOut, new DateTimeZone('UTC')) : new DateTime('now', new DateTimeZone('UTC'));
     $interval = $start->diff($end);
     return $interval->days * 86400 + $interval->h * 3600 + $interval->i * 60 + $interval->s;
-
 }
+
 
 function GetArtistStats($artistID){
     $tz = $_SESSION['timezone'] ?? 'UTC';
