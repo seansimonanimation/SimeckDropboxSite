@@ -242,3 +242,88 @@
   border-color: #1a73e8;
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
 }
+/* ── Client Management: Two-Column Editable Table ── */
+.client-edit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.client-edit-table tr {
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+.client-edit-table td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.client-label {
+  width: 220px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text, #333);
+  white-space: nowrap;
+}
+
+.client-editable {
+  width: 100%;
+  max-width: 400px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-bright, #ccc);
+  border-radius: 8px;
+  background: var(--color-bg-raised, #fff);
+  color: var(--color-text, #333);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.client-editable:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.client-documents-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.client-document-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--glass-bg, #f5f5f5);
+  border: 1px solid var(--glass-border, #ddd);
+  border-radius: 10px;
+  font-size: 0.88rem;
+}
+
+.client-document-item a {
+  text-decoration: none;
+  color: var(--color-link, #1a73e8);
+}
+
+.client-document-item a:hover {
+  text-decoration: underline;
+}
+
+.upload-file-button {
+  padding: 6px 14px;
+  border: 1px dashed var(--color-border-bright, #aaa);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text, #555);
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.upload-file-button:hover {
+  background: var(--glass-bg, #f0f0f0);
+  border-color: var(--color-link, #1a73e8);
+}
