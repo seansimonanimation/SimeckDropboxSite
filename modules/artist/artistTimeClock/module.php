@@ -38,8 +38,10 @@ if(isset($_GET['download_file'])){
             <h3>Your most recent activity was</h3>
         </div>
         <div class="module-card module-card--span-2">
-            <h3> Your Stats</h3>
+            <h3>Your Stats</h3>
+            <?php DisplayArtistStats($_SESSION['username']); ?>
         </div>
+
         <div class="module-card module-card--span-1">
             <?php echo DisplayArtistClockInOutButton($_SESSION['username']); ?>
         </div>

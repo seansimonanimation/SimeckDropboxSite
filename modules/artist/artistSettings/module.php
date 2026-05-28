@@ -100,7 +100,32 @@ function verifyCurrentPW($currentPW, $artistData){
                 </form>
             </div>
         </div>
-        <div class="module-card module-card--placeholder"></div>
+                <div class="module-card module-card--span-1">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Timezone</h3>
+            </div>
+            <div class="module-card__content">
+                <form method="get" action="index.php">
+                    <label for="timezone-select" class="module-form-group" style="margin-bottom:12px;">
+                        <span style="margin-bottom:4px;">Your local timezone</span>
+                        <select name="timezone" id="timezone-select" class="module-input" style="width:auto;min-width:200px;" onchange="this.form.submit()">
+                            <?php
+                            $currentTz = $_SESSION['timezone'] ?? 'UTC';
+                            $tzIds = DateTimeZone::listIdentifiers();
+                            foreach($tzIds as $tz):
+                            ?>
+                                <option value="<?php echo $tz; ?>" <?php echo ($tz === $currentTz) ? 'selected' : ''; ?>>
+                                    <?php echo $tz; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
+                    <input type="hidden" name="action" value="set_timezone">
+                    <noscript><button type="submit" class="btn--sm">Apply</button></noscript>
+                </form>
+            </div>
+        </div>
+
         <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-1">
             <h1>Password change</h1>

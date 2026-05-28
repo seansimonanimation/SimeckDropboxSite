@@ -54,3 +54,14 @@ function SetUserTheme($username, $theme, $role){
     }
     return $result;
 }
+function SetUserTimezone($username, $timezone, $role){
+    $table = ($role === 'client') ? 'clients' : 'artists';
+    $SQLString = "UPDATE $table SET timezone = ? WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $result = $stmt->execute([$timezone, $username]);
+    if($result){
+        $_SESSION['timezone'] = $timezone;
+    }
+    return $result;
+}
