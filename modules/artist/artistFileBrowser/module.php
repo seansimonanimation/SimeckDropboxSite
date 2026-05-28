@@ -56,6 +56,8 @@ define('EF_ROOT', 'libraries/elfinder');
 
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
+<script src="libraries/elfinderLibs/elfinderCommands.js"></script>
+
 <script>
     $(function() {
         $('#elfinder').elfinder({
