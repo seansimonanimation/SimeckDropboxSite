@@ -29,6 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_project'])) {
     }
 }
 
+// Handle AJAX project lead update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_lead') {
+    $pid = trim($_POST['pid'] ?? '');
+    $lead = trim($_POST['lead'] ?? '');
+
+    header('Content-Type: application/json');
+    if ($pid !== '') {
+        UpdateProjectLead($pid, $lead ?: null);
+        echo json_encode(['success' => true]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Missing pid']);
+    }
+    exit;
+}
 
 
 ?>
@@ -79,6 +93,48 @@ document.addEventListener('click', function(e) {
     const value = toggleOption.dataset.value;
     const radio = toggle.querySelector('input[value="' + value + '"]');
     if (radio) radio.checked = true;
+});
+// ── Project Lead Dropdown: Immediate Save ──
+document.addEventListener('change', function(e) {
+    const dropdown = e.target.closest('.proj-lead-select');
+    if (!dropdown) return;
+
+    const pid = dropdown.dataset.pid;
+    const newLead = dropdown.value;
+
+    fetch('/modules/admin/adminProjectManagement/module.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'action=update_lead&pid=' + encodeURIComponent(pid) + '&lead=' + encodeURIComponent(newLead)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Optionally show a brief success indicator
+            dropdown.style.borderColor = '#4caf50';
+            setTimeout(() => { dropdown.style.borderColor = ''; }, 1500);
+        } else {
+            console.error('Failed to update project lead:', data.error);
+        }
+    })
+    .catch(err => console.error('Error updating project lead:', err));
+});
+
+// ── Size On Disk: Async Recalculation ──
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.proj-card__size').forEach(function(el) {
+        const pid = el.dataset.pid;
+        if (!pid) return;
+
+        fetch('/libraries/update_project_size.php?pid=' + encodeURIComponent(pid))
+        .then(response => response.json())
+        .then(data => {
+            if (data.size_mb !== undefined) {
+                el.textContent = data.size_mb + ' MB';
+            }
+        })
+        .catch(err => console.error('Error fetching project size:', err));
+    });
 });
 
 </script>

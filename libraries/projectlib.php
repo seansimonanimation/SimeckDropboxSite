@@ -8,18 +8,99 @@ include_once __ROOT__ . '/libraries/helpers.php';
 function GenerateProjectCards(){
     $projects = GetAllProjects();
     foreach($projects as $project){
-        echo '<div class="module-card module-card--span-1">';
-        echo '<table><th> Project ID </th><th> Project Name </th><th> Active </th><th>Toggle Active</th>';
-        echo '<tr>';
-        echo '<td>'.$project['pid'].'</td>';
-        echo '<td>'.$project['project_name'].'</td>';
-        echo '<td>'.SummonActivityButton($project['active']).'</td>';
-        echo GetToggleButtonText($project['pid'],$project['active'], $project['transitioning']);
-        echo '</tr>';
-        echo '</table>';
+        $pid = $project['pid'];
+        $type = $project['type'];
+        $currentLead = $project['leader'];
+        $sizeBytes = $project['size_on_disk'] ?? 0;
+        $sizeMB = $sizeBytes ? round($sizeBytes / 1048576, 2) . ' MB' : 'Calculating...';
+
+        echo '<div class="module-card module-card--span-4" data-pid="' . htmlspecialchars($pid) . '">';
+        // Row 1: Project Title
+        echo '<div class="proj-card__title-row">';
+        echo '<h2 class="proj-card__title">' . htmlspecialchars($project['project_name']) . '</h2>';
         echo '</div>';
+        // Row 2: Data Columns
+        echo '<div class="proj-card__data-row">';
+
+        // Column 1: Project Type
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label">Type</span>';
+        echo '<span class="proj-card__col-value">' . htmlspecialchars(ucfirst($type)) . '</span>';
+        echo '</div>';
+
+        // Column 2: Project ID
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label">Project ID</span>';
+        echo '<span class="proj-card__col-value">' . htmlspecialchars($pid) . '</span>';
+        echo '</div>';
+
+        // Column 3: Active (text only, not clickable)
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label">Active</span>';
+        echo '<span class="proj-card__col-value">' . SummonActivityButton($project['active']) . '</span>';
+        echo '</div>';
+
+        // Column 4: Project Lead Dropdown
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label">Project Lead</span>';
+        echo GetProjectLeadDropdown($pid, $type, $currentLead);
+        echo '</div>';
+
+        // Column 5: Size On Disk
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label">Size On Disk</span>';
+        echo '<span class="proj-card__col-value proj-card__size" data-pid="' . htmlspecialchars($pid) . '">' . $sizeMB . '</span>';
+        echo '</div>';
+
+        echo '</div>'; // end data-row
+        echo '</div>'; // end card
     }
 }
+function GetProjectLeadDropdown($pid, $type, $currentLead){
+    if ($type === 'internal') {
+        $people = ListAllActiveArtists();
+    } else {
+        $people = ListAllActiveClients();
+    }
+
+    $html = '<select class="proj-card__dropdown proj-lead-select" data-pid="' . htmlspecialchars($pid) . '">';
+    $html .= '<option value="">— None —</option>';
+    foreach ($people as $person) {
+        $selected = ($person['username'] === $currentLead) ? ' selected' : '';
+        $html .= '<option value="' . htmlspecialchars($person['username']) . '"' . $selected . '>';
+        $html .= htmlspecialchars($person['firstname'] . ' ' . $person['lastname'] . ' (' . $person['username'] . ')');
+        $html .= '</option>';
+    }
+    $html .= '</select>';
+    return $html;
+}
+function UpdateProjectLead($pid, $newLead){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE projects SET leader = ? WHERE pid = ?");
+    return $stmt->execute([$newLead ?: null, $pid]);
+}
+function GetProjectFolderSize($pid){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT active_path FROM projects WHERE pid = ?");
+    $stmt->execute([$pid]);
+    $project = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$project || empty($project['active_path'])) {
+        return 0;
+    }
+
+    $fullPath = __ROOT__ . $project['active_path'];
+    if (!is_dir($fullPath)) {
+        return 0;
+    }
+
+    $totalSize = 0;
+    $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($fullPath, RecursiveDirectoryIterator::SKIP_DOTS));
+    foreach ($iterator as $file) {
+        $totalSize += $file->getSize();
+    }
+    return $totalSize;
+}
+
 function GetAllProjects(){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT * FROM projects");
@@ -168,7 +249,7 @@ function CreateNewProject($name, $description, $type) {
 
     // Build folder path
     if ($type === 'internal') {
-        $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}/";
+        $activePath = "/files/Projects/internal/{$newPid}_{$fsName}/";
         $inactiveZipPath = "/files/Projects/internal/archive/{$newPid}_{$fsName}.zip";
     } else {
         $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}/";

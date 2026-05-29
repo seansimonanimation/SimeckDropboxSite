@@ -47,10 +47,19 @@ function UserHasPermissionForArtistFile($username, $artistID){
 
 function ServeFileForDownload($username, $docID){
     $pdo = DBConnect();
+
+    // Try artistdocuments first
     $stmt = $pdo->prepare("SELECT filepath FROM artistdocuments WHERE owner = ? AND uploadID = ?");
     $stmt->execute([$username, $docID]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
+    // If not found, try clientdocuments
+    if (!$result) {
+        $stmt = $pdo->prepare("SELECT filepath FROM clientdocuments WHERE owner = ? AND uploadID = ?");
+        $stmt->execute([$username, $docID]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     if (!$result) {
         echo "File not found.";
         return;
@@ -71,6 +80,7 @@ function ServeFileForDownload($username, $docID){
         echo "File not found.";
     }
 }
+
 
 
 
