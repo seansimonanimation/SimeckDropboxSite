@@ -249,10 +249,10 @@ function CreateNewProject($name, $description, $type) {
 
     // Build folder path
     if ($type === 'internal') {
-        $activePath = "/files/Projects/internal/{$newPid}_{$fsName}/";
+        $activePath = "/files/Projects/internal/{$newPid}_{$fsName}";
         $inactiveZipPath = "/files/Projects/internal/archive/{$newPid}_{$fsName}.zip";
     } else {
-        $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}/";
+        $activePath = "/files/Projects/clientProjects/{$newPid}_{$fsName}";
         $inactiveZipPath = "/files/Projects/clientProjects/archive/{$newPid}_{$fsName}.zip";
     }
 
@@ -314,7 +314,7 @@ function GetAllDataForProject($pid){
 
     // These lines now execute safely because we know $projectDirLocData is not false
     $projectFileCommentstmt = $pdo->prepare($ProjectFileCommentsString);
-    $projectFileCommentstmt->execute([$projectDirLocData['active_path'] . '%', $projectDirLocData['active_path']]);
+    $projectFileCommentstmt->execute([$projectDirLocData['active_path'] . '/%', $projectDirLocData['active_path']]);
     $projectFileCommentData = $projectFileCommentstmt->fetchAll(PDO::FETCH_ASSOC);
 
     $ProjectDirCommentstmt = $pdo->prepare($ProjectDirCommentString);
