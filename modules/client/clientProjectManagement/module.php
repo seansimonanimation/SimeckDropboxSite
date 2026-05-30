@@ -57,7 +57,7 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
-<script src="libraries/elfinderLibs/elfinderCommandOverride.js"></script>
+<?php echo ApplyElfinderCommandOverrides(); ?>
 
 <script>
 $(function() {
@@ -65,19 +65,10 @@ $(function() {
         cssAutoLoad: false,
         baseUrl: 'libraries/elfinder/',
         url: 'modules/client/clientProjectManagement/clientConnector.php',
-        height: $(window).height() - $('#elfinder').offset().top,
+            height: $(window).height() - $('#elfinder').offset().top,
+            width: $(window).width()*0.7,
         role: 'client'
     });
-    
-    // Populate lock cache immediately after elFinder is created
-    var instance = $('#elfinder').elfinder('instance');
-    if (instance) {
-        populateLockCache(instance);
-        instance.bind('open', function() {
-            populateLockCache(this);
-        });
-    }
-    
     $(window).on('resize', resizeElfinder);
 });
 
@@ -85,4 +76,17 @@ $(function() {
 
 
 <!-- Element where elFinder will be created -->
-<div id="elfinder" style="height: 100%;"><center><h1>Thank you for your patience while your filebrowser is loading...</h1></center></div>
+<div class="file-browser-container">
+    <div id="elfinder"><center><h1>If you are seeing this, that means that your file browser is broken. Please reach out to your point of contact.</h1></center></div>
+    
+    <!-- Preview Pane - part of module content -->
+    <div id="preview-pane" class="preview-pane">
+        <div class="preview-header">
+            <h3>Preview</h3>
+            <button class="close-preview" id="close-preview">✕</button>
+        </div>
+        <div class="preview-content">
+            <p>Select a file to view details</p>
+        </div>
+    </div>
+</div>

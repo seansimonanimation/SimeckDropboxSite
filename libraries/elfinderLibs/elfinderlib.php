@@ -56,7 +56,10 @@ function LoadElfinderJSCommands() {
     
     foreach (new DirectoryIterator($base) as $file) {
         if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js') continue;
-        $html .= '<script src="' . $file->getPathname() . '" type="text/javascript" charset="utf-8"></script>' . "\n";
+        // Convert filesystem path to web path
+        $webPath = str_replace(__ROOT__, '', $file->getPathname());
+        $webPath = str_replace('\\', '/', $webPath); // Windows backslashes → forward slashes
+        $html .= '<script src="' . $webPath . '" type="text/javascript" charset="utf-8"></script>' . "\n";
     }
     return $html;
 }

@@ -36,7 +36,7 @@ elFinder.prototype.commands.togglelock = function() {
         var isLocked = fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[fileUrl];
         var action = isLocked ? 'unlock' : 'lock';
 
-        $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+        $.post('libraries/elfinderLibs/endpoints/lockedFilesEndpoint.php', {
             action: action,
             filepath: fileUrl
         }, function(response) {

@@ -59,7 +59,7 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/proxy/elFinderSupportVer1.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
-
+<script src="libraries/elfinderLibs/elfinderInit.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- elfinder initialization -->
 <?php echo ApplyElfinderCommandOverrides(); ?>
@@ -79,7 +79,6 @@ define('EF_ROOT', 'libraries/elfinder');
 </script>
 
 <!-- Element where elFinder will be created -->
- <!-- This would be the content of adminFileBrowser/module.php -->
 <div class="file-browser-container">
     <div id="elfinder"><center><h1>If you are seeing this, that means that your file browser is broken. Please reach out to your point of contact.</h1></center></div>
     

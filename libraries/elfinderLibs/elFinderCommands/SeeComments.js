@@ -30,7 +30,7 @@ elFinder.prototype.commands.seecm = function() {
                     close: function() { $(this).dialog('destroy').remove(); }
                 });
             
-            $.get('libraries/elfinderLibs/commentsEndpoint.php', {
+            $.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
                 action: 'fetch',
                 file_url: fileUrl
             }, function(response) {
@@ -81,7 +81,7 @@ elFinder.prototype.commands.seecm = function() {
                         var content = $('#seecm-new-comment').val().trim();
                         if (!content) return;
                         
-                        $.post('libraries/elfinderLibs/commentsEndpoint.php', {
+                        $.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
                             action: 'add',
                             file_url: fileUrl,
                             content: content

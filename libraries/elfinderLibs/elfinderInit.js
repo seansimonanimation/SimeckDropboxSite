@@ -5,7 +5,7 @@ $(function() {
 
 function populateLockCache(fm) {
     // Query all locked file info under /files/Projects/
-    $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+    $.post('libraries/elfinderLibs/endpoints/lockedFilesEndpoint.php', {
         action: 'query',
         directory: '/files/Projects'
     }, function(response) {
@@ -22,7 +22,7 @@ function populateLockCache(fm) {
     }, 'json');
 
     // Fetch client's override count
-    $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+    $.post('libraries/elfinderLibs/endpoints/lockedFilesEndpoint.php', {
         action: 'get_client_overrides'
     }, function(response) {
         if (response.success && typeof response.overrides !== 'undefined') {

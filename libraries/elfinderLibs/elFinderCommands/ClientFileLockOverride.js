@@ -36,7 +36,7 @@ elFinder.prototype.commands.clientlockoverride = function() {
             return $.Deferred().resolve();
         }
 
-        $.post('libraries/elfinderLibs/lockedFilesEndpoint.php', {
+        $.post('libraries/elfinderLibs/endpoints/lockedFilesEndpoint.php', {
             action: 'override',
             filepath: fileUrl
         }, function(response) {

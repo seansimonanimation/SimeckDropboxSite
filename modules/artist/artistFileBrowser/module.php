@@ -56,7 +56,7 @@ define('EF_ROOT', 'libraries/elfinder');
 
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
-<script src="libraries/elfinderLibs/elfinderCommandOverride.js"></script>
+<?php echo ApplyElfinderCommandOverrides(); ?>
 
 <script>
     $(function() {
@@ -75,4 +75,17 @@ define('EF_ROOT', 'libraries/elfinder');
 
 
 <!-- Element where elFinder will be created -->
-<div id="elfinder" style="height: 100%;"><center><h1>Please wait while your filebrowser is loading...</h1></center></div>
+<div class="file-browser-container">
+    <div id="elfinder"><center><h1>If you are seeing this, that means that your file browser is broken. Please reach out to your point of contact.</h1></center></div>
+    
+    <!-- Preview Pane - part of module content -->
+    <div id="preview-pane" class="preview-pane">
+        <div class="preview-header">
+            <h3>Preview</h3>
+            <button class="close-preview" id="close-preview">✕</button>
+        </div>
+        <div class="preview-content">
+            <p>Select a file to view details</p>
+        </div>
+    </div>
+</div>
