@@ -57,7 +57,7 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 <!-- elfinder initialization -->
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
-<script src="libraries/elfinderLibs/elfinderCommands.js"></script>
+<script src="libraries/elfinderLibs/elfinderCommandOverride.js"></script>
 
 <script>
 $(function() {

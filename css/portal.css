@@ -431,3 +431,82 @@ button:disabled {
     font-size: 12px;
     color: #e74c3c;
 }
+/* Add to portal.css for preview pane support in modules */
+
+/* File browser container with preview pane */
+.file-browser-container {
+    display: flex;
+    height: calc(100vh - var(--topbar-height));
+    position: relative;
+}
+
+#elfinder {
+    flex: 1;
+    /* This will take up the main part of the container */
+}
+
+.preview-pane {
+    width: 300px;
+    background: var(--color-bg-mid);
+    border-left: var(--glass-border);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--topbar-height));
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-heading);
+}
+
+.close-preview {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--color-text-dim);
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-preview:hover {
+    color: var(--color-text);
+}
+
+.preview-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.preview-content p {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Show preview pane only in specific modules */
+body.portal-layout .file-browser-container .preview-pane {
+    display: none; /* Hidden by default */
+}
+
+/* Show preview pane in specific modules */
+body.portal-layout.adminFileBrowser .file-browser-container .preview-pane,
+body.portal-layout.artistFileBrowser .file-browser-container .preview-pane,
+body.portal-layout.clientProjectManagement .file-browser-container .preview-pane {
+    display: flex; /* Show when in these modules */
+}

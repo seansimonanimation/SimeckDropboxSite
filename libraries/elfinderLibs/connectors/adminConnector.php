@@ -16,4 +16,3 @@ unset($root);
 
 $connector = new elFinderConnector(new elFinder($adminOptions));
 $connector->run();
-?>
