@@ -51,11 +51,13 @@ function loadElfinderJs($dir) {
 
 function LoadElfinderJSCommands() {
     $html = '';
-    $base = __ROOT__ . '/libraries/elfinderLibs/elfinderCommands/';
+    $base = '/libraries/elfinderLibs/elfinderCommands/';
     if (!is_dir($base)) return '';
+    //Hardcode in the shared lib so that it loads fist.
+    $html .= '<script src="' . $base . 'SharedCommands.js" type="text/javascript" charset="utf-8"></script>' . "\n";
     
     foreach (new DirectoryIterator($base) as $file) {
-        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js') continue;
+        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'SharedCommands.js') continue;
         // Convert filesystem path to web path
         $webPath = str_replace(__ROOT__, '', $file->getPathname());
         $webPath = str_replace('\\', '/', $webPath); // Windows backslashes → forward slashes
@@ -100,3 +102,11 @@ function ApplyElfinderCommandOverrides() {
     }
 }
 
+function GetLockedFilesForDirectory($directory) {
+    $directory = rtrim($directory, '/') . '/%';
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?'
+    );
+    $stmt->execute([$directory]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}

@@ -1,0 +1,180 @@
+Here is the complete list of **all properties and methods** directly on the `fm` (elFinder instance) object, extracted from the actual source code at `libraries/elfinder/js/elFinder.js`:
+
+---
+
+## Properties (data)
+
+```
+fm.api             — Protocol version number (null → "2.0" → "2.1")
+fm.newAPI          — Boolean, true if api >= 2
+fm.oldAPI          — Boolean, inverse of newAPI
+fm.id              — String, instance ID (e.g. "elfinder-1")
+fm.baseUrl         — String, base URL of elFinder library
+fm.i18nBaseUrl     — String, base URL of i18n JS files
+fm.workerBaseUrl   — String, base URL of worker JS files
+fm.cssloaded       — Boolean/null, whether CSS is loaded
+fm.theme           — Object|null, current theme object
+fm.bootCallback    — Function, callback at boot up
+fm.reloadCallback  — Function, callback at reload
+fm.storage         — Function, localStorage or cookie wrapper
+fm.options         — Object, all config options passed at init
+fm.toUnbindEvents  — Object, tracks events to unbind
+fm.netDrivers      — Array, network driver names
+fm.mimesCanMakeEmpty — Object
+fm.volOptions       — Object, volume-specific options (set during init)
+fm.customData      — Object, custom data merged from options + server
+fm.optsCustomData  — Object, custom data from options only
+fm.prevCustomData  — Object, previous custom data snapshot
+fm.hasVolOptions   — Boolean, whether volume options exist
+fm.currentReqCmd   — String, current request command name
+fm.commandMap      — Object, UI command mapping
+fm.sorters         — Object, sorting configuration
+fm.isCORS          — Boolean, CORS mode
+fm.uplMaxSize      — Number, max upload size in bytes
+fm.uplMaxFile      — Number, max files per upload
+fm.syncStopper     — Boolean
+fm.maxTargets      — Number, max targets for operations
+fm.hashCheckers    — Array, hash algorithm checkers
+fm.lang            — String, current language code
+fm.i18             — Object, i18n translations
+fm.messages        — Object, i18n message strings
+fm.direction       — String, "ltr" or "rtl"
+fm.dateFormat      — String, date format string
+fm.fancyFormat     — String, fancy date format
+fm.nonameDateFormat — String, date format for "no name" files
+fm.cssClass        — String, CSS class string for root element
+fm.draggable       — Object, draggable options
+fm.draggingUiHelper — Object|null, current drag helper
+fm.autoScroll      — Object, auto-scroll functions
+fm.ui              — Object, UI component references
+fm.zIndex          — Number, z-index value
+fm.textMimes       — Object, text MIME types
+fm.OS              — String, "mac" or other
+fm.UA              — Object, user agent detection (Mobile, Touch, Angle, Rotated, etc.)
+fm.res             — Function, resource getter
+fm.theme           — Object|null, current theme
+fm.keyState        — Object, current keyboard state { keyCode, ctrlKey, shiftKey, metaKey, altKey }
+fm.cache           — Object! General-purpose custom cache (populated by your project with lockedPaths, clientOverrides)
+```
+
+---
+
+## Methods
+
+### Event System
+```
+fm.bind(event, callback, priorityFirst)       — Attach event listener
+fm.unbind(event, callback)                     — Remove event listener
+fm.trigger(event, data, allowModify)           — Fire event
+fm.getListeners(event)                         — Get registered listeners
+fm.pauseUnloadCheck(state, keep)              — Pause/resume unload check
+```
+
+### File Operations
+```
+fm.exec(command, args)                         — Execute any command by name
+fm.selectedFiles()                             — Get array of selected file objects
+fm.url(hash)                                   — Convert hash to URL path
+fm.getFile(hash)                               — Get jQuery DOM node for file
+fm.file(hash)                                  — Get single file object by hash
+fm.files()                                     — Get all files in current dir
+fm.cwd()                                       — Get current working directory file obj
+fm.reload()                                    — Refresh current directory
+fm.upload(files)                               — Upload files
+fm.download(hashes)                            — Download files
+fm.open(hash)                                  — Open directory
+fm.getContents(hash)                           — Read file contents
+fm.putContents(hash, content)                  — Write file contents
+fm.cut(hashes)                                 — Cut files
+fm.copy(hashes)                                — Copy files
+fm.paste(dstHash)                              — Paste clipboard
+fm.rm(hashes)                                  — Delete files
+fm.rename(hash, name)                          — Rename file
+fm.mkdir(name, dirHash)                        — Create directory
+fm.mkfile(name, dirHash)                       — Create empty file
+fm.selectFiles(hashes)                         — Select specific files
+fm.selectAll()                                 — Select all files
+fm.unselectAll()                               — Deselect all files
+fm.clipboard(hashes)                           — Get/set clipboard contents
+fm.escape(str)                                 — HTML-escape a string
+fm.error(msg)                                  — Show error notification
+fm.resize()                                    — Recalculate layout
+fm.getUI(key)                                  — Get UI element (e.g. 'workzone', 'navbar', 'cwd')
+fm.loadCss(urls)                               — Load CSS files
+fm.returnBytes(str)                            — Convert size string to bytes
+fm.isRoot(hash/file)                           — Check if is root directory
+fm.isLocked(hash/file)                         — Check elFinder's internal lock
+fm.enable()                                    — Enable commands
+fm.disable()                                   — Disable commands
+fm.getColumnName(key)                          — Get column header name
+fm.toggleFullscreen(target, full)              — Toggle fullscreen
+fm.toggleMaximize(target, max)                 — Toggle maximize
+fm.getContentsHashes(target, needHashes, hashOpts, requestOpts) — Get content hashes
+fm.i18n(key)                                   — Translate a key
+fm.debug(type, data)                           — Debug logging
+fm.toHide(element)                             — Hide element
+fm.autoSync()                                  — Start auto-sync
+```
+
+---
+
+## Sub-objects of particular interest
+
+### `fm.options`
+Passed from the PHP side. In your project it includes (based on usage):
+```
+fm.options.role          — 'admin' | 'artist' | 'client'
+fm.options.baseUrl       — base path
+fm.options.uiOptions     — toolbar, context menu config
+fm.options.themes        — theme definitions
+fm.options.theme         — current theme name
+fm.options.disabled      — disabled commands array
+fm.options.contextItems  — context menu items (if set)
+```
+Plus all other standard elFinder options.
+
+### `fm.cache` (YOUR custom data)
+This is `{}` by default and **you** populate it. In this project:
+```
+fm.cache.lockedPaths     — { '/files/...': { assetlock: bool, commentlock: bool }, ... }
+fm.cache.clientOverrides — Number (remaining overrides)
+```
+You can add anything you want here.
+
+### `fm.UA`
+```
+fm.UA.Mobile    — Boolean
+fm.UA.Touch     — Boolean
+fm.UA.Safari    — Boolean
+fm.UA.Angle     — Number (device orientation)
+fm.UA.Rotated   — Boolean
+```
+
+### `fm.ui` — References to UI components
+```
+fm.ui.cwd        — Current working directory element
+fm.ui.navbar     — Navigation tree element
+fm.ui.workzone   — Main workzone container
+fm.ui.toolbar    — Toolbar element
+fm.ui.stat       — Status bar element
+```
+
+### File object properties (from `fm.selectedFiles()[0]`)
+```
+hash       — unique identifier
+name       — filename
+mime       — MIME type
+size       — size in bytes
+date       — Unix timestamp
+read       — 1 or 0
+write      — 1 or 0
+locked     — 1 or 0 (elFinder's internal lock)
+phash      — parent directory hash
+volumeid   — volume identifier
+tmb        — thumbnail reference
+path       — full path (if configured)
+dirs       — number of subdirectories (for folders)
+```
+---
+
+That's the full inventory of what's available on `fm`, organized by category. Every one of those properties and methods can be accessed from inside your custom command files via `this.fm`.
