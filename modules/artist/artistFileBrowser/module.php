@@ -15,61 +15,58 @@ include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
 // Absolute root-relative path to elFinder
 define('EF_ROOT', 'libraries/elfinder');
+
+// Helper to load a glob of CSS files
 ?>
 <!-- elFinder CSS and addon theme -->
 <?php echo loadElfinderCss(EF_ROOT . '/css'); ?>
 <link href="css/portal.css" rel="stylesheet">
 <link href="css/elfinderThemes/simeck-responsive/theme.css" rel="stylesheet">
 <link href="css/comments.css" rel="stylesheet">
-
 <!-- jQuery and jQuery UI (REQUIRED) -->
 <script src="https://code.jquery.com/jquery-4.0.0.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="https://code.jquery.com/ui/1.14.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
-
 <!-- elfinder core (load in specific order) -->
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.version.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
-<script src="modules/artist/artistFileBrowser/elfinderOptionOverride.js"></script>
+<script src="libraries/elfinderLibs/opt/<?php echo $_SESSION['tempRole'];?>ElfinderOptions.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.command.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.resources.js"></script>
-
 <!-- elfinder dialog -->
 <script src="<?php echo EF_ROOT; ?>/js/jquery.dialogelfinder.js"></script>
-
 <!-- elfinder default lang -->
 <script src="<?php echo EF_ROOT; ?>/js/i18n/elfinder.en.js"></script>
-
 <!-- elfinder ui -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
-
-<!-- elfinder commands -->
+<!-- elFinder override commands and new commands go here -->
+<?php echo LoadElfinderJSCommands(); ?>
+<!-- elfinder stock commands -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
-
 <!-- elfinder extras & proxy -->
 <script src="<?php echo EF_ROOT; ?>/js/proxy/elFinderSupportVer1.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
-
 <!-- elfinder initialization -->
-<script src="libraries/elfinderLibs/elfinderInit.js"></script>
+ <script> var elfinderRole = <?php echo json_encode($_SESSION['tempRole']);?>;</script>
 <?php echo ApplyElfinderCommandOverrides(); ?>
-
+<script src="libraries/elfinderLibs/elfinderInit.js"></script>
 <script>
-    $(function() {
+$(function() {
         $('#elfinder').elfinder({
-            cssAutoLoad: false,
-            baseUrl: 'libraries/elfinder/',
-            url: 'modules/artist/artistFileBrowser/artistConnector.php',
-            height: $(window).height() - $('#elfinder').offset().top,
-            role: 'artist',
+        cssAutoLoad: false,
+        baseUrl: 'libraries/elfinder/',
+        url: `libraries/elfinderLibs/connectors/simeckConnector.php`,
+        height: $(window).height() - $('#elfinder').offset().top,
+        width: $(window).width()*0.7,
+        role: elfinderRole,
         });
         
         $(window).on('resize', resizeElfinder);
-    });
+});
 </script>
 
 

@@ -34,7 +34,7 @@ elFinder.prototype.commands.clientLockOverride = function() {
         if (!confirm('Use one lock override (' + OverrideCount + ' remaining) to unlock comments on "' + files[0].name + '"?')) {
             return $.Deferred().resolve();
         }
-        $.post('libraries/elfinderLibs/endpoints/ClientLockOverrideEndpoint.php', {
+        $.post('libraries/elfinderLibs/endpoints/ClientUseOverrideTokenEndpoint.php', {
             filepath: fm.url(files[0].hash)
         }, function(response) {
             if (response.success) {

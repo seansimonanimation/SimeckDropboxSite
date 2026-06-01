@@ -1,8 +1,8 @@
 /**
- * @commandID seecm
+ * @commandID seeComments
  * @nicename See Comments
  */
-elFinder.prototype.commands.seecm = function() {
+elFinder.prototype.commands.seeComments = function() {
     this.contextmenu = true;
 
     this.init = function(){

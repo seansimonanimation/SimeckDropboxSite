@@ -14,12 +14,12 @@ include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
 $GLOBALS['db'] = DBConnect();
 header('Content-Type: application/json');
-$filePath = $_REQUEST['filepath'] ?? '';
-if(!$filePath) {
+$filepath = $_REQUEST['filepath'] ?? '';
+if(!$filepath) {
     echo json_encode(['success' => false, 'error' => 'No filepath provided']);
     exit;
 }
-$sqlQueryString = "SELECT lockid, filepath, locktime,assetlock, commentlock FROM lockedfiles WHERE filepath = ?";
+$SQLQueryString = "SELECT lockid, filepath, locktime,assetlock, commentlock FROM lockedfiles WHERE filepath = ?";
 $stmt1 = $GLOBALS['db']->prepare($SQLQueryString);
 $stmt1 -> execute([$filepath]);
 $existing = $stmt1->fetch(PDO::FETCH_ASSOC);

@@ -10,35 +10,19 @@
 
 
 //CURRENTLY WORKING ON THIS.
-elFinder.prototype.commands.LockFile = function() {
+elFinder.prototype.commands.lockFile = function() {
 
     //Sets this as a context menu item.
-    if(role === 'admin'){this.contextmenu = true;} else {this.contextmenu = false;}
-    this.contextMenu = OverrideCount > 0;
+    if(elfinderRole === 'admin'){this.contextmenu = true;} else {this.contextmenu = false;}
     
     this.init = function(){
-        var role = this.fm.options.role || '';
-        var fm = this.fm;
-        var files = fm.selectedFiles();
-        if (files.length === 1) {
-            var url = fm.url(files[0].hash);
-            var hash = files[0].hash;
-            var $node = fm.getFile(hash);
-            var filepath = url;
-            this.title = fm.cache?.['lockedPaths']?.[filepath] ? '' : 'Lock File';
-        } else {            
-            var url, hash, node, filepath = '';
-            this.title = '';
-        }
+        this.title = 'Lock File';
     };
-
-    if(url === ''){return;}
 
     this.exec = function(){
         var fm = this.fm;
-        var files = fm.selectedFiles;
-        $.post('/libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
-            filepath: fm.selectedFiles[0].filepath
+        $.post('libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
+            filepath: fm.url(fm.selectedFiles()[0].hash)
         }, function(response){
             if (response.success) {
                 fm.exec('reload');
@@ -47,6 +31,18 @@ elFinder.prototype.commands.LockFile = function() {
             }
             return $.Deferred().resolve();
         });
-
     };
+    this.getstate = function() {
+        var fm = this.fm;
+        var sel = fm.selectedFiles();
+        if (sel.length !== 1) return -1;
+        var role = fm.options.role || '';
+        if (role !== 'admin' && role !== 'artist') return -1;
+        var url = fm.url(sel[0].hash);
+        if (fm.cache?.lockedPaths?.[url]) return -1;
+        return 0;
+    };
+
+
+
 }

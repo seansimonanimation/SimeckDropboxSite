@@ -7,7 +7,6 @@
 // Load sub-modules
 require_once __DIR__ . '/volumeConfig.php';
 require_once __DIR__ . '/lockHelpers.php';
-
 function ConnectorSetup(){
     require_once __ROOT__ . '/libraries/elfinder/php/autoload.php';
 }
@@ -51,12 +50,14 @@ function loadElfinderJs($dir) {
 
 function LoadElfinderJSCommands() {
     $html = '';
-    $base = '/libraries/elfinderLibs/elfinderCommands/';
-    if (!is_dir($base)) return '';
+    $webBase = '/libraries/elfinderLibs/elfinderCommands/';
+    $fsBase = __ROOT__ . $webBase;
+
+    if (!is_dir($fsBase)) return '';
     //Hardcode in the shared lib so that it loads fist.
-    $html .= '<script src="' . $base . 'SharedCommands.js" type="text/javascript" charset="utf-8"></script>' . "\n";
+    $html .= '<script src="' . $webBase . 'SharedCommands.js" type="text/javascript" charset="utf-8"></script>' . "\n";
     
-    foreach (new DirectoryIterator($base) as $file) {
+    foreach (new DirectoryIterator($fsBase) as $file) {
         if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'SharedCommands.js') continue;
         // Convert filesystem path to web path
         $webPath = str_replace(__ROOT__, '', $file->getPathname());
@@ -102,11 +103,4 @@ function ApplyElfinderCommandOverrides() {
     }
 }
 
-function GetLockedFilesForDirectory($directory) {
-    $directory = rtrim($directory, '/') . '/%';
-    $stmt = $GLOBALS['db']->prepare(
-        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?'
-    );
-    $stmt->execute([$directory]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+

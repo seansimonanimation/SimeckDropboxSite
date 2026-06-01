@@ -1,6 +1,5 @@
 $(function() {
-    // Also call resizeElfinder on initial load
-    resizeElfinder();
+        resizeElfinder();
 });
 
 function populateLockCache(fm) {
