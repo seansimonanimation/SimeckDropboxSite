@@ -4,20 +4,109 @@
  */
 elFinder.prototype.commands.rm = function() {
     this.contextmenu = true;
-    // Copy the original command structure
+    
     this.init = function() {
-        // Set title, etc.
         this.title = 'Delete';
     };
     
     this.getstate = function() {
-        // Return 0 to enable, -1 to disable
+        // Enable only if there are selected files/folders
         return this.fm.selectedFiles().length ? 0 : -1;
     };
     
     this.exec = function() {
-        // Your custom logic
-        alert("Hello, world!");
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        
+        if (files.length === 0) {
+            fm.error('No files selected.');
+            return $.Deferred().resolve();
+        }
+        
+        // Build list of names for confirmation dialog
+        var names = [];
+        var hasFolders = false;
+        $.each(files, function(i, file) {
+            names.push(file.name);
+            if (file.mime === 'directory') {
+                hasFolders = true;
+            }
+        });
+        
+        // Build confirmation message
+        var message = 'Delete ' + files.length + ' item(s)?\n\n';
+        message += names.join('\n');
+        if (hasFolders) {
+            message += '\n\nWARNING: Folders will be deleted recursively, including all contents, comments, and locks.';
+        }
+        
+        if (!confirm(message)) {
+            return $.Deferred().resolve();
+        }
+        
+        // Build array of file URLs (root-relative paths)
+        var paths = [];
+        $.each(files, function(i, file) {
+            paths.push(fm.url(file.hash));
+        });
+        
+        // Show loading indicator
+        fm.notify({
+            type: 'rm',
+            cnt: files.length,
+            hideCnt: true
+        });
+        
+        // POST to the rm override endpoint
+        $.post('libraries/elfinderLibs/endpoints/RmOverrideEndpoint.php', {
+            paths: paths
+        }, function(response) {
+            fm.notify({
+                type: 'rm',
+                cnt: -files.length
+            });
+            
+            if (response.success) {
+                // Reload the current directory to reflect changes
+                // Remove the beforeunload handler to bypass the "unsaved changes" prompt
+                window.onbeforeunload = null;
+                $(window).off('beforeunload');  // In case it was attached via jQuery
+                location.reload();
+
+
+                
+                // Show success message
+                var deletedCount = response.deleted ? response.deleted.length : 0;
+                fm.toast({
+                    msg: deletedCount + ' item(s) deleted successfully.',
+                    mode: 'success',
+                    time: 3000
+                });
+            } else {
+                // Show errors
+                if (response.errors && response.errors.length > 0) {
+                    fm.error(response.errors.join('\n'));
+                } else {
+                    fm.error(response.error || 'Delete operation failed.');
+                }
+                
+                // Still reload in case partial success
+                if (response.deleted && response.deleted.length > 0) {
+                    // Remove the beforeunload handler to bypass the "unsaved changes" prompt
+                    window.onbeforeunload = null;
+                    $(window).off('beforeunload');  // In case it was attached via jQuery
+                    location.reload();
+
+                }
+            }
+        }, 'json').fail(function(xhr, status, error) {
+            fm.notify({
+                type: 'rm',
+                cnt: -files.length
+            });
+            fm.error('Server error during delete: ' + error);
+        });
+        
         return $.Deferred().resolve();
     };
 };

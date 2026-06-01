@@ -282,7 +282,7 @@ elFinder.prototype._options = {
 	 *
 	 * @type Array
 	 */
-commands : ['*', 'seeComments', 'lockFile', 'rm', 'sendToMondayChat', 'sendToThursdayChat'],
+commands : ['*', 'seeComments', 'lockFile', 'rm', 'sendToMondayChat', 'sendToThursdayChat', 'mv'],
 	// Available commands list
 	//commands : [
 	//	'archive', 'back', 'chmod', 'colwidth', 'copy', 'cut', 'download', 'duplicate', 'edit', 'extract',
@@ -1310,7 +1310,7 @@ commands : ['*', 'seeComments', 'lockFile', 'rm', 'sendToMondayChat', 'sendToThu
 		// current directory menu
 		cwd    : ['undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'mkfile', 'paste', '|', 'empty', 'hide', '|', 'view', 'sort', 'selectall', 'colwidth', '|', 'places', 'info', 'chmod', 'netunmount', '|', 'fullscreen', '|', 'preference'],
 		// current directory file menu
-		files  : ['seeComments' , '|' ,'sendToMondayChat', 'sendToThursdayChat',  'lockFile' ,'|' , 'getfile', '|' ,'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', 'edit', 'resize', '|', 'archive', 'extract', '|', 'selectall', 'selectinvert', '|', 'places', 'info', 'chmod', 'netunmount']
+		files  : ['seeComments' , '|' ,'sendToMondayChat', 'sendToThursdayChat',  'lockFile' ,'|' , 'getfile', '|' ,'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', '|' , 'mv' , 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', 'edit', 'resize', '|', 'archive', 'extract', '|', 'selectall', 'selectinvert', '|', 'places', 'info', 'chmod', 'netunmount']
 	},
 
 	/**
