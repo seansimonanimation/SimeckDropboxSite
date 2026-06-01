@@ -20,7 +20,7 @@ if (!$requestDir) {
     $requestDir = '/files/Projects';
 }
 
-$SQLQuery = 'SELECT filepath, assetLock, commentLock FROM lockedfiles WHERE filepath LIKE ?';
+$SQLQuery = 'SELECT filepath, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?';
 $stmt = $GLOBALS['db']->prepare($SQLQuery);
 $stmt->execute([rtrim($requestDir, '/') . '/%']);
 $lockedFiles = $stmt->fetchAll(PDO::FETCH_ASSOC);

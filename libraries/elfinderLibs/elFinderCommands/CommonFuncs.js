@@ -1,6 +1,5 @@
 
 
-this.prototype.commands.CommonFuncs = function() {
 
     this.GetAllLockedFilesInProjects = function() {
         var fm = this.fm;
@@ -31,4 +30,4 @@ this.prototype.commands.CommonFuncs = function() {
         }
         return false;
     };
-};
+

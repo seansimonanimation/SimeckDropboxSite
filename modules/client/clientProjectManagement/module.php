@@ -52,6 +52,7 @@ define('EF_ROOT', 'libraries/elfinder');
 
 <!-- elfinder initialization -->
  <script> var elfinderRole = <?php echo json_encode($_SESSION['tempRole']);?>;</script>
+ <script> var clientOverrides = <?php echo json_encode($_SESSION['lock_overrides']);?>;</script>
  <script src="libraries/elfinderLibs/elfinderInit.js"></script>
 <?php echo ApplyElfinderCommandOverrides(); ?>
 <script>
@@ -64,7 +65,9 @@ $(function() {
         width: $(window).width()*0.7,
         role: elfinderRole,
         });
-        
+        fm = $('#elfinder').elfinder('instance');
+        fm.cache.clientOverrides = clientOverrides;
+        populateLockCache(fm);
         $(window).on('resize', resizeElfinder);
 });
 </script>

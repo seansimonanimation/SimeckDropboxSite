@@ -55,10 +55,10 @@ function LoadElfinderJSCommands() {
 
     if (!is_dir($fsBase)) return '';
     //Hardcode in the shared lib so that it loads fist.
-    $html .= '<script src="' . $webBase . 'SharedCommands.js" type="text/javascript" charset="utf-8"></script>' . "\n";
+    $html .= '<script src="' . $webBase . 'CommonFuncs.js" type="text/javascript" charset="utf-8"></script>' . "\n";
     
     foreach (new DirectoryIterator($fsBase) as $file) {
-        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'SharedCommands.js') continue;
+        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'CommonFuncs.js') continue;
         // Convert filesystem path to web path
         $webPath = str_replace(__ROOT__, '', $file->getPathname());
         $webPath = str_replace('\\', '/', $webPath); // Windows backslashes → forward slashes

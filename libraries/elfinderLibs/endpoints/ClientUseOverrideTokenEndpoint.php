@@ -26,7 +26,7 @@ if ($lockOverridesAvailable <= 0) {
     echo json_encode(['success' => false, 'error' => 'No lock overrides available']);
     exit;
 }
-$SQLUserString = "UPDATE lock_overrides = ? WHERE username = ?";
+$SQLUserString = "UPDATE clients SET lock_overrides = ? WHERE username = ?";
 $stmt1 = $GLOBALS['db']->prepare($SQLUserString);
 $stmt1->execute([$lockOverridesAvailable - 1, $_SESSION['username'] ?? '']);
 

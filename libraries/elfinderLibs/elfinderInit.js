@@ -9,8 +9,8 @@ function populateLockCache(fm) {
         fm.cache.lockedPaths = {};
         response.lockedFiles.forEach(function(lock) {
             fm.cache.lockedPaths[lock.filepath] = {
-                assetlock: lock.assetLock,
-                commentlock: lock.commentLock
+                assetlock: lock.assetlock,
+                commentlock: lock.commentlock
             };
         });
     }, 'json');

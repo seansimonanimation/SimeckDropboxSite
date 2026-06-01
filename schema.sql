@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `clientdocuments` (
   KEY `uploadID` (`uploadID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clientdocuments: ~0 rows (approximately)
+-- Dumping data for table simeckdb.clientdocuments: ~1 rows (approximately)
 INSERT IGNORE INTO `clientdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
 
@@ -87,9 +87,9 @@ CREATE TABLE IF NOT EXISTS `clients` (
 
 -- Dumping data for table simeckdb.clients: ~3 rows (approximately)
 INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`, `theme`, `lock_overrides`, `timezone`) VALUES
-	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 0, 'UTC'),
+	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 10, 'UTC'),
 	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC'),
-	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', NULL, 'UTC');
+	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC');
 
 -- Dumping structure for table simeckdb.filecomments
 CREATE TABLE IF NOT EXISTS `filecomments` (
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS `filecomments` (
   `comment_content` longtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.filecomments: ~22 rows (approximately)
+-- Dumping data for table simeckdb.filecomments: ~26 rows (approximately)
 INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `comment_order`, `comment_content`) VALUES
 	('client', '2026-05-24 15:02:51', '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', 1, 'It\'s Simeck\'s logo.'),
 	('admin', '2026-05-25 17:02:25', '/files/Projects/clientProjects/C01_SetSail', 1, 'Test Comment!'),
@@ -125,7 +125,10 @@ INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `
 	('client', '2026-05-27 15:22:05', '/files/Projects/clientProjects/C01_SetSail//clientUpload/simeck-logopng.png', 3, 'asd'),
 	('admin', '2026-05-27 15:51:34', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 1, 'Comment!'),
 	('admin', '2026-05-29 11:40:39', '/files/Dropboxes/User%2C%20Admin/new/IMG_20240820_175126467.jpg', 1, 'It\'s Butters!'),
-	('admin', '2026-05-29 12:20:39', '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', 1, 'Kitty!');
+	('admin', '2026-05-29 12:20:39', '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', 1, 'Kitty!'),
+	('admin', '2026-06-01 11:31:58', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 2, 'Comment!'),
+	('admin', '2026-06-01 11:32:00', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 3, 'Comment!'),
+	('admin', '2026-06-01 11:33:49', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 4, 'derp!');
 
 -- Dumping structure for table simeckdb.lockedfiles
 CREATE TABLE IF NOT EXISTS `lockedfiles` (
@@ -135,12 +138,13 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   `assetlock` int DEFAULT '1',
   `commentlock` int DEFAULT '1',
   KEY `lockid` (`lockid`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.lockedfiles: ~2 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1),
-	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1);
+	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1),
+	(12, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', '2026-06-01 11:31:31', 1, 1);
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
