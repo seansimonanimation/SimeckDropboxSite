@@ -87,7 +87,7 @@ elFinder.prototype.commands.seeComments = function() {
                             content: content
                         }, function(addResponse) {
                             if (addResponse.success) {
-                                fm.exec('seecm');
+                                fm.exec('seeComments');
                             } else {
                                 alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
                             }
