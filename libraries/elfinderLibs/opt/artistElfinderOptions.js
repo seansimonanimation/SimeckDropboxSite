@@ -1310,7 +1310,7 @@ elFinder.prototype._options = {
 		// current directory menu
 		cwd    : ['undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort', 'selectall', '|',],
 		// current directory file menu
-		files  : ['seecm' , '|' ,'sendToMondayChat', 'sendToThursdayChat',  '|' ,'getfile', '|' ,'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'mv' , '|', 'rm', 'empty', '|', 'rename', 'edit', '|', 'archive', 'extract', '|']
+		files  : ['seeComments' , '|' ,'sendToMondayChat', 'sendToThursdayChat',  '|' ,'getfile', '|' ,'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'mv' , '|', 'rm', 'empty', '|', 'rename', 'edit', '|', 'archive', 'extract', '|']
 	},
 
 	/**
