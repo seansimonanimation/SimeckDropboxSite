@@ -23,14 +23,7 @@ function IsFileLocked($filepath) {
  * @param string $directory  Root-relative dir, e.g. "/files/Projects/internal/P01_C City/"
  * @return array  Array of lock rows (lockid, filepath, locktime, assetlock, commentlock).
  */
-function GetLockedFilesForDirectory($directory) {
-    $directory = rtrim($directory, '/') . '/%';
-    $stmt = $GLOBALS['db']->prepare(
-        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?'
-    );
-    $stmt->execute([$directory]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+
 
 /**
  * Get a client's available lock overrides.
@@ -139,4 +132,20 @@ function lockAccessControl($attr, $path, $data, $volume, $isDir, $relpath) {
         }
     }
     return null;
+}
+function GetLockedFilesForDirectoryRecursively($directory) {
+    $directory = rtrim($directory, '/') . '/%';
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ?'
+    );
+    $stmt->execute([$directory]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function GetLockedFilesForDirectory($directory) {
+    $directory = rtrim($directory, '/') . '/%';
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT lockid, filepath, locktime, assetlock, commentlock FROM lockedfiles WHERE filepath LIKE ? AND filepath NOT LIKE ?'
+    );
+    $stmt->execute([$directory, $directory . '%/%']);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

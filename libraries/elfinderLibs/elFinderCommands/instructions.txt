@@ -1,0 +1,32 @@
+Here's the basic structure for your new command file.
+
+/**
+ * @commandID system name
+ * @nicename nicename
+ */
+elFinder.prototype.commands.mv = function() {
+    this.contextmenu = true;
+
+        this.init = function() {
+        this.title = 'What shows up in the context menu.';
+    };
+
+    this.exec = function() {
+
+    }
+
+    this.getstate = function() {
+        return this.fm.selectedFiles().length ? 0 : -1;
+    };
+}
+
+
+In all relevant connector options files, you need to include your commandID at commands:, around line 285 as of the time of writing.
+Additionally, you will need to include the commandID in the appropriate contextmenu: sections, around line 1310 at the time of writing.
+
+Any time you need to interact with the DB, you must first check with existing endpoints to see if it'll do what you need it to do.
+If none of them do, you'll need to make a new endpoint.
+Just remember that DB access is done with AJAX calls, which are async. Use them only if you absolutely have to, and then run
+SimeckRefresh(); to refresh the page.
+
+If you need to access session info, you can find it in fm.simeckSession (js) or $_SESSION (php).

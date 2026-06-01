@@ -28,6 +28,7 @@ function PutClientDataInSession($clientData){
     $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['timezone'] = $clientData['timezone'] ?? 'UTC';
     $_SESSION['role'] = 'client';
+    $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['theme'] = $clientData['theme'] ?? 'dark-boo';
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
@@ -103,6 +104,7 @@ function ImpersonateClient($clientData){
     $_SESSION['lastname']      = $clientData['lastname'];
     $_SESSION['project_assignments'] = $clientData['project_assignments'];
     $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
+    $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
 }
@@ -122,6 +124,7 @@ function StopImpersonating(){
     unset($_SESSION['_imp_orig_userID']);
     unset($_SESSION['impersonating']);
     unset($_SESSION['clientProjects']);
+    unset($_SESSION['lock_overrides']);
 
     $_SESSION['tempRole'] = 'admin';
 }

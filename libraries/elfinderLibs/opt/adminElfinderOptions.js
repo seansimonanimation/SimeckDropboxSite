@@ -282,8 +282,7 @@ elFinder.prototype._options = {
 	 *
 	 * @type Array
 	 */
-	commands : ['*', 'seecm', 'clientlockoverride'],
-
+commands : ['*', 'seeComments', 'lockFile', 'rm', 'sendToMondayChat', 'sendToThursdayChat', 'mv'],
 	// Available commands list
 	//commands : [
 	//	'archive', 'back', 'chmod', 'colwidth', 'copy', 'cut', 'download', 'duplicate', 'edit', 'extract',
@@ -575,7 +574,7 @@ elFinder.prototype._options = {
 		search : {
 			// Incremental search from the current view
 			incsearch : {
-				enable : false, // is enable true or false
+				enable : true, // is enable true or false
 				minlen : 1,    // minimum number of characters
 				wait   : 500   // wait milliseconds
 			},
@@ -819,11 +818,11 @@ elFinder.prototype._options = {
 			['duplicate', 'rename', 'edit', 'resize', 'chmod'],
 			['selectall', 'selectnone', 'selectinvert'],
 			['quicklook', 'info'],
-			/*['extract', 'archive'],
+			['extract', 'archive'],
 			['search'],
 			['view', 'sort'],
 			['preference', 'help'],
-			['fullscreen']*/
+			['fullscreen']
 		],
 		// toolbar extra options
 		toolbarExtra : {
@@ -834,12 +833,12 @@ elFinder.prototype._options = {
 			// auto hide on initial open
 			autoHideUA: ['Mobile'],
 			// Initial setting value of hide button in toolbar setting
-			defaultHides: ['home', 'reload', 'fullscreen'],
+			defaultHides: ['home', 'reload'],
 			// show Preference button ('none', 'auto', 'always')
 			// If you do not include 'preference' in the context menu you should specify 'auto' or 'always'
 			showPreferenceButton: 'none',
 			// show Preference button into contextmenu of the toolbar (true / false)
-			preferenceInContextmenu: false
+			preferenceInContextmenu: true
 		},
 		// directories tree options
 		tree : {
@@ -1307,11 +1306,11 @@ elFinder.prototype._options = {
 	 */
 	contextmenu : {
 		// navbarfolder menu
-		navbar : ['open', 'opennew', 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', '|', 'rename', '|', '|','info'],
+		navbar : ['open', 'opennew', 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', '|', 'archive', '|', 'places', 'info', 'chmod', 'netunmount'],
 		// current directory menu
-		cwd    : ['undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort', 'selectall', '|','info'],
+		cwd    : ['undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'mkfile', 'paste', '|', 'empty', 'hide', '|', 'view', 'sort', 'selectall', 'colwidth', '|', 'places', 'info', 'chmod', 'netunmount', '|', 'fullscreen', '|', 'preference'],
 		// current directory file menu
-		files  : ['seecm', 'clientlockoverride', '|' , 'getfile', '|' ,'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste','|', 'rename', '|', 'selectall', 'selectinvert', '|','info']
+		files  : ['seeComments' , '|' ,'sendToMondayChat', 'sendToThursdayChat',  'lockFile' ,'|' , 'getfile', '|' ,'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', '|' , 'mv' , 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', 'edit', 'resize', '|', 'archive', 'extract', '|', 'selectall', 'selectinvert', '|', 'places', 'info', 'chmod', 'netunmount']
 	},
 
 	/**
@@ -1371,5 +1370,5 @@ elFinder.prototype._options = {
 	/**
 	 * Whether renaming root folders is enabled. If true, the alias for the root folder is stored as a preference for the user.
 	 */
-	enableRootRename : false,
+	enableRootRename : true,
 };

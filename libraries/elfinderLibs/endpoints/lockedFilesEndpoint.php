@@ -6,7 +6,7 @@
  * Actions:
  *   query  – Get locked files under a directory
  *   lock   – Lock a file (admin/artist only)
- *   unlock – Unlock a file (admin/artist only)
+ *   Override – Client override of comment lock (client only)
  *   check  – Check lock status of a single file
  */
 
@@ -14,30 +14,32 @@ define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
+include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
 $GLOBALS['db'] = DBConnect();
 
 header('Content-Type: application/json');
 
 $action = $_REQUEST['action'] ?? '';
 
-switch ($action) {
+switch ($action) { //action is what brings us to this endpoint.
 
     case 'query':
+        //Safety check against directories.
         $directory = $_POST['directory'] ?? '';
         if (!$directory) {
-            echo json_encode(['success' => false, 'error' => 'No directory provided']);
+            echo json_encode(['success' => false, 'error' => 'You can\'t lock directories!']);
             exit;
         }
-        $locked = GetLockedFilesForDirectory($directory);
+        $locked = GetLockedFilesForDirectoryRecursively($directory);
         // Return full lock info
         echo json_encode(['success' => true, 'locked' => $locked]);
         break;
 
 
     case 'lock':
-        // Only admins and artists can lock
+        // Only admins can lock
         $role = $_SESSION['role'] ?? '';
-        if (!in_array($role, ['admin', 'artist'])) {
+        if (!in_array($role, ['admin'])) {
             echo json_encode(['success' => false, 'error' => 'Permission denied']);
             exit;
         }
