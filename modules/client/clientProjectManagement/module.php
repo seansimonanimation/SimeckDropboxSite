@@ -42,9 +42,10 @@ define('EF_ROOT', 'libraries/elfinder');
 <!-- elfinder ui -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
 <!-- elFinder override commands and new commands go here -->
-<?php echo LoadElfinderJSCommands(); ?>
+<?php echo ApplyElfinderCommandOverrides(); ?>
 <!-- elfinder stock commands -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
+<?php echo LoadElfinderJSCommands(); ?>
 <!-- elfinder extras & proxy -->
 <script src="<?php echo EF_ROOT; ?>/js/proxy/elFinderSupportVer1.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>

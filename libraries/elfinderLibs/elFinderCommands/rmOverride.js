@@ -3,6 +3,7 @@
  * @nicename Delete
  */
 elFinder.prototype.commands.rm = function() {
+    this.contextmenu = true;
     // Copy the original command structure
     this.init = function() {
         // Set title, etc.

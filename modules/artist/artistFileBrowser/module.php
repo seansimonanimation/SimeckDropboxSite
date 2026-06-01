@@ -42,18 +42,20 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/i18n/elfinder.en.js"></script>
 <!-- elfinder ui -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
-<!-- elFinder override commands and new commands go here -->
-<?php echo LoadElfinderJSCommands(); ?>
+
 <!-- elfinder stock commands -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
+<!-- elFinder override commands and new commands go here -->
+<?php echo LoadElfinderJSCommands(); ?>
 <!-- elfinder extras & proxy -->
 <script src="<?php echo EF_ROOT; ?>/js/proxy/elFinderSupportVer1.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 <!-- elfinder initialization -->
  <script> var elfinderRole = <?php echo json_encode($_SESSION['tempRole']);?>;</script>
-<?php echo ApplyElfinderCommandOverrides(); ?>
+
 <script src="libraries/elfinderLibs/elfinderInit.js"></script>
+<?php echo ApplyElfinderCommandOverrides(); ?>
 <script>
 $(function() {
         $('#elfinder').elfinder({
