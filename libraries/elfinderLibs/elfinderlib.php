@@ -48,7 +48,7 @@ function loadElfinderJs($dir) {
     return $html;
 }
 
-function LoadElfinderJSCommands() {
+function LoadElfinderJSCommands() { //loads the command and command override functions dynamically.
     $html = '';
     $webBase = '/libraries/elfinderLibs/elfinderCommands/';
     $fsBase = __ROOT__ . $webBase;
@@ -67,7 +67,7 @@ function LoadElfinderJSCommands() {
     return $html;
 }
 
-function ApplyElfinderCommandOverrides() {
+function ApplyElfinderCommandOverrides() { //actually applies the commands that have been loaded.
     //Target format
     //elFinder.prototype.i18.en.cmdseecm = 'See Comments';
     //elFinder.prototype.i18.en.cmdtogglelock = 'Lock / Unlock File';
