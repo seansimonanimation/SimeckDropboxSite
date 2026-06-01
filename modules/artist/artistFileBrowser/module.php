@@ -52,24 +52,26 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/extras/editors.default.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/extras/quicklook.googledocs.js"></script>
 <!-- elfinder initialization -->
- <script> var elfinderRole = <?php echo json_encode($_SESSION['tempRole']);?>;</script>
+<?php OutputSimeckSessionScript(); ?>
+ <script src="libraries/elfinderLibs/elfinderInit.js"></script>
 
-<script src="libraries/elfinderLibs/elfinderInit.js"></script>
 <?php echo ApplyElfinderCommandOverrides(); ?>
 <script>
 $(function() {
-        $('#elfinder').elfinder({
+        var fm = $('#elfinder').elfinder({
         cssAutoLoad: false,
         baseUrl: 'libraries/elfinder/',
         url: `libraries/elfinderLibs/connectors/simeckConnector.php`,
         height: $(window).height() - $('#elfinder').offset().top,
         width: $(window).width()*0.7,
-        role: elfinderRole,
+        role: window.simeckSession.tempRole,
         });
-        
+        fm = $('#elfinder').elfinder('instance');
+        fm.simeckSession = window.simeckSession;
         $(window).on('resize', resizeElfinder);
 });
 </script>
+
 
 
 

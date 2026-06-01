@@ -13,7 +13,8 @@
 elFinder.prototype.commands.lockFile = function() {
 
     //Sets this as a context menu item.
-    if(elfinderRole === 'admin'){this.contextmenu = true;} else {this.contextmenu = false;}
+    if(window.simeckSession && window.simeckSession.tempRole === 'admin'){this.contextmenu = true;} else {this.contextmenu = false;}
+
     
     this.init = function(){
         this.title = 'Lock File';

@@ -4,7 +4,8 @@
  */
 elFinder.prototype.commands.clientLockOverride = function() {
     //Sets this as a context menu item, but only if the user has overrides available.
-    if(elfinderRole === 'client'){this.contextmenu = true;} else {this.contextmenu = false;}
+    if(window.simeckSession && window.simeckSession.tempRole === 'client'){this.contextmenu = true;} else {this.contextmenu = false;}
+
 
 
 this.init = function(){
@@ -31,7 +32,7 @@ this.init = function(){
             filepath: fm.url(files[0].hash)
         }, function(response) {
             if (response.success) {
-                clientOverrides -= 1;
+                fm.simeckSession.lock_overrides -= 1;
                 location.reload();
             } else {
                 fm.error(response.error || 'Override failed.');
@@ -50,7 +51,7 @@ this.init = function(){
         // Only show if the file has a comment lock
         if (!fm.cache?.lockedPaths?.[url]?.commentlock) return -1;
         // Only show if the user has overrides
-        if (typeof clientOverrides === 'undefined' || clientOverrides <= 0) return -1;
+        if (!fm.simeckSession || typeof fm.simeckSession.lock_overrides === 'undefined' || fm.simeckSession.lock_overrides <= 0) return -1;
         return 0;
     };
 

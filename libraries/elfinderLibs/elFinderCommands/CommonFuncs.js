@@ -31,3 +31,8 @@
         return false;
     };
 
+    SimeckRefresh = function(){
+        window.onbeforeunload = null;
+        $(window).off('beforeunload');  // In case it was attached via jQuery
+        location.reload();
+    }

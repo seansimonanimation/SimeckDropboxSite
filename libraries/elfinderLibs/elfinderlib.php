@@ -102,5 +102,20 @@ function ApplyElfinderCommandOverrides() { //actually applies the commands that 
         echo "<script>elFinder.prototype.i18.en.cmd{$command['commandID']} = '{$command['nicename']}';</script>";
     }
 }
-
-
+function OutputSimeckSessionScript() {
+    $sessionData = [
+        'username'             => $_SESSION['username'] ?? null,
+        'firstname'            => $_SESSION['firstname'] ?? null,
+        'lastname'             => $_SESSION['lastname'] ?? null,
+        'userID'               => $_SESSION['userID'] ?? null,
+        'role'                 => $_SESSION['role'] ?? null,
+        'tempRole'             => $_SESSION['tempRole'] ?? null,
+        'theme'                => $_SESSION['theme'] ?? 'dark-boo',
+        'timezone'             => $_SESSION['timezone'] ?? 'UTC',
+        'impersonating'        => $_SESSION['impersonating'] ?? false,
+        'project_assignments'  => $_SESSION['project_assignments'] ?? null,
+        'point_of_contact'     => $_SESSION['point_of_contact'] ?? null,
+        'lock_overrides'       => $_SESSION['lock_overrides'] ?? null,
+    ];
+    echo '<script>window.simeckSession = ' . json_encode($sessionData, JSON_PRETTY_PRINT) . ';</script>' . "\n";
+}
