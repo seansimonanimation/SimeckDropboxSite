@@ -28,3 +28,9 @@ function resizeElfinder() {
         instance.resize();
     }
 }
+
+document.addEventListener('dragstart', function(e) {
+    if (e.target.closest('#elfinder')) {
+        e.preventDefault();
+    }
+});

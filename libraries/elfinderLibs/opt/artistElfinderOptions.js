@@ -170,7 +170,23 @@ elFinder.prototype._options = {
 	 * @type Object
 	 * @default  {}
 	 */
-	handlers : {},
+	handlers : {
+		init: function(e, fm) {
+			var band = fm.getUI('workzone');
+			band.selectable({
+				filter: '.elfinder-cwd-file, .elfinder-cwd-file *',
+				delay: 50,
+				distance: 5,
+				selecting: function (e, ui) {
+					$(ui.selecting).trigger('select.' + fm.namespace);
+				},
+				unselecting: function (e, ui) {
+					$(ui.unselecting).trigger('unselect.' + fm.namespace);
+				}
+			});
+		}
+	},
+
 
 	/**
 	 * Any custom headers to send across every ajax request

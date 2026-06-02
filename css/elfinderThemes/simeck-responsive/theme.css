@@ -41,6 +41,21 @@ div.elfinder * {
   background: var(--color-surface);
   color: var(--color-text);
 }
+#elfinder,
+#elfinder * {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.elfinder-cwd-file,
+.elfinder-cwd-file * {
+  /* allow text selection on the file rows so filenames can still be selected */
+  -webkit-user-select: text;
+     -moz-user-select: text;
+      -ms-user-select: text;
+          user-select: text;
+}
 
 /* ========================================================= */
 /*  2. WORKZONE (main split panel)                           */
