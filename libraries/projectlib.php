@@ -127,7 +127,7 @@ function GetAssignedProjectOptionList(){
     
     // Get project names for the assigned PIDs
     $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
-    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
+    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders) AND active = 1 AND transitioning = 0");
     $stmt->execute(array_values($projectArr));
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     

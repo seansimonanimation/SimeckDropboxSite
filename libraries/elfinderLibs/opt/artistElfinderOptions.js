@@ -172,6 +172,7 @@ elFinder.prototype._options = {
 	 */
 	handlers : {},
 
+
 	/**
 	 * Any custom headers to send across every ajax request
 	 *
