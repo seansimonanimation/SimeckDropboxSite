@@ -85,15 +85,19 @@ function GetTimeclockEntries($startDate = null, $endDate = null, $artist = null)
 }
 
 function CloseTimeclockShift($shiftID){
-    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE shift_id = ?';
+    $SQLString = 'UPDATE timeclockshifts SET time_out = CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix") WHERE shift_id = ?';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     if(IsReadOnly()){ return false;}
     $stmt->execute([$shiftID]);
+    LogAction(
+        "Closed timeclock shift #$shiftID",
+        "Shift closed.",
+        'timeclock'
+    );
 }
 
 function UpdateTimeclockShiftField($shiftId, $field, $value){
-    // Only allow updating time_in or time_out — whitelist for security
     $allowedFields = ['time_in', 'time_out'];
     if(!in_array($field, $allowedFields)){
         return false;
@@ -102,8 +106,17 @@ function UpdateTimeclockShiftField($shiftId, $field, $value){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     if(IsReadOnly()){ return false;}
-    return $stmt->execute([$value, $shiftId]);
+    $result = $stmt->execute([$value, $shiftId]);
+    if($result){
+        LogAction(
+            "Updated timeclock shift #$shiftId $field",
+            "New value: $value",
+            'timeclock'
+        );
+    }
+    return $result;
 }
+
 
 function GetDataFromDB($SQLString, $params = []){
     $pdo = DBConnect();

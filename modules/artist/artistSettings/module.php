@@ -35,6 +35,7 @@ if(!IsReadOnly()){
         if($errorMessage === ''){
             if(SetArtistPassword($username, $newPW)){
                 header("Location: ?pw_changed=1");
+                LogAction('Password changed', 'Artist changed their password.', null, $username);
                 exit;
             } else {
                 $errorMessage = 'Database error. Password was not changed.';

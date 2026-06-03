@@ -1,7 +1,7 @@
 <?php
 // Assigns a random phrase to the top bar
 // of the portal. This is just for fun and can be easily modified or removed.
-
+require_once __DIR__ . '/logging.php';
 
     function DisplayRandomTopbarPhrase(){
         $topbarArtistPhrases = [

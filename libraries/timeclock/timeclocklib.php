@@ -6,19 +6,22 @@ include_once __ROOT__ . '/download.php';
 
 
 function GenerateTimeclockTable(){
+    $tz = $_SESSION['timezone'] ?? 'America/Phoenix';
     $entryArray = GetTimeclockEntries();
     echo '<table id="ShiftList" class="display atc-tablecell" style="width:100%; border-collapse: collapse;">';
     echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Delete</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
+        $displayIn = PhoenixToLocal($entry['time_in'], $tz);
+        $displayOut = PhoenixToLocal($entry['time_out'], $tz);
         echo '<tr>';
         echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
         echo '<td>' . htmlspecialchars($entry['user']) . '</td>';
         echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_in">';
-        echo '  <span class="atc-display">' . htmlspecialchars($entry['time_in']) . '</span>';
+        echo '  <span class="atc-display">' . htmlspecialchars($displayIn) . '</span>';
         echo '</td>';
         echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_out">';
-        echo '  <span class="atc-display">' . htmlspecialchars($entry['time_out'] ?? '') . '</span>';
+        echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineShiftLengthOrSummonButton($entry['time_in'], $entry['time_out'], $entry['shift_id']) . '</td>';
         echo '<td><a href="index.php?delete_shift_id=' . htmlspecialchars($entry['shift_id']) . '">❌</a></td>';
@@ -27,6 +30,7 @@ function GenerateTimeclockTable(){
     echo '</tbody></table>';
 }
 
+
 function GenerateArtistTimeclockTable($artistID){
     $tz = $_SESSION['timezone'] ?? 'UTC';
     $entryArray = GetTimeclockEntries(null, null, $artistID);
@@ -34,12 +38,11 @@ function GenerateArtistTimeclockTable($artistID){
     echo '<thead><tr><th>Shift ID</th><th>Time In</th><th>Time Out</th><th>Shift Length</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
-        $localIn = UTCToLocal($entry['time_in'], $tz);
-        $localOut = UTCToLocal($entry['time_out'], $tz);
+        // Stripped out the UTCToLocal() — stored times are America/Phoenix, display as-is
         echo '<tr>';
         echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
-        echo '<td>' . htmlspecialchars($localIn) . '</td>';
-        echo '<td>' . htmlspecialchars($localOut ?? '') . '</td>';
+        echo '<td>' . htmlspecialchars($entry['time_in']) . '</td>';
+        echo '<td>' . htmlspecialchars($entry['time_out'] ?? '') . '</td>';
         echo '<td>' . DetermineArtistShiftLength($entry['time_in'], $entry['time_out']) . '</td>';
         echo '</tr>';
     }
@@ -47,9 +50,16 @@ function GenerateArtistTimeclockTable($artistID){
 }
 
 
+
 function UTCToLocal($utcDatetime, $targetTimezone){
     if($utcDatetime === null || $utcDatetime === '') return null;
     $dt = new DateTime($utcDatetime, new DateTimeZone('UTC'));
+    $dt->setTimezone(new DateTimeZone($targetTimezone));
+    return $dt->format('Y-m-d H:i:s');
+}
+function PhoenixToLocal($phxDatetime, $targetTimezone){
+    if($phxDatetime === null || $phxDatetime === '') return null;
+    $dt = new DateTime($phxDatetime, new DateTimeZone('America/Phoenix'));
     $dt->setTimezone(new DateTimeZone($targetTimezone));
     return $dt->format('Y-m-d H:i:s');
 }
@@ -82,7 +92,7 @@ function DetermineArtistShiftLength($timeIn, $timeOut){
     return $interval->format('%h hours %i minutes');
 }
 function ClockEveryoneOut(){
-    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE time_out IS NULL';
+    $SQLString = 'UPDATE timeclockshifts SET time_out = CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix") WHERE time_out IS NULL';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -110,7 +120,7 @@ function DisplayArtistClockInOutButton($artistID){
 }
 
 function ArtistClockIn($artistID){
-    $SQLString = 'INSERT INTO timeclockshifts (user, time_in) VALUES (?, NOW())';
+    $SQLString = 'INSERT INTO timeclockshifts (user, time_in) VALUES (?, CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix"))';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$artistID]);
@@ -119,7 +129,7 @@ function ArtistClockIn($artistID){
 }
 
 function ArtistClockOut($artistID){
-    $SQLString = 'UPDATE timeclockshifts SET time_out = NOW() WHERE user = ? AND time_out IS NULL';
+    $SQLString = 'UPDATE timeclockshifts SET time_out = CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix") WHERE user = ? AND time_out IS NULL';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$artistID]);
@@ -142,43 +152,42 @@ function ShowArtistFilesForTimeclock(){
     }
 }
 function GetArtistShiftDurationSeconds($timeIn, $timeOut){
-    $tz = new DateTimeZone($_SESSION['timezone'] ?? 'America/Phoenix');
-    $start = new DateTime($timeIn, $tz);
-    $end = $timeOut ? new DateTime($timeOut, $tz) : new DateTime('now', $tz);
+    $dbTz = new DateTimeZone('America/Phoenix');
+    $start = new DateTime($timeIn, $dbTz);
+    $end = $timeOut ? new DateTime($timeOut, $dbTz) : new DateTime('now', new DateTimeZone('America/Phoenix'));
     $interval = $start->diff($end);
     return $interval->days * 86400 + $interval->h * 3600 + $interval->i * 60 + $interval->s;
 }
 
 
 
+
 function GetArtistStats($artistID){
-    $tz = $_SESSION['timezone'] ?? 'UTC';
-    $userTz = new DateTimeZone($tz);
-    $utc = new DateTimeZone('UTC');
+    $phx = new DateTimeZone('America/Phoenix');
     
-    $now = new DateTime('now', $userTz);
+    $now = new DateTime('now', $phx);
     
-    // Today: 00:00:00 to 23:59:59
-    $todayStart = (clone $now)->setTime(0, 0, 0)->setTimezone($utc)->format('Y-m-d H:i:s');
-    $todayEnd = (clone $now)->setTime(23, 59, 59)->setTimezone($utc)->format('Y-m-d H:i:s');
+    // Today: 00:00:00 to 23:59:59 in Phoenix
+    $todayStart = (clone $now)->setTime(0, 0, 0)->format('Y-m-d H:i:s');
+    $todayEnd = (clone $now)->setTime(23, 59, 59)->format('Y-m-d H:i:s');
     
-    // This week (Monday start)
-    $dayOfWeek = (int)$now->format('N'); // 1=Monday, 7=Sunday
+    // This week (Monday start) in Phoenix
+    $dayOfWeek = (int)$now->format('N');
     $monday = (clone $now)->modify('-' . ($dayOfWeek - 1) . ' days')->setTime(0, 0, 0);
-    $weekStart = (clone $monday)->setTimezone($utc)->format('Y-m-d H:i:s');
-    $weekEnd = (clone $monday)->modify('+6 days')->setTime(23, 59, 59)->setTimezone($utc)->format('Y-m-d H:i:s');
+    $weekStart = $monday->format('Y-m-d H:i:s');
+    $weekEnd = (clone $monday)->modify('+6 days')->setTime(23, 59, 59)->format('Y-m-d H:i:s');
     
-    // Last 2 weeks
-    $twoWeeksStart = (clone $now)->modify('-14 days')->setTime(0, 0, 0)->setTimezone($utc)->format('Y-m-d H:i:s');
+    // Last 2 weeks in Phoenix
+    $twoWeeksStart = (clone $now)->modify('-14 days')->setTime(0, 0, 0)->format('Y-m-d H:i:s');
     $twoWeeksEnd = $weekEnd;
     
-    // This month
-    $monthStart = (clone $now)->modify('first day of this month')->setTime(0, 0, 0)->setTimezone($utc)->format('Y-m-d H:i:s');
-    $monthEnd = (clone $now)->modify('last day of this month')->setTime(23, 59, 59)->setTimezone($utc)->format('Y-m-d H:i:s');
+    // This month in Phoenix
+    $monthStart = (clone $now)->modify('first day of this month')->setTime(0, 0, 0)->format('Y-m-d H:i:s');
+    $monthEnd = (clone $now)->modify('last day of this month')->setTime(23, 59, 59)->format('Y-m-d H:i:s');
     
-    // This year
-    $yearStart = (clone $now)->modify('first day of January')->setTime(0, 0, 0)->setTimezone($utc)->format('Y-m-d H:i:s');
-    $yearEnd = (clone $now)->modify('last day of December')->setTime(23, 59, 59)->setTimezone($utc)->format('Y-m-d H:i:s');
+    // This year in Phoenix
+    $yearStart = (clone $now)->modify('first day of January')->setTime(0, 0, 0)->format('Y-m-d H:i:s');
+    $yearEnd = (clone $now)->modify('last day of December')->setTime(23, 59, 59)->format('Y-m-d H:i:s');
     
     // Get all shifts for the artist
     $SQLString = 'SELECT time_in, time_out FROM timeclockshifts WHERE user = ?';
@@ -203,7 +212,7 @@ function GetArtistStats($artistID){
         $duration = GetArtistShiftDurationSeconds($timeIn, $timeOut);
         $stats['lifetime'] += $duration;
         
-        // Check which periods this shift falls into
+        // Compare Phoenix-stored times against Phoenix boundaries
         if($timeIn >= $todayStart && $timeIn <= $todayEnd) $stats['today'] += $duration;
         if($timeIn >= $weekStart && $timeIn <= $weekEnd) $stats['week'] += $duration;
         if($timeIn >= $twoWeeksStart && $timeIn <= $twoWeeksEnd) $stats['twoWeeks'] += $duration;
@@ -213,6 +222,7 @@ function GetArtistStats($artistID){
     
     return $stats;
 }
+
 
 function FormatDurationHours($totalSeconds){
     $hours = floor($totalSeconds / 3600);
