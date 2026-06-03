@@ -57,6 +57,36 @@ $currentUser = $_SESSION['username'];
             </div>
         </div>
 
+        <div class="module-card module-card--span-1" id="datetime-calculator-card">
+            <h2>Date/Time Calculator</h2>
+            <p style="font-size:0.85em;margin-bottom:12px;">
+
+                Enter a date and time in your timezone to see what it is for another artist.
+            </p>
+            <div style="margin-bottom:12px;">
+                <label for="dtc-artist-select">Select an artist:</label>
+                <select id="dtc-artist-select" class="module-input" style="width:100%;max-width:400px;">
+                    <option value="">-- Select an artist --</option>
+                    <?php foreach($artistList as $a): ?>
+                        <option value="<?php echo htmlspecialchars($a['username']); ?>">
+                            <?php echo htmlspecialchars($a['firstname'] . ' ' . $a['lastname'] . ' (' . $a['username'] . ')'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div style="margin-bottom:12px;">
+                <label for="dtc-date">Date:</label>
+                <input type="date" id="dtc-date" class="module-input" style="width:100%;max-width:400px;">
+            </div>
+            <div style="margin-bottom:12px;">
+                <label for="dtc-time">Time:</label>
+                <input type="time" id="dtc-time" class="module-input" style="width:100%;max-width:400px;">
+            </div>
+            <div id="dtc-result" style="margin-top:12px;padding:12px;border-radius:6px;border:1px solid #ccc;min-height:20px;">
+                Select an artist and enter a date &amp; time to convert.
+            </div>
+        </div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
@@ -83,11 +113,51 @@ document.addEventListener('DOMContentLoaded', function(){
                     + '</div>';
             });
     }
+
+    // ── Date/Time Calculator ──
+    const dtcSelect = document.getElementById('dtc-artist-select');
+    const dtcDate = document.getElementById('dtc-date');
+    const dtcTime = document.getElementById('dtc-time');
+    const dtcResult = document.getElementById('dtc-result');
+
+    function updateDateTimeConversion(){
+        const artist = dtcSelect.value;
+        const date = dtcDate.value;
+        const time = dtcTime.value;
+
+        if(!artist || !date || !time){
+            dtcResult.innerHTML = 'Select an artist and enter a date &amp; time to convert.';
+            dtcResult.style.borderColor = '#ccc';
+            return;
+        }
+
+        // Format as "YYYY-MM-DD HH:MM" for the server
+        const datetime = date + ' ' + time;
+
+        fetch('?action=convert_datetime&artist=' + encodeURIComponent(artist) + '&datetime=' + encodeURIComponent(datetime))
+            .then(r => r.json())
+            .then(data => {
+                if(data.error){
+                    dtcResult.innerHTML = '<span style="color:red;">Error: ' + data.error + '</span>';
+                    dtcResult.style.borderColor = '#e74c3c';
+                    return;
+                }
+                dtcResult.innerHTML = '<strong>That\'s ' + data.display + '</strong><br>'
+                    + '<span style="font-size:0.9em;">for ' + data.artist_name + ' (' + data.artist_timezone + ')</span>';
+                dtcResult.style.borderColor = '#2ecc71';
+            })
+            .catch(err => {
+                dtcResult.innerHTML = '<span style="color:red;">Request failed.</span>';
+                dtcResult.style.borderColor = '#e74c3c';
+            });
+    }
+
+    dtcSelect.addEventListener('change', updateDateTimeConversion);
+    dtcDate.addEventListener('change', updateDateTimeConversion);
+    dtcTime.addEventListener('change', updateDateTimeConversion);
 });
 </script>
 
-
-        <div class="module-card module-card--span-1">Card 6</div>
         
         <!-- Row 3: 1 card, spanning all 4 columns -->
         <div class="module-card module-card--full"><h1>Changelog</h1>
