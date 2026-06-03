@@ -268,6 +268,7 @@ function CreateNewProject($name, $description, $type) {
     $stmt->execute([$newPid, $name, $activePath, $inactiveZipPath, $type, $description]);
 
     return $newPid;
+    LogAction('Created new project', "Project Name: $name, Type: $type", $newPid);
 }
 
 function GetAllDataForProject($pid){
