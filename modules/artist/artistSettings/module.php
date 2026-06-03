@@ -160,7 +160,7 @@ function verifyCurrentPW($currentPW, $artistData){
         </div>
         <div class="module-card module-card--placeholder"></div>
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <!--  AVAILABILITY GRID — Full Width                                -->
+        <!--  AVAILABILITY GRID — Half Width                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="module-card module-card--span-2" style="overflow:visible;">
             <div class="module-card__header">
