@@ -76,7 +76,9 @@ if(isset($_GET['action']) && $_GET['action'] === 'set_timezone' && isset($_GET['
     $valid = in_array($tz, DateTimeZone::listIdentifiers(), true);
     if($valid){
         SetUserTimezone($_SESSION['username'], $tz, $_SESSION['role']);
+        $_SESSION['timezone'] = $tz;  // ← Update session immediately
     }
     header("Location: index.php");
     exit;
 }
+
