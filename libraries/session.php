@@ -86,12 +86,14 @@ function ImpersonateArtist($artistData){
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+    $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
 
     // Override with impersonated artist's data
     $_SESSION['username']  = $artistData['username'];
     $_SESSION['firstname'] = $artistData['firstname'];
     $_SESSION['lastname']  = $artistData['lastname'];
     $_SESSION['userID']    = $artistData['userID'];
+    $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'artist'; // Shows artist modules
 
@@ -104,6 +106,7 @@ function ImpersonateClient($clientData){
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+    $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
 
     // Override with impersonated client's data
     $_SESSION['username']      = $clientData['username'];
@@ -112,6 +115,7 @@ function ImpersonateClient($clientData){
     $_SESSION['project_assignments'] = $clientData['project_assignments'];
     $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
+    $_SESSION['availability'] = $clientData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
 }
@@ -119,7 +123,7 @@ function ImpersonateClient($clientData){
 function StopImpersonating(){
     if(!isset($_SESSION['_imp_orig_username'])) return;
     //Log the end of the impersonation action
-        LogSimeckAction('Stopped impersonation',$_SESSION['username'] . " stopped impersonating. Reverted back to '{$_SESSION['_imp_orig_username']}'.", 'System');
+        LogSimeckAction('Stopped impersonation',$_SESSION['_imp_orig_username'] . " stopped impersonating. Reverted back from '{$_SESSION['username']}'.", 'System');
     $_SESSION['username']  = $_SESSION['_imp_orig_username'];
     $_SESSION['firstname'] = $_SESSION['_imp_orig_firstname'];
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
