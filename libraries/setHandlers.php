@@ -36,9 +36,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'impersonate_client' && isset(
     exit;
 }
 
-
-
-
    if(isset($_GET['action']) && $_GET['action'] === 'logout'){
       logout();
       header("Location: login.php");

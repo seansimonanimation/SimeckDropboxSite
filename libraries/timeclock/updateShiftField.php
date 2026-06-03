@@ -1,6 +1,7 @@
 <?php
 include_once __DIR__ . '/../session.php';
 include_once __ROOT__ . '/libraries/db.php';
+include_once __ROOT__ . '/libraries/logging.php';
 
 // Admin-only check
 if(GetRole() !== 'admin'){
@@ -28,6 +29,7 @@ if(!$shiftId || !$field || $value === null){
 $result = UpdateTimeclockShiftField((int)$shiftId, $field, $value);
 
 if($result){
+    LogSimeckAction('Updated timeclock shift', $_SESSION['username'] ?? 'user' . " updated shift ID $shiftId field $field to value: $value", 'System');
     echo json_encode(['success' => true]);
 } else {
     http_response_code(400);

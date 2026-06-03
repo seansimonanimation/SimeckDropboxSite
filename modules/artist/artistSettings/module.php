@@ -39,8 +39,8 @@ if(!IsReadOnly()){
 
         if($errorMessage === ''){
             if(SetArtistPassword($username, $newPW)){
-                header("Location: ?pw_changed=1");
                 LogSimeckAction('Password changed', 'Artist changed their password.', 'System');
+                header("Location: ?pw_changed=1");
                 exit;
             } else {
                 $errorMessage = 'Database error. Password was not changed.';
@@ -53,8 +53,9 @@ if(!IsReadOnly()){
         $username = $_SESSION['username'];
         if(SetArtistAvailability($username, $_POST['av_data'])){
             $_SESSION['availability'] = $_POST['av_data'];
-            header("Location: ?av_saved=1");
             LogSimeckAction('Availability updated', 'Artist updated their availability.', 'System');
+            header("Location: ?av_saved=1");
+
             exit;
         } else {
             $errorMessage = 'Invalid availability data. Please try again.';
