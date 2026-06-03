@@ -29,7 +29,6 @@ echo '<div class="module-card module-card--span-4">';
 echo '<center><h1 style="color:green;">Success: ' . $inputMessage;
 echo '</h1></center>';
 echo '</div>';
-LogAction('Updated settings', 'Client updated their settings.', null, $_SESSION['username']);
 }
 
 function GetClientLockOverrideCount(){

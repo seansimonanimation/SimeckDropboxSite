@@ -5,6 +5,7 @@
 
 include_once __DIR__ . '/db.php';
 include_once __DIR__ . '/session.php';
+include_once __ROOT__ . '/libraries/logging.php';
 
 function attempt_login($username, $password){
 //This function attemps to log an artist user in first. If that fails, it attempts to log a client user in. If both fail, it returns false.
@@ -31,6 +32,7 @@ function SetArtistPassword($username, $newpass){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$hashpass,$username]);
+    LogSimeckAction('Artist password changed', "Password for artist '{$username}' was changed.", 'System');
     return true;
 }
 
@@ -40,6 +42,7 @@ function SetClientPassword($username, $newpass){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$hashpass,$username]);
+    LogSimeckAction('Client password changed', "Password for client '{$username}' was changed.", 'System');
     return true;
 }
 
@@ -52,6 +55,7 @@ function SetUserTheme($username, $theme, $role){
     if($result){
         $_SESSION['theme'] = $theme;
     }
+    LogSimeckAction('User theme changed', "User '{$username}' changed their theme to '{$theme}'.", 'System');
     return $result;
 }
 function SetUserTimezone($username, $timezone, $role){
@@ -63,5 +67,6 @@ function SetUserTimezone($username, $timezone, $role){
     if($result){
         $_SESSION['timezone'] = $timezone;
     }
+    LogSimeckAction('User timezone changed', "User '{$username}' changed their timezone to '{$timezone}'.", 'System');
     return $result;
 }

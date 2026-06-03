@@ -4,6 +4,7 @@ include_once __DIR__ . '/session.php';
 include_once __DIR__ . '/db.php';
 include_once __ROOT__ . '/libraries/sharedlib.php';
 include_once __ROOT__ . '/libraries/helpers.php';
+include_once __ROOT__ . '/libraries/logging.php';
 
 function GenerateProjectCards(){
     $projects = GetAllProjects();
@@ -77,7 +78,9 @@ function GetProjectLeadDropdown($pid, $type, $currentLead){
 function UpdateProjectLead($pid, $newLead){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("UPDATE projects SET leader = ? WHERE pid = ?");
+    LogSimeckAction('Project lead updated', "Project with PID {$pid} has a new lead: " . ($newLead ?: 'None'), $pid);
     return $stmt->execute([$newLead ?: null, $pid]);
+
 }
 function GetProjectFolderSize($pid){
     $pdo = DBConnect();
@@ -210,6 +213,7 @@ function ToggleProjectActivation($pid){
         $updateStmt = $pdo->prepare("UPDATE projects SET active = ?, transitioning = 1  WHERE pid = ?");
         $updateStmt->execute([$newStatus, $pid]);
     }
+    LogSimeckAction('Project activation toggled', "Project with PID {$pid} was " . ($newStatus ? 'activated' : 'deactivated') . " and is now transitioning.", $pid);
     RefreshPortal();
 }
 
@@ -266,9 +270,9 @@ function CreateNewProject($name, $description, $type) {
     $stmt = $pdo->prepare("INSERT INTO projects (pid, project_name, active, active_path, inactive_zip_path, transitioning, type, description)
                            VALUES (?, ?, 1, ?, ?, 0, ?, ?)");
     $stmt->execute([$newPid, $name, $activePath, $inactiveZipPath, $type, $description]);
-
+    LogSimeckAction('Project created', "Project '{$name}' with PID {$newPid} was created.", 'System');
     return $newPid;
-    LogAction('Created new project', "Project Name: $name, Type: $type", $newPid);
+    
 }
 
 function GetAllDataForProject($pid){

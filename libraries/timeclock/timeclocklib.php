@@ -2,7 +2,7 @@
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
 include_once __ROOT__ . '/download.php';
-
+include_once __ROOT__ . '/libraries/logging.php';
 
 
 function GenerateTimeclockTable(){
@@ -96,6 +96,7 @@ function ClockEveryoneOut(){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
+    LogSimeckAction('Mass clock-out', 'All artists were clocked out by the system.', 'System');
 }
 
 function DeleteShift($shiftID){
@@ -103,6 +104,7 @@ function DeleteShift($shiftID){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$shiftID]);
+    LogSimeckAction('Shift deleted', 'A timeclock shift was deleted by an admin.', 'System');
 }
 
 function DisplayArtistClockInOutButton($artistID){
@@ -124,6 +126,7 @@ function ArtistClockIn($artistID){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$artistID]);
+    LogSimeckAction('Clocked in', 'Artist clocked in.', 'System');
     header("Location: index.php");
     exit;
 }
@@ -133,6 +136,7 @@ function ArtistClockOut($artistID){
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$artistID]);
+    LogSimeckAction('Clocked out', 'Artist clocked out.', 'System');
     header("Location: index.php");
     exit;
 }

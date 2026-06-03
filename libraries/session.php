@@ -79,6 +79,8 @@ function RefreshPortal(){
 }
 
 function ImpersonateArtist($artistData){
+    //Log the impersonation action
+        LogSimeckAction('Started impersonation',$_SESSION['username'] . " started impersonating artist '{$artistData['username']}'.", 'System');
     // Save original admin data
     $_SESSION['_imp_orig_username']  = $_SESSION['username'];
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
@@ -92,8 +94,11 @@ function ImpersonateArtist($artistData){
     $_SESSION['userID']    = $artistData['userID'];
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'artist'; // Shows artist modules
+
 }
 function ImpersonateClient($clientData){
+    //Log the impersonation action
+        LogSimeckAction('Started impersonation',$_SESSION['username'] . " started impersonating client '{$clientData['username']}'.", 'System');
     // Save original admin data
     $_SESSION['_imp_orig_username']  = $_SESSION['username'];
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
@@ -113,7 +118,8 @@ function ImpersonateClient($clientData){
 
 function StopImpersonating(){
     if(!isset($_SESSION['_imp_orig_username'])) return;
-
+    //Log the end of the impersonation action
+        LogSimeckAction('Stopped impersonation',$_SESSION['username'] . " stopped impersonating. Reverted back to '{$_SESSION['_imp_orig_username']}'.", 'System');
     $_SESSION['username']  = $_SESSION['_imp_orig_username'];
     $_SESSION['firstname'] = $_SESSION['_imp_orig_firstname'];
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];

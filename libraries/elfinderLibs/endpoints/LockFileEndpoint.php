@@ -12,6 +12,7 @@ include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
+include_once __ROOT__ . '/libraries/logging.php';
 $GLOBALS['db'] = DBConnect();
 header('Content-Type: application/json');
 $filepath = $_REQUEST['filepath'] ?? '';
@@ -32,5 +33,7 @@ if ($existing) {
 $SQLInsertString = 'INSERT INTO lockedfiles (filepath, locktime, assetlock, commentlock) VALUES (?, NOW(), 1, 1)';
 $stmt2 = $GLOBALS['db']->prepare($SQLInsertString);
 $stmt2->execute([$filepath]);
+
+LogSimeckAction('Locked file', $_SESSION['username'] ?? 'user' . " locked file: $filepath", 'Project');
 
 echo json_encode(['success' => true, 'message' => 'Lock applied successfully']);

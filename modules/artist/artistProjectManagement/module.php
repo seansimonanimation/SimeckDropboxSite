@@ -14,7 +14,7 @@ include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
 include_once __ROOT__ . '/libraries/projectlib.php';
-
+include_once __ROOT__ . '/libraries/logging.php';
 
 // Handle comment submission BEFORE loading project data
 // Handle comment submission BEFORE loading project data
@@ -28,6 +28,7 @@ if(!IsReadOnly()){
         $stmt = $pdo->prepare("INSERT INTO filecomments (owner, comment_time, parent_file_url, comment_order, comment_content)
                                VALUES (?, NOW(), ?, ?, ?)");
         $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $_POST['dir_comment_content']]);
+        LogSimeckAction('Added Project comment', "Added a comment to Project '{$_POST['dir_comment_path']}': {$_POST['dir_comment_content']}", $_POST['See_Project']);
     }
 }
 

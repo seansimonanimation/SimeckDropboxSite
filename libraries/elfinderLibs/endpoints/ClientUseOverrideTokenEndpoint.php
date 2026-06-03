@@ -10,6 +10,7 @@ define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
+include_once __ROOT__ . '/libraries/logging.php';
 $GLOBALS['db'] = DBConnect();
 header('Content-Type: application/json');
 $filePath = $_REQUEST['filepath'] ?? '';
@@ -35,4 +36,5 @@ $SQLOverrideString = "UPDATE lockedfiles SET commentLock = 0 WHERE filepath = ?"
 $stmt2 = $GLOBALS['db']->prepare($SQLOverrideString);
 $stmt2->execute([$filePath]);
 
+LogSimeckAction('Used lock override', $_SESSION['username'] ?? 'user', " used a lock override on file: $filePath. Overrides left: " . ($lockOverridesAvailable - 1), 'System');
 echo json_encode(['success' => true, 'message' => 'Lock override applied successfully', 'overridesLeft' => $lockOverridesAvailable - 1]);
