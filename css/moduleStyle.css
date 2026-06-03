@@ -426,3 +426,6 @@
 .theme-spite-castle {
     --av-active: #7c4dff;
 }
+#calcModeToggle .module-toggle__option[data-value="timezone"].module-toggle__option--active ~ .module-toggle__slider {
+  transform: translateX(100%);
+}
