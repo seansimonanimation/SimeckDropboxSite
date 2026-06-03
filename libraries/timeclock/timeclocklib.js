@@ -70,16 +70,16 @@ $(document).on('click', '.atc-editable', function(){
                 alert('Failed to save: ' + (data.error || 'unknown error'));
             }
             $td.removeClass('editing');
+            location.reload();
         }, 'json').fail(function(){
             $display.text(originalValue || '');
             alert('Failed to save. Check your connection.');
             $td.removeClass('editing');
         });
-        location.reload();
+
     }
     
     $input.on('change', saveValue);
-    $input.on('blur', saveValue);
     $input.on('keydown', function(e){
         if(e.key === 'Enter'){
             e.preventDefault();
