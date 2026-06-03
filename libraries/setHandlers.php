@@ -125,40 +125,54 @@ if(isset($_GET['action']) && $_GET['action'] === 'get_artist_availability' && is
     exit;
 }
 // ════════════════════════════════════════════════════════
-// AJAX: Convert a datetime from viewer's timezone to artist's timezone
+// AJAX: Convert a datetime from viewer's timezone to artist's or a specific timezone
 // ════════════════════════════════════════════════════════
-if(isset($_GET['action']) && $_GET['action'] === 'convert_datetime' && isset($_GET['artist']) && isset($_GET['datetime'])){
+if(isset($_GET['action']) && $_GET['action'] === 'convert_datetime' && isset($_GET['datetime']) && (isset($_GET['artist']) || isset($_GET['timezone']))){
     header('Content-Type: application/json');
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT timezone, firstname, lastname FROM artists WHERE username = ? AND active = 1");
-    $stmt->execute([$_GET['artist']]);
-    $artist = $stmt->fetch(PDO::FETCH_ASSOC);
-    if(!$artist){
-        echo json_encode(['error' => 'Artist not found']);
-        exit;
-    }
     
     $viewerTz = $_SESSION['timezone'] ?? 'UTC';
-    $artistTz = $artist['timezone'] ?? 'UTC';
     $inputDatetime = $_GET['datetime']; // Format: "Y-m-d H:i"
+    
+    if(isset($_GET['artist'])){
+        // Artist mode: look up the artist's timezone
+        $pdo = DBConnect();
+        $stmt = $pdo->prepare("SELECT timezone, firstname, lastname FROM artists WHERE username = ? AND active = 1");
+        $stmt->execute([$_GET['artist']]);
+        $artist = $stmt->fetch(PDO::FETCH_ASSOC);
+        if(!$artist){
+            echo json_encode(['error' => 'Artist not found']);
+            exit;
+        }
+        $targetTz = $artist['timezone'] ?? 'UTC';
+        $targetName = $artist['firstname'] . ' ' . $artist['lastname'];
+    } else {
+        // Timezone mode: use the provided timezone directly
+        $targetTz = $_GET['timezone'];
+        $valid = in_array($targetTz, DateTimeZone::listIdentifiers(), true);
+        if(!$valid){
+            echo json_encode(['error' => 'Invalid timezone']);
+            exit;
+        }
+        $targetName = $targetTz;
+    }
     
     try {
         $dt = new DateTime($inputDatetime, new DateTimeZone($viewerTz));
-        $dt->setTimezone(new DateTimeZone($artistTz));
+        $dt->setTimezone(new DateTimeZone($targetTz));
         $converted = $dt->format('Y-m-d H:i');
-        
-        // Friendly display format
         $display = $dt->format('l, F j, Y') . ' at ' . $dt->format('g:i A');
         
         echo json_encode([
             'success' => true,
             'converted' => $converted,
             'display' => $display,
-            'artist_name' => $artist['firstname'] . ' ' . $artist['lastname'],
-            'artist_timezone' => $artistTz
+            'artist_name' => $targetName,
+            'artist_timezone' => $targetTz,
+            'target_timezone' => $targetTz
         ]);
     } catch(Exception $e){
         echo json_encode(['error' => 'Invalid date/time format']);
     }
     exit;
 }
+
