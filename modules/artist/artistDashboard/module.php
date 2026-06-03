@@ -30,8 +30,16 @@ $currentUser = $_SESSION['username'];
         <div class="module-card"><center><h3> Number of active clients</h3>
         <p><?php echo GetClientCount(false); ?></p></center>
     </div>
-        <div class="module-card"><center><h3> Number of active artists</h3>
-        <p><?php echo GetArtistCount(false); ?></p></center>
+        <div class="module-card">
+            <center><h1>Join the team Discord!</H1></center>
+                <iframe src="https://discord.com/widget?id=303707251619921930&theme=dark"
+                    width="100%"
+                    height="80%"
+                    allowtransparency="true"
+                    frameborder="0"
+                    sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                    style="display:block;border:none;">
+            </iframe>
     </div>
         <?php $artistList = GetAllActiveArtists(); ?>
         <div class="module-card module-card--span-1" id="av-checker-card">
