@@ -33,11 +33,6 @@ $currentUser = $_SESSION['username'];
         <div class="module-card"><center><h3> Number of active artists</h3>
         <p><?php echo GetArtistCount(false); ?></p></center>
     </div>
-        <div class="module-card">Card 3</div>
-        <div class="module-card">Card 4</div>
-        
-        <!-- Row 2: 2 cards, each spanning 2 columns -->
-        <div class="module-card module-card--span-2">Card 5</div>
         <?php $artistList = GetAllActiveArtists(); ?>
         <div class="module-card module-card--span-1" id="av-checker-card">
             <h2>Team Member Availability Checker</h2>
