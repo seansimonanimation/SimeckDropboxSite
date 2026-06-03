@@ -29,6 +29,7 @@ echo '<div class="module-card module-card--span-4">';
 echo '<center><h1 style="color:green;">Success: ' . $inputMessage;
 echo '</h1></center>';
 echo '</div>';
+LogAction('Updated settings', 'Client updated their settings.', null, $_SESSION['username']);
 }
 
 function GetClientLockOverrideCount(){
@@ -37,4 +38,30 @@ function GetClientLockOverrideCount(){
     $stmt->execute([$_SESSION['username']]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ? (int)$result['lock_overrides'] : 0;
+}
+function GetArtistAvailability($username){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT availability FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetchColumn();
+    return $result ?: '0|0|0|0|0|0|0';
+}
+
+function SetArtistAvailability($username, $availabilityString){
+    $parts = explode('|', $availabilityString);
+    if(count($parts) !== 7){
+        return false;
+    }
+    foreach($parts as $part){
+        if(!ctype_digit($part)){
+            return false;
+        }
+        // Max value for 48 bits = 2^48 - 1 = 281474976710655
+        if((int)$part > 281474976710655){
+            return false;
+        }
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE artists SET availability = ? WHERE username = ?");
+    return $stmt->execute([$availabilityString, $username]);
 }
