@@ -71,8 +71,14 @@ function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
     return implode('<br>', $lines);
 }
 
-
-
+function SearchArtistsByName($query){
+    $SQLString = "SELECT username, firstname, lastname, availability, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
+    $pdo = DBConnect();
+    $likeTerm = '%' . $query . '%';
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 
 function GenerateArtistCards() {
@@ -108,6 +114,25 @@ function GetAllArtists(){
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function GetAllActiveArtists(){
+    $SQLString = "SELECT username, firstname, lastname, availability, timezone FROM artists WHERE active = 1";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function IsArtistAvailableNow($avString, $artistTimezone){
+    $parts = explode('|', $avString);
+    if(count($parts) !== 7) return 'No';
+
+    $artistTz = new DateTimeZone($artistTimezone);
+    $now = new DateTime('now', $artistTz);
+    $day = (int)$now->format('w'); // 0=Sun..6=Sat
+    $bit = (int)$now->format('G') * 2 + (int)((int)$now->format('i') / 30);
+
+    $mask = (int)$parts[$day];
+    return ($mask >> $bit) & 1 ? 'Yes' : 'No';
 }
 
 

@@ -82,3 +82,48 @@ if(isset($_GET['action']) && $_GET['action'] === 'set_timezone' && isset($_GET['
     exit;
 }
 
+// ════════════════════════════════════════════════════════
+// AJAX: Artist search for availability checker
+// ════════════════════════════════════════════════════════
+if(isset($_GET['action']) && $_GET['action'] === 'search_artists'){
+    include_once __ROOT__ . '/libraries/artistmanagementlib.php';
+    header('Content-Type: application/json');
+    $q = $_GET['q'] ?? '';
+    if($q === ''){
+        $artists = GetAllActiveArtists();
+    } else {
+        $artists = SearchArtistsByName($q);
+    }
+    $results = [];
+    foreach($artists as $a){
+        $results[] = [
+            'username' => $a['username'],
+            'name' => $a['firstname'] . ' ' . $a['lastname']
+        ];
+    }
+    echo json_encode($results);
+    exit;
+}
+
+// ════════════════════════════════════════════════════════
+// AJAX: Get availability for a specific artist
+// ════════════════════════════════════════════════════════
+if(isset($_GET['action']) && $_GET['action'] === 'get_artist_availability' && isset($_GET['username'])){
+    include_once __ROOT__ . '/libraries/artistmanagementlib.php';
+    header('Content-Type: application/json');
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT availability, timezone FROM artists WHERE username = ? AND active = 1");
+    $stmt->execute([$_GET['username']]);
+    $artist = $stmt->fetch(PDO::FETCH_ASSOC);
+    if(!$artist){
+        echo json_encode(['error' => 'Artist not found']);
+        exit;
+    }
+    $av = $artist['availability'] ?? '0|0|0|0|0|0|0';
+    $tz = $artist['timezone'] ?? 'UTC';
+    echo json_encode([
+        'available_now' => IsArtistAvailableNow($av, $tz),
+        'availability_html' => DisplayArtistAvailability($av, $tz)
+    ]);
+    exit;
+}
