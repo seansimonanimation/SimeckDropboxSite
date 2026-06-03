@@ -90,11 +90,7 @@ function CloseTimeclockShift($shiftID){
     $stmt = $pdo->prepare($SQLString);
     if(IsReadOnly()){ return false;}
     $stmt->execute([$shiftID]);
-    LogAction(
-        "Closed timeclock shift #$shiftID",
-        "Shift closed.",
-        'timeclock'
-    );
+    LogSimeckAction('Closed timeclock shift', "Shift #$shiftID was closed.", 'System');
 }
 
 function UpdateTimeclockShiftField($shiftId, $field, $value){
@@ -108,11 +104,7 @@ function UpdateTimeclockShiftField($shiftId, $field, $value){
     if(IsReadOnly()){ return false;}
     $result = $stmt->execute([$value, $shiftId]);
     if($result){
-        LogAction(
-            "Updated timeclock shift #$shiftId $field",
-            "New value: $value",
-            'timeclock'
-        );
+        LogSimeckAction('Updated timeclock shift', "Shift #$shiftId had its $field updated to $value.", 'System');
     }
     return $result;
 }

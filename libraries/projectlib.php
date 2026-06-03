@@ -78,6 +78,7 @@ function UpdateProjectLead($pid, $newLead){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("UPDATE projects SET leader = ? WHERE pid = ?");
     return $stmt->execute([$newLead ?: null, $pid]);
+    LogSimeckAction('Project lead updated', "Project with PID {$pid} has a new lead: " . ($newLead ?: 'None'), $pid);
 }
 function GetProjectFolderSize($pid){
     $pdo = DBConnect();
@@ -210,6 +211,7 @@ function ToggleProjectActivation($pid){
         $updateStmt = $pdo->prepare("UPDATE projects SET active = ?, transitioning = 1  WHERE pid = ?");
         $updateStmt->execute([$newStatus, $pid]);
     }
+    LogSimeckAction('Project activation toggled', "Project with PID {$pid} was " . ($newStatus ? 'activated' : 'deactivated') . " and is now transitioning.", $pid);
     RefreshPortal();
 }
 
@@ -268,7 +270,7 @@ function CreateNewProject($name, $description, $type) {
     $stmt->execute([$newPid, $name, $activePath, $inactiveZipPath, $type, $description]);
 
     return $newPid;
-    LogAction('Created new project', "Project Name: $name, Type: $type", $newPid);
+    LogSimeckAction('Project created', "Project '{$name}' with PID {$newPid} was created.", 'System');
 }
 
 function GetAllDataForProject($pid){

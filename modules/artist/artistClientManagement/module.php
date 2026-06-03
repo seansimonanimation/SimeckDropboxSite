@@ -12,7 +12,7 @@
  */
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/clientManagement/artistClientManagement.php';
-
+include_once __ROOT__ . '/libraries/logging.php';
 ?>
 
 

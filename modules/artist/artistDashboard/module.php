@@ -14,6 +14,7 @@ include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/dashboardlib.php';
 include_once __ROOT__ . '/libraries/artistmanagementlib.php';
+include_once __ROOT__ . '/libraries/logging.php';
 $currentUser = $_SESSION['username'];
 
 ?>

@@ -14,6 +14,7 @@ include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/auth.php';
 include_once __ROOT__ . '/libraries/settingslib.php';
+include_once __ROOT__ . '/libraries/logging.php';
 
 global $errorMessage;
 $errorMessage = '';
@@ -39,7 +40,7 @@ if(!IsReadOnly()){
         if($errorMessage === ''){
             if(SetArtistPassword($username, $newPW)){
                 header("Location: ?pw_changed=1");
-                LogAction('Password changed', 'Artist changed their password.', null, $username);
+                LogSimeckAction('Password changed', 'Artist changed their password.', 'System');
                 exit;
             } else {
                 $errorMessage = 'Database error. Password was not changed.';
@@ -53,6 +54,7 @@ if(!IsReadOnly()){
         if(SetArtistAvailability($username, $_POST['av_data'])){
             $_SESSION['availability'] = $_POST['av_data'];
             header("Location: ?av_saved=1");
+            LogSimeckAction('Availability updated', 'Artist updated their availability.', 'System');
             exit;
         } else {
             $errorMessage = 'Invalid availability data. Please try again.';
