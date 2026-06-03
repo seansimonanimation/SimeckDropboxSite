@@ -1,7 +1,80 @@
 <?php
 include_once __DIR__ . '/session.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/download.php';  
+include_once __ROOT__ . '/download.php'; 
+
+function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
+    $parts = explode('|', $avString);
+    if(count($parts) !== 7){ return '<span style="color:#999">Not Set</span>'; }
+    if(array_sum($parts) == 0){ return '<span style="color:#999">Not Set</span>'; }
+
+    $viewerTz = new DateTimeZone($_SESSION['timezone'] ?? 'UTC');
+    $artistTz = new DateTimeZone($artistTimezone);
+
+    // Convert artist's 7-day bitmask to viewer's local timezone
+    $viewerMask = [0,0,0,0,0,0,0];
+    $ref = new DateTime('2024-01-07', $artistTz); // Sunday reference
+
+    for($d = 0; $d < 7; $d++){
+        $mask = (int)$parts[$d];
+        if($mask === 0) continue;
+
+        for($b = 0; $b < 48; $b++){
+            if(($mask >> $b) & 1){
+                $dt = clone $ref;
+                $dt->modify("+$d days");
+                $dt->modify('+' . ($b * 30) . ' minutes');
+                $dt->setTimezone($viewerTz);
+
+                $vDay = (int)$dt->format('w');
+                $vBit = (int)$dt->format('G') * 2 + (int)($dt->format('i') / 30);
+                $viewerMask[$vDay] |= (1 << $vBit);
+            }
+        }
+    }
+
+    // Display from the converted viewer mask
+    $dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    $lines = [];
+
+    for($d = 0; $d < 7; $d++){
+        $mask = $viewerMask[$d];
+        if($mask === 0) continue;
+
+        $ranges = [];
+        $i = 0;
+        while($i < 48){
+            if(($mask >> $i) & 1){
+                $start = $i;
+                while($i < 48 && (($mask >> $i) & 1)){ $i++; }
+                $end = $i;
+                $startHour = floor($start / 2);
+                $startMin = ($start % 2) * 30;
+                $endHour = floor($end / 2);
+                $endMin = ($end % 2) * 30;
+
+                $startStr = ($startHour == 0 ? '12' : ($startHour > 12 ? $startHour - 12 : $startHour))
+                    . ':' . str_pad($startMin, 2, '0', STR_PAD_LEFT)
+                    . ($startHour < 12 ? 'a' : 'p');
+                $endStr = ($endHour == 0 ? '12' : ($endHour > 12 ? $endHour - 12 : $endHour))
+                    . ':' . str_pad($endMin, 2, '0', STR_PAD_LEFT)
+                    . ($endHour < 12 ? 'a' : 'p');
+
+                $ranges[] = $startStr . '-' . $endStr;
+            } else {
+                $i++;
+            }
+        }
+        $lines[] = $dayNames[$d] . ': ' . implode(', ', $ranges);
+    }
+
+    return implode('<br>', $lines);
+}
+
+
+
+
+
 function GenerateArtistCards() {
     if(isset($_GET['searchArtist'])){
         $artists = GetSearchedArtist($_GET['searchArtist']);
@@ -11,12 +84,13 @@ function GenerateArtistCards() {
     foreach ($artists as $artist) {
         echo '<div class="module-card module-card--span-4">';
         echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
-        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
+        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
         echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
+        echo '<td class="module-tablecell">' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
         echo '<td class="module-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
         // CHANGED: added class="reset-pw-button" and data attribute instead of location.href
         echo '<td class="module-tablecell"><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
@@ -29,7 +103,7 @@ function GenerateArtistCards() {
     }
 }
 function GetAllArtists(){
-    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments FROM artists";
+    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments, availability, timezone FROM artists";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -60,7 +134,7 @@ function ToggleArtistStatus($artistUsername, $isActive){
     RefreshPortal();
 }
 function GetSearchedArtist($searchterm){
-    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
+    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments, availability, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $likeTerm = '%' . $searchterm . '%';

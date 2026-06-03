@@ -410,3 +410,19 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* ── Availability Grid Cell Styles ── */
+.av-cell {
+    display: inline-block;
+}
+.av-cell.active {
+    background: var(--av-active, #4CAF50) !important;
+    border-color: var(--av-active, #4CAF50) !important;
+}
+#av-grid-container {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.theme-spite-castle {
+    --av-active: #7c4dff;
+}

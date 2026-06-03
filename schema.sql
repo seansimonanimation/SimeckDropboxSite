@@ -47,14 +47,15 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `project_assignments` varchar(100) DEFAULT NULL,
   `theme` varchar(20) NOT NULL DEFAULT 'dark-boo',
   `timezone` varchar(40) DEFAULT NULL,
+  `availability` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0|0|0|0|0|0|0',
   KEY `userID` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
-INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`, `timezone`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix'),
-	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo', NULL),
-	('rsimon', 'Randy', 'Simon', NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo', NULL);
+INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`, `timezone`, `availability`) VALUES
+	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|0|0|0|0|0'),
+	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0'),
+	('rsimon', 'Randy', 'Simon', NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0');
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -66,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `clientdocuments` (
   KEY `uploadID` (`uploadID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clientdocuments: ~1 rows (approximately)
+-- Dumping data for table simeckdb.clientdocuments: ~0 rows (approximately)
 INSERT IGNORE INTO `clientdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
 
@@ -82,14 +83,15 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `point_of_contact` varchar(20) DEFAULT NULL,
   `theme` varchar(20) DEFAULT 'dark-boo',
   `lock_overrides` int DEFAULT NULL,
-  `timezone` varchar(40) DEFAULT 'UTC'
+  `timezone` varchar(40) DEFAULT 'UTC',
+  `availability` varchar(120) DEFAULT '0|0|0|0|0|0|0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.clients: ~3 rows (approximately)
-INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`, `theme`, `lock_overrides`, `timezone`) VALUES
-	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 10, 'UTC'),
-	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC'),
-	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC');
+INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`, `theme`, `lock_overrides`, `timezone`, `availability`) VALUES
+	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 7, 'UTC', '0|0|0|0|0|0|0'),
+	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0'),
+	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0');
 
 -- Dumping structure for table simeckdb.filecomments
 CREATE TABLE IF NOT EXISTS `filecomments` (
@@ -100,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `filecomments` (
   `comment_content` longtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.filecomments: ~26 rows (approximately)
+-- Dumping data for table simeckdb.filecomments: ~27 rows (approximately)
 INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `comment_order`, `comment_content`) VALUES
 	('client', '2026-05-24 15:02:51', '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', 1, 'It\'s Simeck\'s logo.'),
 	('admin', '2026-05-25 17:02:25', '/files/Projects/clientProjects/C01_SetSail', 1, 'Test Comment!'),
@@ -128,7 +130,9 @@ INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `
 	('admin', '2026-05-29 12:20:39', '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', 1, 'Kitty!'),
 	('admin', '2026-06-01 11:31:58', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 2, 'Comment!'),
 	('admin', '2026-06-01 11:32:00', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 3, 'Comment!'),
-	('admin', '2026-06-01 11:33:49', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 4, 'derp!');
+	('admin', '2026-06-01 11:33:49', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 4, 'derp!'),
+	('admin', '2026-06-02 11:19:37', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Dragon%20Ball%20Z%20-%20Ova%2001B%20-%20Plan%20To%20Eradicate%20The%20Saiyans%2C%20Part%202%20Of%202%20(1993%20Dvdrip%20-%20480P%20Jap%20Audio).mp4', 1, 'derp'),
+	('admin', '2026-06-02 11:25:42', '/files/Projects/clientProjects/C01_SetSail/clientUpload/mov/CHU_WEBSITE.png', 1, 'Chu!');
 
 -- Dumping structure for table simeckdb.lockedfiles
 CREATE TABLE IF NOT EXISTS `lockedfiles` (
@@ -138,27 +142,29 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   `assetlock` int DEFAULT '1',
   `commentlock` int DEFAULT '1',
   KEY `lockid` (`lockid`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.lockedfiles: ~2 rows (approximately)
+-- Dumping data for table simeckdb.lockedfiles: ~3 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1),
 	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1),
-	(12, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', '2026-06-01 11:31:31', 1, 1);
+	(12, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', '2026-06-01 11:31:31', 1, 1),
+	(15, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Dragon%20Ball%20Z%20-%20Ova%2001B%20-%20Plan%20To%20Eradicate%20The%20Saiyans%2C%20Part%202%20Of%202%20(1993%20Dvdrip%20-%20480P%20Jap%20Audio).mp4', '2026-06-02 11:19:49', 1, 1);
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
-  `name` varchar(50) DEFAULT NULL,
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   `user_action` varchar(500) DEFAULT NULL,
   `ip_address` varchar(20) DEFAULT NULL,
   `extra_data` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `project_target` varchar(10) DEFAULT 'system'
+  `project_target` varchar(10) DEFAULT 'system',
+  `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.logs: ~1 rows (approximately)
-INSERT IGNORE INTO `logs` (`name`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`) VALUES
-	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system');
+INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
+	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL);
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -176,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
 
 -- Dumping data for table simeckdb.projects: ~3 rows (approximately)
 INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`, `leader`, `size_on_disk`) VALUES
-	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 2381352),
+	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 300173009),
 	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.', 'admin', 19541129),
 	('P01', 'C City', 1, '/files/Projects/internal/P01_C City', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.', 'admin', 1345373);
 
@@ -187,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   `time_in` datetime DEFAULT NULL,
   `time_out` datetime DEFAULT NULL,
   KEY `shift_id` (`shift_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.timeclockshifts: ~12 rows (approximately)
 INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
@@ -202,8 +208,9 @@ INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`)
 	('admin', 11, '2026-05-28 12:39:50', '2026-05-28 12:39:56'),
 	('admin', 12, '2026-05-28 12:39:57', '2026-05-28 12:47:36'),
 	('admin', 13, '2026-05-28 12:47:44', '2026-05-28 12:49:33'),
-	('admin', 14, '2026-05-28 12:49:35', '2026-05-28 12:59:06'),
-	('admin', 15, '2026-05-28 12:59:09', NULL);
+	('admin', 14, '2026-05-28 12:49:35', '2026-05-28 14:59:06'),
+	('admin', 15, '2026-05-28 12:59:09', '2026-06-01 17:00:17'),
+	('admin', 16, '2026-06-01 14:53:31', NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

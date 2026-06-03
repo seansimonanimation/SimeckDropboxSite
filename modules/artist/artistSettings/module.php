@@ -21,8 +21,12 @@ $successMessage = '';
 if(isset($_GET['pw_changed'])){
     $successMessage = 'Password changed successfully.';
 }
+if(isset($_GET['av_saved'])){
+    $successMessage = 'Availability saved successfully.';
+}
 
 if(!IsReadOnly()){
+    // ── Password Change ──
     if(isset($_POST['ArtistChangePW'])){
         $username = $_SESSION['username'];
         $currentPW = $_POST['currentPW'];
@@ -42,6 +46,18 @@ if(!IsReadOnly()){
             }
         }
     }
+
+    // ── Availability Save ──
+    if(isset($_POST['save_availability']) && isset($_POST['av_data'])){
+        $username = $_SESSION['username'];
+        if(SetArtistAvailability($username, $_POST['av_data'])){
+            $_SESSION['availability'] = $_POST['av_data'];
+            header("Location: ?av_saved=1");
+            exit;
+        } else {
+            $errorMessage = 'Invalid availability data. Please try again.';
+        }
+    }
 }
 
 
@@ -53,7 +69,6 @@ function verifyConfirmation($newPW, $confirmPW){
     }
     return true;
 }
-// Updated function:
 function verifyCurrentPW($currentPW, $artistData){
     global $errorMessage;
     if(!password_verify($currentPW, $artistData['password'])){
@@ -64,7 +79,6 @@ function verifyCurrentPW($currentPW, $artistData){
 }
 
 ?>
-
 
 <link rel="stylesheet" href="/css/moduleStyle.css" />
 
@@ -101,7 +115,7 @@ function verifyCurrentPW($currentPW, $artistData){
                 </form>
             </div>
         </div>
-                <div class="module-card module-card--span-1">
+        <div class="module-card module-card--span-1">
             <div class="module-card__header">
                 <h3 class="module-card__title">Timezone</h3>
             </div>
@@ -126,8 +140,11 @@ function verifyCurrentPW($currentPW, $artistData){
                 </form>
             </div>
         </div>
-
         <div class="module-card module-card--placeholder"></div>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!--  PASSWORD CHANGE                                                -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="module-card module-card--span-1">
             <h1>Password change</h1>
             <form method="POST" class="module-create-form" action="">
@@ -138,5 +155,41 @@ function verifyCurrentPW($currentPW, $artistData){
                 <button class="module-button" type="submit">Change password</button>
             </form>
         </div>
-    </div>
-</div>
+        <div class="module-card module-card--placeholder"></div>
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!--  AVAILABILITY GRID — Full Width                                -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <div class="module-card module-card--span-2" style="overflow:visible;">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Weekly Availability</h3>
+            </div>
+            <div class="module-card__content">
+                <p style="font-size:0.85rem;color:var(--color-text-muted,#888);margin:0 0 12px 0;">
+                    Click any half-hour block to toggle your availability. Click <strong>Apply</strong> when done.
+                </p>
+
+                <form id="av-form" method="post" action="">
+                    <input type="hidden" name="save_availability" value="1" />
+                    <input type="hidden" name="av_data" id="av-data" value="" />
+
+                    <div id="av-grid-container"></div>
+
+                    <div style="margin-top:14px;display:flex;gap:12px;align-items:center;">
+                        <button type="button" id="av-apply-btn" class="module-button" style="padding:8px 24px;font-weight:600;">Apply</button>
+                        <span style="font-size:0.82rem;color:var(--color-text-muted,#888);">
+                            Changes are not saved until you click Apply.
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+<!-- ═══ Availability Grid JavaScript ═══ -->
+<script src="/modules/artist/artistSettings/availability.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var initialStr = <?php echo json_encode($_SESSION['availability'] ?? '0|0|0|0|0|0|0'); ?>;
+    AvailabilityGrid.init('av-grid-container', initialStr);
+});
+</script>
