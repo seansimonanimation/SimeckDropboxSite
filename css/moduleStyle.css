@@ -423,8 +423,20 @@
     justify-content: center;
     text-align: center;
 }
+.theme-dark-boo {
+    --av-active: #1e88e5;
+}
 .theme-spite-castle {
     --av-active: #7c4dff;
+}
+.theme-sky-boo {
+    --av-active: #03a9f4;
+}
+.theme-fat-butters {
+    --av-active: #ff5722;
+}
+.theme-ketchup-mustard {
+    --av-active: #ff9800;
 }
 #calcModeToggle .module-toggle__option[data-value="timezone"].module-toggle__option--active ~ .module-toggle__slider {
   transform: translateX(100%);
