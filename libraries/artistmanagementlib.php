@@ -68,7 +68,7 @@ function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
         $lines[] = $dayNames[$d] . ': ' . implode(', ', $ranges);
     }
 
-    return implode('<br>', $lines);
+    return  'Timezone: ' . $artistTimezone . '<br />' . implode('<br>', $lines);
 }
 
 function SearchArtistsByName($query){
