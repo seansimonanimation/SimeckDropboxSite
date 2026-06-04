@@ -44,7 +44,7 @@ elFinder.prototype.commands.seeComments = function() {
                                 '<div class="seecm-comment__header">' +
                                 '<span class="seecm-comment__author">' + fm.escape(comment.owner) + '</span> ' +
                                 '<span class="seecm-comment__time">' + comment.comment_time + '</span></div>' +
-                                '<p class="seecm-comment__body">' + fm.escape(comment.comment_content) + '</p>' +
+                                '<p class="seecm-comment__body">' + comment.comment_content + '</p>' +
                                 '</div>';
                         });
                     }

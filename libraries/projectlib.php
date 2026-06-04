@@ -388,7 +388,7 @@ function DisplayProjectDirComments($comments, $projectPath){
         echo '<tr>';
         echo '<td>'.htmlspecialchars(GetUserDisplayName($comment['owner'])).'</td>';
         echo '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
-        echo '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
+        echo '<td>'.$comment['comment_content'].'</td>';
         echo '</tr>';
     }
     echo '</tbody>';
@@ -436,7 +436,7 @@ function DisplayProjectFileComments($comments){
         echo '<td>'.htmlspecialchars(GetUserDisplayName($comment['owner'])).'</td>';
         echo '<td style="white-space:nowrap;">'.htmlspecialchars($comment['comment_time']).'</td>';
         echo '<td>'.htmlspecialchars($filename).'</td>';
-        echo '<td>'.htmlspecialchars($comment['comment_content']).'</td>';
+        echo '<td>'.$comment['comment_content'].'</td>';
         echo '</tr>';
     }
     echo '</tbody>';
