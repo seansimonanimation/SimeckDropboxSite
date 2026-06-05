@@ -48,14 +48,15 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `theme` varchar(20) NOT NULL DEFAULT 'dark-boo',
   `timezone` varchar(40) DEFAULT NULL,
   `availability` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0|0|0|0|0|0|0',
+  `availability_this_week` varchar(50) DEFAULT '0|0|0|0|0|0|0',
   KEY `userID` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
-INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`, `timezone`, `availability`) VALUES
-	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|0|0|0|0|0'),
-	('artist', 'Artist', 'User', '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0'),
-	('rsimon', 'Randy', 'Simon', NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0');
+INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`) VALUES
+	('admin', 'Admin', 'User', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|0', '0|0|0|0|0|0|0'),
+	('artist', 'Artist', 'User', '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo', NULL, '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0'),
+	('rsimon', 'Randy', 'Simon', NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0', '0|0|0|0|0|0|0');
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -92,6 +93,19 @@ INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `
 	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 7, 'UTC', '0|0|0|0|0|0|0'),
 	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0'),
 	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0');
+
+-- Dumping structure for table simeckdb.daysoff
+CREATE TABLE IF NOT EXISTS `daysoff` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) DEFAULT NULL,
+  `date_off_start` date DEFAULT NULL,
+  `date_off_end` date DEFAULT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table simeckdb.daysoff: ~0 rows (approximately)
 
 -- Dumping structure for table simeckdb.filecomments
 CREATE TABLE IF NOT EXISTS `filecomments` (
@@ -162,9 +176,33 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~1 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~24 rows (approximately)
 INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
-	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL);
+	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL),
+	('admin', '2026-06-03 12:16:33', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-03 12:16:36', 'Stopped impersonation', '127.0.0.1', 'rsimon stopped impersonating. Reverted back to \'admin\'.', 'System', 'admin'),
+	('admin', '2026-06-03 12:16:39', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-03 12:16:42', 'Stopped impersonation', '127.0.0.1', 'rsimon stopped impersonating. Reverted back to \'admin\'.', 'System', 'admin'),
+	('admin', '2026-06-03 12:50:45', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-03 12:51:49', 'Stopped impersonation', '127.0.0.1', 'rsimon stopped impersonating. Reverted back to \'admin\'.', 'System', 'admin'),
+	('admin', '2026-06-03 15:34:06', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-03 15:34:15', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-03 15:34:18', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-03 15:34:35', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-03 16:07:59', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
+	('admin', '2026-06-03 16:14:51', 'Availability updated', '127.0.0.1', 'Artist updated their availability.', 'System', NULL),
+	('admin', '2026-06-03 16:58:56', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'fat-butters\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:09', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:28', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'ketchup-mustard\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:31', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'fat-butters\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:33', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:34', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:36', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:52', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'fat-butters\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:53', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'ketchup-mustard\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:54', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
+	('admin', '2026-06-03 16:59:55', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL),
+	('admin', '2026-06-05 12:13:59', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL);
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -195,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   KEY `shift_id` (`shift_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.timeclockshifts: ~12 rows (approximately)
+-- Dumping data for table simeckdb.timeclockshifts: ~14 rows (approximately)
 INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
 	('artist', 4, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
 	('admin', 2, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),

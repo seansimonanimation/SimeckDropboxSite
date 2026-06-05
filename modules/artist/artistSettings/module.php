@@ -25,6 +25,18 @@ if(isset($_GET['pw_changed'])){
 if(isset($_GET['av_saved'])){
     $successMessage = 'Availability saved successfully.';
 }
+// Check if there's an active weekly override to show a notice
+$hasWeekOverride = false;
+if(isset($_SESSION['username'])){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT availability_this_week FROM artists WHERE username = ?");
+    $stmt->execute([$_SESSION['username']]);
+    $twAv = $stmt->fetchColumn() ?? '0|0|0|0|0|0|0';
+    $parts = explode('|', $twAv);
+    foreach($parts as $p){
+        if((int)$p !== 0){ $hasWeekOverride = true; break; }
+    }
+}
 
 if(!IsReadOnly()){
     // ── Password Change ──
@@ -62,6 +74,36 @@ if(!IsReadOnly()){
         }
     }
 }
+    // ── Time Off Submission ──
+    if(isset($_POST['submit_timeoff'])){
+        $username = $_SESSION['username'];
+        $dateStart = $_POST['timeoff_date_start'] ?? '';
+        $dateEnd   = $_POST['timeoff_date_end'] ?? '';
+        $startTime = null;
+        $endTime   = null;
+
+        // Handle "all day" — leave times as NULL
+        if (!isset($_POST['timeoff_all_day'])) {
+            $startTime = $_POST['timeoff_start_time'] ?? null;
+            $endTime   = $_POST['timeoff_end_time'] ?? null;
+        }
+
+        // Single-day: dateEnd stays null
+        if (!isset($_POST['timeoff_multi_day'])) {
+            $dateEnd = null;
+        }
+
+        $result = SubmitDayOff($username, $dateStart, $dateEnd ?: null, $startTime, $endTime);
+        if ($result === true) {
+            $successMessage = 'Time off request submitted successfully.';
+            // If availability was adjusted, update the session
+            if (isset($_POST['timeoff_same_week'])) {
+                // AdjustAvailabilityThisWeek already updated $_SESSION['availability']
+            }
+        } else {
+            $errorMessage = $result;
+        }
+    }
 
 
 function verifyConfirmation($newPW, $confirmPW){
@@ -160,13 +202,13 @@ function verifyCurrentPW($currentPW, $artistData){
                 <button class="module-button" type="submit">Change password</button>
             </form>
         </div>
-        <div class="module-card module-card--placeholder"></div>
         <!-- ════════════════════════════════════════════════════════════════ -->
         <!--  AVAILABILITY GRID — Half Width                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <div class="module-card module-card--span-2" style="overflow:visible;">
+        <div class="module-card module-card--span-3" style="overflow:visible;">
             <div class="module-card__header">
                 <h3 class="module-card__title">Weekly Availability</h3>
+                
             </div>
             <div class="module-card__content">
                 <p style="font-size:0.85rem;color:var(--color-text-muted,#888);margin:0 0 12px 0;">
@@ -188,6 +230,57 @@ function verifyCurrentPW($currentPW, $artistData){
                 </form>
             </div>
         </div>
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!--  TIME OFF REQUEST                                              -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <div class="module-card module-card--span-1">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Request Time Off</h3>
+            </div>
+            <div class="module-card__content" style="padding:10px 12px;">
+                <form id="timeoff-form" method="post" action="" style="text-align:center;">
+                    <input type="hidden" name="submit_timeoff" value="1" />
+
+                    <!-- Date row -->
+                    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px;">
+                        <div>
+                            <label for="timeoff_date_start" style="display:block;margin-bottom:2px;font-size:0.75rem;">Date</label>
+                            <input type="date" id="timeoff_date_start" name="timeoff_date_start" class="module-input" required style="width:auto;max-width:200px;font-size:0.82rem;" />
+                        </div>
+                        <div id="timeoff_end_date_group" style="display:none;">
+                            <label for="timeoff_date_end" style="display:block;margin-bottom:2px;font-size:0.75rem;">End</label>
+                            <input type="date" id="timeoff_date_end" name="timeoff_date_end" class="module-input" style="width:auto;max-width:200px;font-size:0.82rem;" />
+                        </div>
+                    </div>
+
+                    <!-- Checkboxes row -->
+                    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:6px;font-size:0.82rem;">
+                        <label style="display:flex;align-items:center;gap:3px;cursor:pointer;">
+                            <input type="checkbox" id="timeoff_multi_day" name="timeoff_multi_day" value="1" style="margin:0;" />
+                            Multi-day
+                        </label>
+                        <label style="display:flex;align-items:center;gap:3px;cursor:pointer;">
+                            <input type="checkbox" id="timeoff_all_day" name="timeoff_all_day" value="1" style="margin:0;" />
+                            All day
+                        </label>
+                    </div>
+
+                    <!-- Time fields row -->
+                    <div id="timeoff_time_fields" style="display:flex;gap:8px;justify-content:center;margin-bottom:8px;">
+                        <div>
+                            <label for="timeoff_start_time" style="display:block;margin-bottom:2px;font-size:0.75rem;">Start</label>
+                            <input type="time" id="timeoff_start_time" name="timeoff_start_time" class="module-input" style="width:auto;max-width:120px;font-size:0.82rem;" />
+                        </div>
+                        <div>
+                            <label for="timeoff_end_time" style="display:block;margin-bottom:2px;font-size:0.75rem;">End</label>
+                            <input type="time" id="timeoff_end_time" name="timeoff_end_time" class="module-input" style="width:auto;max-width:120px;font-size:0.82rem;" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="module-button" style="padding:5px 16px;font-size:0.85rem;">Submit</button>
+                </form>
+            </div>
+        </div>
 
 
 <!-- ═══ Availability Grid JavaScript ═══ -->
@@ -196,5 +289,25 @@ function verifyCurrentPW($currentPW, $artistData){
 document.addEventListener('DOMContentLoaded', function(){
     var initialStr = <?php echo json_encode($_SESSION['availability'] ?? '0|0|0|0|0|0|0'); ?>;
     AvailabilityGrid.init('av-grid-container', initialStr);
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var multiDayCheckbox = document.getElementById('timeoff_multi_day');
+    var endDateGroup = document.getElementById('timeoff_end_date_group');
+    var allDayCheckbox = document.getElementById('timeoff_all_day');
+    var timeFields = document.getElementById('timeoff_time_fields');
+
+    if(multiDayCheckbox && endDateGroup) {
+        multiDayCheckbox.addEventListener('change', function(){
+            endDateGroup.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+
+    if(allDayCheckbox && timeFields) {
+        allDayCheckbox.addEventListener('change', function(){
+            timeFields.style.display = this.checked ? 'none' : 'block';
+        });
+    }
 });
 </script>

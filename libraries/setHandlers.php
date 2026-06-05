@@ -1,4 +1,6 @@
 <?php
+include_once __ROOT__ . '/libraries/timeofflib.php';
+
 
    //Sends the user back to the login page if there is no session.
    if(!isset($_SESSION['username'])){
@@ -109,7 +111,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'get_artist_availability' && is
     include_once __ROOT__ . '/libraries/artistmanagementlib.php';
     header('Content-Type: application/json');
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT availability, timezone FROM artists WHERE username = ? AND active = 1");
+    $stmt = $pdo->prepare("SELECT availability, availability_this_week, timezone FROM artists WHERE username = ? AND active = 1");
     $stmt->execute([$_GET['username']]);
     $artist = $stmt->fetch(PDO::FETCH_ASSOC);
     if(!$artist){
@@ -117,13 +119,16 @@ if(isset($_GET['action']) && $_GET['action'] === 'get_artist_availability' && is
         exit;
     }
     $av = $artist['availability'] ?? '0|0|0|0|0|0|0';
+    $avTw = $artist['availability_this_week'] ?? '0|0|0|0|0|0|0';
     $tz = $artist['timezone'] ?? 'UTC';
+    $effectiveAv = GetEffectiveAvailability($av, $avTw);
     echo json_encode([
-        'available_now' => IsArtistAvailableNow($av, $tz),
-        'availability_html' => DisplayArtistAvailability($av, $tz)
+        'available_now' => IsArtistAvailableNow($effectiveAv, $tz),
+        'availability_html' => DisplayArtistAvailability($effectiveAv, $tz)
     ]);
     exit;
 }
+
 // ════════════════════════════════════════════════════════
 // AJAX: Convert a datetime from viewer's timezone to artist's or a specific timezone
 // ════════════════════════════════════════════════════════

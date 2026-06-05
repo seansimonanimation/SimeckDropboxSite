@@ -18,6 +18,8 @@ function PutArtistDataInSession($artistData){
     $_SESSION['theme'] = $artistData['theme'] ?? 'dark-boo';
     $_SESSION['timezone'] = $artistData['timezone'] ?? 'UTC';
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
+    $_SESSION['availability_this_week'] = $artistData['availability_this_week'] ?? '0|0|0|0|0|0|0'; 
+
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
