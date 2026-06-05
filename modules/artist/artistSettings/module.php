@@ -164,7 +164,7 @@ function verifyCurrentPW($currentPW, $artistData){
         <!-- ════════════════════════════════════════════════════════════════ -->
         <!--  AVAILABILITY GRID — Half Width                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <div class="module-card module-card--span-2" style="overflow:visible;">
+        <div class="module-card module-card--span-4" style="overflow:visible;">
             <div class="module-card__header">
                 <h3 class="module-card__title">Weekly Availability</h3>
             </div>
