@@ -1,7 +1,9 @@
 <?php
 include_once __DIR__ . '/session.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/download.php'; 
+include_once __ROOT__ . '/download.php';
+include_once __ROOT__ . '/libraries/timeofflib.php';
+
 
 function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
     $parts = explode('|', $avString);
@@ -72,13 +74,14 @@ function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
 }
 
 function SearchArtistsByName($query){
-    $SQLString = "SELECT username, firstname, lastname, availability, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
+    $SQLString = "SELECT username, firstname, lastname, availability, availability_this_week, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
     $pdo = DBConnect();
     $likeTerm = '%' . $query . '%';
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 function GenerateArtistCards() {
@@ -109,19 +112,21 @@ function GenerateArtistCards() {
     }
 }
 function GetAllArtists(){
-    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments, availability, timezone FROM artists";
+    $SQLString = "SELECT username, firstname, lastname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 function GetAllActiveArtists(){
-    $SQLString = "SELECT username, firstname, lastname, availability, timezone FROM artists WHERE active = 1";
+    $SQLString = "SELECT username, firstname, lastname, availability, availability_this_week, timezone FROM artists WHERE active = 1";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 function IsArtistAvailableNow($avString, $artistTimezone){
     $parts = explode('|', $avString);
     if(count($parts) !== 7) return 'No';
@@ -159,13 +164,14 @@ function ToggleArtistStatus($artistUsername, $isActive){
     RefreshPortal();
 }
 function GetSearchedArtist($searchterm){
-    $SQLString = "SELECT username, firstname, lastname, userID, role , active, project_assignments, availability, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
+    $SQLString = "SELECT username, firstname, lastname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $likeTerm = '%' . $searchterm . '%';
     $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 function ResetArtistPassword($username){
     $defaultPW = '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS'; // This is the hash for "SimeckArtist01".
     $SQLString = "UPDATE artists SET password = ? WHERE username = ?";
