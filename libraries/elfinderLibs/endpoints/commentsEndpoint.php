@@ -44,7 +44,7 @@ if ($action === 'fetch') {
 
 } elseif ($action === 'add') {
     $fileUrl  = $_POST['file_url'] ?? '';
-    $content  = $_POST['content'] ?? '';
+    $content = htmlspecialchars(trim($_POST['content'] ?? ''), ENT_QUOTES, 'UTF-8');
 
     if (empty($fileUrl) || empty(trim($content))) {
         http_response_code(400);

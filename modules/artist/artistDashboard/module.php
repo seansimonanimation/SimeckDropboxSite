@@ -17,6 +17,13 @@ include_once __ROOT__ . '/libraries/artistmanagementlib.php';
 include_once __ROOT__ . '/libraries/logging.php';
 $currentUser = $_SESSION['username'];
 
+
+
+
+if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy'){
+    SetActiveModule(('Settings'))
+}
+
 ?>
 <link rel="stylesheet" href="/css/moduleStyle.css" />
 

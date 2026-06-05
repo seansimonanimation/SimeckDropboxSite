@@ -93,6 +93,8 @@ function verifyCurrentPW($currentPW, $artistData){
     <div class="module-grid">
         <?php echo ArtistSettingsSuccessDisplay($successMessage);?>
         <?php echo ArtistSettingsErrorDisplay($errorMessage); ?>
+        <?php if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy') { echo ArtistSettingsSuccessDisplay('You are logged in with the default password. Please change your password.'); }?>
+
         <?php
         $themes = DiscoverThemes();
         $currentTheme = $_SESSION['theme'] ?? 'dark-boo';

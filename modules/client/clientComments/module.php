@@ -23,8 +23,9 @@ if(!IsReadOnly()){
         $nextOrder = $orderStmt->fetchColumn();
         
         $stmt = $pdo->prepare("INSERT INTO filecomments (owner, comment_time, parent_file_url, comment_order, comment_content)
-                               VALUES (?, NOW(), ?, ?, ?)");
-        $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $_POST['dir_comment_content']]);
+                       VALUES (?, NOW(), ?, ?, ?)");
+        $sanitized_content = htmlspecialchars($_POST['dir_comment_content'], ENT_QUOTES, 'UTF-8');
+        $stmt->execute([$_SESSION['username'], $_POST['dir_comment_path'], $nextOrder, $sanitized_content]);
     }
 }
 
