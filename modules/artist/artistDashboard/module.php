@@ -21,7 +21,7 @@ $currentUser = $_SESSION['username'];
 
 
 if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy'){
-    SetActiveModule(('Settings'))
+    SetActiveModule(('Settings'));
 }
 
 ?>
