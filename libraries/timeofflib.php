@@ -145,12 +145,6 @@ function AdjustAvailabilityThisWeek($username, $dateStart, $dateEnd, $startTime,
     $newAvStr = implode('|', $newMask);
     $stmt = $pdo->prepare("UPDATE artists SET availability_this_week = ? WHERE username = ?");
     $stmt->execute([$newAvStr, $username]);
-
-    // Also update session if the user is the current user
-    if (isset($_SESSION['username']) && $_SESSION['username'] === $username) {
-        $_SESSION['availability'] = $newAvStr;
-    }
-
     return true;
 }
 

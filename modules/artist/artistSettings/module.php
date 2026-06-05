@@ -25,6 +25,18 @@ if(isset($_GET['pw_changed'])){
 if(isset($_GET['av_saved'])){
     $successMessage = 'Availability saved successfully.';
 }
+// Check if there's an active weekly override to show a notice
+$hasWeekOverride = false;
+if(isset($_SESSION['username'])){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT availability_this_week FROM artists WHERE username = ?");
+    $stmt->execute([$_SESSION['username']]);
+    $twAv = $stmt->fetchColumn() ?? '0|0|0|0|0|0|0';
+    $parts = explode('|', $twAv);
+    foreach($parts as $p){
+        if((int)$p !== 0){ $hasWeekOverride = true; break; }
+    }
+}
 
 if(!IsReadOnly()){
     // ── Password Change ──
@@ -196,6 +208,7 @@ function verifyCurrentPW($currentPW, $artistData){
         <div class="module-card module-card--span-3" style="overflow:visible;">
             <div class="module-card__header">
                 <h3 class="module-card__title">Weekly Availability</h3>
+                
             </div>
             <div class="module-card__content">
                 <p style="font-size:0.85rem;color:var(--color-text-muted,#888);margin:0 0 12px 0;">
