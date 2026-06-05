@@ -95,7 +95,7 @@ if(!IsReadOnly()){
 
         $result = SubmitDayOff($username, $dateStart, $dateEnd ?: null, $startTime, $endTime);
         if ($result === true) {
-            $successMessage = 'Time off request submitted successfully.';
+            $successMessage = 'Time off Notification submitted successfully.';
             // If availability was adjusted, update the session
             if (isset($_POST['timeoff_same_week'])) {
                 // AdjustAvailabilityThisWeek already updated $_SESSION['availability']
@@ -235,7 +235,7 @@ function verifyCurrentPW($currentPW, $artistData){
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="module-card module-card--span-1">
             <div class="module-card__header">
-                <h3 class="module-card__title">Request Time Off</h3>
+                <h3 class="module-card__title">Submit time-off Notification</h3>
             </div>
             <div class="module-card__content" style="padding:10px 12px;">
                 <form id="timeoff-form" method="post" action="" style="text-align:center;">
