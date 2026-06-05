@@ -11,60 +11,72 @@ function getAdminFileBrowserOptions(){
         'roots' => array(
             //Personal dropbox volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "My Dropbox",
                 'path' => AttachOrCreateDropbox(),
                 'URL'  => DetermineMyDropboxURL(),
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Everyone's Dropboxes volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "Everyone's Dropboxes",
                 'path' => __ROOT__ . '/files/Dropboxes',
                 'URL'  => '/files/Dropboxes/',
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Project volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'path' => __ROOT__ . '/files/Projects',
                 'URL'  => '/files/Projects/',
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access'
+                'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Resources volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "Studio Resources",
                 'path' => __ROOT__ . '/files/Resources',
                 'URL'  => '/files/Resources/',
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access'
+                'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             array(
                 //Corporate volume
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'path' => __ROOT__ . '/files/Corporate',
                 'URL'  => '/files/Corporate/',
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access'
+                'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             // Trash volume
             array(
                 'id'            => '1',
                 'driver'        => 'Trash',
                 'path'   => __ROOT__ . '/files/.trash/',
-                'tmbURL' => '/files/.trash/.tmb/',
+                'tmbURL' => '/files/.tmb/',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+
             )
         )
     );
@@ -79,7 +91,7 @@ function getArtistFileBrowserOptions(){
         'roots' => array(
             //Personal Dropbox volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "My Dropbox",
                 'path' => AttachOrCreateDropbox(),
                 'URL'  => DetermineMyDropboxURL(),
@@ -87,10 +99,12 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Everyone's Dropboxes volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "Everyone's Dropboxes",
                 'path' => __ROOT__ . '/files/Dropboxes',
                 'URL'  => '/files/Dropboxes/',
@@ -98,20 +112,24 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Project volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'path' => __ROOT__ . '/files/Projects',
                 'URL'  => '/files/Projects/',
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             //Resources volume
             array(
-                'driver'        => 'LocalFileSystem',
+                'driver'        => 'SimeckVolume',
                 'alias'        => "Studio Resources",
                 'path' => __ROOT__ . '/files/Resources',
                 'URL'  => '/files/Resources/',
@@ -119,16 +137,20 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
             ),
             // Trash volume
             array(
                 'id'            => '1',
                 'driver'        => 'Trash',
                 'path'   => __ROOT__ . '/files/.trash/',
-                'tmbURL' => '/files/.trash/.tmb/',
+                'tmbURL' => '/files/.tmb/',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+
             )
         )
     );
@@ -165,7 +187,7 @@ function getClientFileBrowserOptions(){
             @mkdir($clientUploadPath . '.tmb', 0777, true);
         }
         $roots[] = array(
-            'driver'        => 'LocalFileSystem',
+            'driver'        => 'SimeckVolume',
             'alias'        => $project['project_name'],
             'path' => __ROOT__ . rtrim($project['active_path'], '/') . '/clientUpload/',
             'URL'  => rtrim($project['active_path'], '/') . '/clientUpload/',
@@ -173,6 +195,8 @@ function getClientFileBrowserOptions(){
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
             'accessControl' => 'access',
             'dotFiles' => false,
+                'tmbPath' => __ROOT__ . '/files/.tmb',
+                'tmbURL' => '/files/.tmb/',
         );
     }
 
