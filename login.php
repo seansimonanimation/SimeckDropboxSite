@@ -49,7 +49,7 @@ function execute_login(){
 
     <div class="site-header">
       <div class="logo-mark">
-         <img src="https://files.simeck.com/simeck-small-icon.png"
+         <img src="globalSiteAssets/simeck-small-icon.png"
               alt="Simeck Entertainment" />
       </div>
       <div class="site-title">
