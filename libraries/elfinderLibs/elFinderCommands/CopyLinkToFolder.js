@@ -52,13 +52,13 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         // Copy to clipboard
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(linkText).then(function() {
-                var msg = '';
+                var message = '';
                 if (links.length === 1) {
-                    msg = 'Folder link copied to clipboard!';
+                    message = 'Folder link copied to clipboard!';
                 } else {
-                    msg = links.length + ' folder link(s) copied to clipboard!';
+                    message = links.length + ' folder link(s) copied to clipboard!';
                 }
-                fm.notify({ type: 'info', msg: msg });
+                fm.notify({ type: 'info', msg: message });
             }).catch(function() {
                 prompt('Copy these folder link(s) (Ctrl+C, then Enter):', linkText);
             });
