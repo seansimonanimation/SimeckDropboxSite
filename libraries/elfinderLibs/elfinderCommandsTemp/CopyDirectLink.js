@@ -7,7 +7,7 @@
  * @commandID CopyDirectLink
  * @nicename Copy Download Link
  */
-
+//
 elFinder.prototype.commands.CopyDirectLink = function() {
     this.contextmenu = true;
 

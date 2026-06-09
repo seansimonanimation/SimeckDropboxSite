@@ -2,6 +2,7 @@
  * @commandID sendToMondayChat
  * @nicename Send to Monday Chat
  */
+//
 elFinder.prototype.commands.sendToMondayChat = function() {
     this.contextmenu = true;
 

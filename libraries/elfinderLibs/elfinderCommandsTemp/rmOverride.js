@@ -2,6 +2,7 @@
  * @commandID rm
  * @nicename Delete
  */
+//
 elFinder.prototype.commands.rm = function() {
     this.contextmenu = true;
     

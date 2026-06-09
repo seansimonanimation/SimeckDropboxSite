@@ -5,7 +5,7 @@
 elFinder.prototype.commands.clientLockOverride = function() {
     //Sets this as a context menu item, but only if the user has overrides available.
     if(window.simeckSession && window.simeckSession.tempRole === 'client'){this.contextmenu = true;} else {this.contextmenu = false;}
-
+//
 
 
 this.init = function(){
