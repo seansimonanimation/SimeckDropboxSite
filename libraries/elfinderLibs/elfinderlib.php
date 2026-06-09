@@ -119,3 +119,47 @@ function OutputSimeckSessionScript() {
     ];
     echo '<script>window.simeckSession = ' . json_encode($sessionData, JSON_PRETTY_PRINT) . ';</script>' . "\n";
 }
+function DecodeElfinderHash($hash, $elfinderOptions) {
+    // elFinder hash format: "<volumeId><base64_of_path>"
+    $underscorePos = strpos($hash, '_');
+    if ($underscorePos === false) return null;
+    
+    $volumeId = substr($hash, 0, $underscorePos + 1);  // e.g., "s1_"
+    $encodedPath = substr($hash, $underscorePos + 1);
+    
+    // Decode elFinder's custom base64 alphabet: - → +, _ → /, . → =
+    $encodedPath = str_replace(['-', '_', '.'], ['+', '/', '='], $encodedPath);
+    $relativePath = base64_decode($encodedPath, true);
+    if ($relativePath === false) return null;
+    
+    // Get the volume ID number (the number after the driver letter)
+    preg_match('/\d+/', $volumeId, $matches);
+    $volumeNumber = isset($matches[0]) ? (int)$matches[0] : 0;
+    
+    // Attempt to find the correct root by its volume ID or position
+    // elFinder assigns IDs as {driverLetter}{indexInRoots+1}_
+    // But the Trash volume overrides its ID explicitly with 'id' => '1'
+    if (isset($elfinderOptions['roots'][$volumeNumber - 1]['path'])) {
+        // Use position-based lookup (works for all non-Trash volumes)
+        $volumePath = rtrim(str_replace('\\', '/', $elfinderOptions['roots'][$volumeNumber - 1]['path']), '/');
+        $fullPath = $volumePath . '/' . ltrim($relativePath, '/');
+        
+        // Verify the file actually exists at this path
+        if (file_exists($fullPath) || is_dir($fullPath)) {
+            return $fullPath;
+        }
+    }
+    
+    // Fallback: iterate all roots and look for the one whose path matches
+    // This catches the Trash volume case
+    foreach ($elfinderOptions['roots'] as $root) {
+        if (!isset($root['path'])) continue;
+        $volumePath = rtrim(str_replace('\\', '/', $root['path']), '/');
+        $fullPath = $volumePath . '/' . ltrim($relativePath, '/');
+        if (file_exists($fullPath) || is_dir($fullPath)) {
+            return $fullPath;
+        }
+    }
+    
+    return null;
+}

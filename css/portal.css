@@ -510,3 +510,13 @@ body.portal-layout.artistFileBrowser .file-browser-container .preview-pane,
 body.portal-layout.clientProjectManagement .file-browser-container .preview-pane {
     display: flex; /* Show when in these modules */
 }
+.elfinder-notify-discord {
+    background-color: #5865F2; /* Discord blurple */
+    color: #fff;
+}
+.elfinder-notify-discord .elfinder-notify-msg {
+    color: #fff;
+}
+.elfinder-notify-discord .elfinder-notify-progress {
+    background-color: #fff;
+}
