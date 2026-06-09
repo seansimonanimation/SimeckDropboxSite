@@ -45,6 +45,12 @@ function UserHasPermissionForArtistFile($username, $artistID){
     return false; // deny access for everyone that makes it to this line.
 }
 
+function ServeHashDownload($b64filepathHash){
+
+}
+
+
+
 function ServeFileForDownload($username, $docID){
     $pdo = DBConnect();
 

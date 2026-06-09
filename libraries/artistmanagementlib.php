@@ -173,7 +173,7 @@ function GetSearchedArtist($searchterm){
 }
 
 function ResetArtistPassword($username){
-    $defaultPW = '$2y$10$zMKhZyXxiuVI4MhnboAkNeMCCDZU29.FsvF23zFInKalm5eTn5jZS'; // This is the hash for "SimeckArtist01".
+    $defaultPW = '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy'; // This is the hash for "SimeckArtist01".
     $SQLString = "UPDATE artists SET password = ? WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
