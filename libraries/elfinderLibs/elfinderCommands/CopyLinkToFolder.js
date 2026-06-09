@@ -23,11 +23,6 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         var files = fm.selectedFiles();
         var dfrd = $.Deferred();
 
-        if (files.length === 0) {
-            fm.notify({ type: 'error', msg: 'No files selected.' });
-            return dfrd.reject();
-        }
-
         // Collect unique parent folder hashes
         var parentHashes = [];
         $.each(files, function(i, f) {
