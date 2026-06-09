@@ -73,3 +73,4 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         return 0;
     };
 };
+//

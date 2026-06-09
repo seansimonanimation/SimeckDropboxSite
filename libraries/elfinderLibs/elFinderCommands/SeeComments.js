@@ -2,6 +2,7 @@
  * @commandID seeComments
  * @nicename See Comments
  */
+//
 elFinder.prototype.commands.seeComments = function() {
     this.contextmenu = true;
 

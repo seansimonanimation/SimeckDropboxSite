@@ -46,4 +46,4 @@ elFinder.prototype.commands.lockFile = function() {
 
 
 
-}
+}//

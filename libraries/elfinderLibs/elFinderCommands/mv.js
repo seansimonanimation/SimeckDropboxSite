@@ -16,4 +16,4 @@ elFinder.prototype.commands.mv = function() {
     this.getstate = function() {
         return this.fm.selectedFiles().length ? 0 : -1;
     };
-}
+}//
