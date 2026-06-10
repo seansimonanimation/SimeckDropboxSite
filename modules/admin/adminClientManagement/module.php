@@ -31,7 +31,8 @@ include_once __ROOT__ . '/modules/admin/adminClientManagement/issets.php';
                 <button class="module-button" type="submit">Search</button>
             </form>
         </div>
-        <div class="module-card module-card--span-2">Stats</div>
+        <div class="module-card module-card--placeholder"></div>
+        <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-1">
             Create new client<br />
             <form method="GET" class="module-create-form" action="" id="createClientForm">

@@ -34,9 +34,7 @@ if(isset($_GET['download_file'])){
         <p>Use the button below to clock in or out. If you forget to clock out, an admin can adjust your times. Just remember to tell us the shift ID!</p>
     </div>
     <div class="module-grid">
-        <div class="module-card module-card--span-1">
-            <h3>Your most recent activity was</h3>
-        </div>
+        <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-2">
             <h3>Your Stats</h3>
             <?php DisplayArtistStats($_SESSION['username']); ?>
