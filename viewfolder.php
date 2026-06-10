@@ -67,10 +67,10 @@ $hasAccess = ($decodedPath !== null);
     <?php if ($hasAccess): ?>
         <div class="redirecting">
             <p>Redirecting to the file browser...</p>
-            <p><small>If you are not redirected automatically, <a href="<?php echo htmlspecialchars($targetPage . '#' . $folderid); ?>">click here</a>.</small></p>
+            <p><small>If you are not redirected automatically, <a href="<?php echo htmlspecialchars($targetPage . '#elf_' . $folderid); ?>">click here</a>.</small></p>
         </div>
         <script>
-            window.location.href = '<?php echo htmlspecialchars($targetPage . '#' . $folderid, ENT_QUOTES); ?>';
+            window.location.href = '<?php echo htmlspecialchars($targetPage . '#elf_' . $folderid, ENT_QUOTES); ?>';
         </script>
     <?php else: ?>
         <div class="access-error">

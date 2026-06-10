@@ -61,7 +61,7 @@ function execute_login(){
 
       <div class="card-header">
          <h1>Welcome back!</h1>
-         <p>Please enter your name and sign in<br>with your Simeck password.</p>
+         <p>Please enter your username or email and password to begin.</p>
       </div>
 
       <div class="divider"></div>
