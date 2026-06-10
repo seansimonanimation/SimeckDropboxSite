@@ -24,14 +24,21 @@ function execute_login(){
         attempt_login($_POST['username'], $_POST['password']);
     }
     if(isset($_SESSION['username'])){
-        SetActiveModule('Dashboard'); // Set the default active module to the dashboard for the user's role.
+        if(isset($_SESSION['login_redirect'])){
+            if($_SESSION['login_redirect'] === '/login.php' || $_SESSION['login_redirect'] === 'login.php'){unset($_SESSION['login_redirect']);}
+            $redirect = $_SESSION['login_redirect'];
+            unset($_SESSION['login_redirect']);
+            header("location: $redirect");
+            exit;
+        }
+        SetActiveModule('Dashboard');
         header("location: index.php");
         exit;
     } else {
-        header("location: login.php?error=Invalid%20username%20or%20password");
-        exit;
+            header("location: login.php?error=Invalid%20username%20or%20password");
+            exit;
+        }
     }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">

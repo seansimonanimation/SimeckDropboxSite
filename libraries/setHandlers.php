@@ -3,10 +3,11 @@ include_once __ROOT__ . '/libraries/timeofflib.php';
 
 
    //Sends the user back to the login page if there is no session.
-   if(!isset($_SESSION['username'])){
-     header("location: login.php");
-     exit;
-   }
+    if(!isset($_SESSION['username'])){
+        $_SESSION['login_redirect'] = $_SERVER['REQUEST_URI'];
+        header("location: login.php");
+        exit;
+    }
    if (isset($_GET['action']) && $_GET['action'] === 'switch_role') {
       adminViewToggle();
       header("Location: index.php");
