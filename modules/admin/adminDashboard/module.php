@@ -33,7 +33,7 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
         <div class="module-card"><center><h3> Number of active artists</h3>
         <p><?php echo GetArtistCount(false); ?></p></center>
     </div>
-        <div class="module-card">Card 3</div>
+        <div class="module-card module-card--placeholder"></div>
         <div class="module-card"><h1> Drive Status</h1>
     <h2>Drive Name:</h2>Larson<br />
     <h2> Drive Usage:</h2>
@@ -44,7 +44,8 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
         <div class="module-card module-card--span-2"><center><h1>Total number of comments</h1>
         <h1><?php echo GetTotalCommentCount(); ?> </h1>
         </div>
-        <div class="module-card module-card--span-2">Card 6</div>
+        <div class="module-card module-card--placeholder"></div>
+        <div class="module-card module-card--placeholder"></div>
         
         <!-- Row 3: 1 card, spanning all 4 columns -->
         <div class="module-card module-card--span-4"><h1>Changelog</h1>

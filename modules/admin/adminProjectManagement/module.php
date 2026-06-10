@@ -145,41 +145,41 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="module-header">
     </div>
     <div class="module-grid">
-        <div class="module-card module-card--span-4">
-            <h1>Project Management</h1>
-            <p>This module allows admins to manage projects.</p> </div>
-        <div class="module-card module-card--span-1">Search for Project </div>
-        <div class="module-card module-card--span-2"> Stats </div>
+        <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-1">
-            
-<div class="module-card module-card--span-1">
-    <form method="post" class="module-create-form">
-        <h1 class="module-form-title"><center>Create New Project</center></h1>
-
-        <!-- Two-sided toggle -->
-        <div class="module-toggle" id="projectTypeToggle">
-            <input type="radio" name="project_type" id="typeClient" value="client" checked hidden>
-            <input type="radio" name="project_type" id="typeInternal" value="internal" hidden>
-            <label for="typeClient" class="module-toggle__option module-toggle__option--active" data-value="client">Client Project</label>
-            <label for="typeInternal" class="module-toggle__option" data-value="internal">Internal Project</label>
-            <div class="module-toggle__slider"></div>
+            <center><h1>Project Management</h1>
+            <p>This module allows admins to manage projects.</p></center> 
         </div>
+        <div class="module-card module-card--placeholder"></div>
+    
+        <div class="module-card module-card--span-1">
+        <form method="post" class="module-create-form">
+            <h1 class="module-form-title"><center>Create New Project</center></h1>
 
-        <div class="module-form-group">
-            <label for="projectName">Project Name</label>
-            <input type="text" name="project_name" id="projectName" required>
-        </div>
+            <!-- Two-sided toggle -->
+            <div class="module-toggle" id="projectTypeToggle">
+                <input type="radio" name="project_type" id="typeClient" value="client" checked hidden>
+                <input type="radio" name="project_type" id="typeInternal" value="internal" hidden>
+                <label for="typeClient" class="module-toggle__option module-toggle__option--active" data-value="client">Client Project</label>
+                <label for="typeInternal" class="module-toggle__option" data-value="internal">Internal Project</label>
+                <div class="module-toggle__slider"></div>
+            </div>
 
-        <div class="module-form-group">
-            <label for="projectDescription">Description</label>
-            <textarea name="project_description" id="projectDescription" rows="3"></textarea>
-        </div>
+            <div class="module-form-group">
+                <label for="projectName">Project Name</label>
+                <input type="text" name="project_name" id="projectName" required>
+            </div>
 
-        <button type="submit" name="create_project" class="module-btn">Create Project</button>
-    </form>
-</div>
-</div>
-        <?php GenerateProjectCards(); ?>
-        <input type="file" id="fileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
+            <div class="module-form-group">
+                <label for="projectDescription">Description</label>
+                <textarea name="project_description" id="projectDescription" rows="3"></textarea>
+            </div>
+
+            <button type="submit" name="create_project" class="module-btn">Create Project</button>
+        </form>
     </div>
+
+    <?php GenerateProjectCards(); ?>
 </div>
+<input type="file" id="fileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
+
