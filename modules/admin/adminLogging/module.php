@@ -25,7 +25,6 @@ include_once __ROOT__ . '/libraries/logging.php';
     <div class="module-grid">
         <div class="module-card module-card--span-4">
         <div class="logging-container">
-            <h1>System Logs</h1>
             <div class="logging-content">
                 <?php echo ShowAdminLogPageData(); ?>
             </div>
