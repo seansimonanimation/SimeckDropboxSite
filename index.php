@@ -7,7 +7,8 @@ ob_start();
    include_once __ROOT__ . '/libraries/topBarPhrases.php';
    include_once __ROOT__ . '/libraries/moduleLoader.php';
    include_once __ROOT__ . '/libraries/setHandlers.php';
-   require_once __DIR__ . '/libraries/logging.php';
+   require_once __ROOT__ . '/vendor/autoload.php';
+   require_once __ROOT__ . '/libraries/logging.php';
 
 function adminViewToggle(){
     if(GetRole() == 'admin' && GetTempRole() == 'admin'){
