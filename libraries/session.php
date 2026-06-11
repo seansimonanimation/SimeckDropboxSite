@@ -20,6 +20,9 @@ function PutArtistDataInSession($artistData){
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['availability_this_week'] = $artistData['availability_this_week'] ?? '0|0|0|0|0|0|0'; 
     $_SESSION['nickname'] = $artistData['nickname'] ?? '';
+    $_SESSION['phone_country_code'] = $artistData['phone_country_code'] ?? 1;
+    $_SESSION['phone_number'] = $artistData['phone_number'] ?? null;
+    $_SESSION['receive_texts'] = $artistData['receive_texts'] ?? 0;
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
@@ -36,6 +39,9 @@ function PutClientDataInSession($clientData){
     $_SESSION['role'] = 'client';
     $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['theme'] = $clientData['theme'] ?? 'dark-boo';
+    $_SESSION['phone_country_code'] = $clientData['phone_country_code'] ?? '+1';
+    $_SESSION['phone_number'] = $clientData['phone_number'] ?? null;
+    $_SESSION['receive_texts'] = $clientData['receive_texts'] ?? 0;
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
@@ -98,6 +104,10 @@ function ImpersonateArtist($artistData){
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
     $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
     $_SESSION['_imp_orig_nickname']  = $_SESSION['nickname'] ?? '';
+    $_SESSION['_imp_orig_phone_country_code'] = $_SESSION['phone_country_code'] ?? 1;
+    $_SESSION['_imp_orig_phone_number'] = $_SESSION['phone_number'] ?? null;
+    $_SESSION['_imp_orig_receive_texts'] = $_SESSION['receive_texts'] ?? 0;
+
 
     // Override with impersonated artist's data
     $_SESSION['username']  = $artistData['username'];
@@ -106,6 +116,9 @@ function ImpersonateArtist($artistData){
     $_SESSION['nickname']  = $artistData['nickname'] ?? '';
     $_SESSION['userID']    = $artistData['userID'];
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
+    $_SESSION['phone_country_code'] = $artistData['phone_country_code'] ?? 1;
+    $_SESSION['phone_number'] = $artistData['phone_number'] ?? null;
+    $_SESSION['receive_texts'] = $artistData['receive_texts'] ?? 0;
     $_SESSION['impersonating'] = true;
     
     $_SESSION['tempRole'] = 'artist'; // Shows artist modules
@@ -120,6 +133,10 @@ function ImpersonateClient($clientData){
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
     $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
+    $_SESSION['_imp_orig_phone_country_code'] = $_SESSION['phone_country_code'] ?? '+1';
+    $_SESSION['_imp_orig_phone_number'] = $_SESSION['phone_number'] ?? null;
+    $_SESSION['_imp_orig_receive_texts'] = $_SESSION['receive_texts'] ?? 0;
+
 
     // Override with impersonated client's data
     $_SESSION['username']      = $clientData['username'];
@@ -129,6 +146,9 @@ function ImpersonateClient($clientData){
     $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['availability'] = $clientData['availability'] ?? '0|0|0|0|0|0|0';
+    $_SESSION['phone_country_code'] = $clientData['phone_country_code'] ?? '+1';
+    $_SESSION['phone_number'] = $clientData['phone_number'] ?? null;
+    $_SESSION['receive_texts'] = $clientData['receive_texts'] ?? 0;
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
 }
@@ -142,6 +162,10 @@ function StopImpersonating(){
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
     $_SESSION['nickname']  = $_SESSION['_imp_orig_nickname'] ?? '';
     $_SESSION['userID']    = $_SESSION['_imp_orig_userID'];
+    $_SESSION['phone_country_code'] = $_SESSION['_imp_orig_phone_country_code'] ?? 1;
+    $_SESSION['phone_number'] = $_SESSION['_imp_orig_phone_number'] ?? null;
+    $_SESSION['receive_texts'] = $_SESSION['_imp_orig_receive_texts'] ?? 0;
+
 
     if(isset($_SESSION['point_of_contact'])) unset($_SESSION['point_of_contact']);
     unset($_SESSION['_imp_orig_username']);
@@ -149,6 +173,9 @@ function StopImpersonating(){
     unset($_SESSION['_imp_orig_lastname']);
     unset($_SESSION['_imp_orig_userID']);
     unset($_SESSION['_imp_orig_nickname']);
+    unset($_SESSION['_imp_orig_phone_country_code']);
+    unset($_SESSION['_imp_orig_phone_number']);
+    unset($_SESSION['_imp_orig_receive_texts']);
     unset($_SESSION['impersonating']);
     unset($_SESSION['clientProjects']);
     unset($_SESSION['lock_overrides']);

@@ -49,6 +49,21 @@ if(!IsImpersonating()){
         LogSimeckAction('Nickname changed', "Artist changed their nickname to '{$newNickname}'.", 'System');
         $successMessage = 'Nickname updated successfully.';
     }
+    // ── Phone Info Save ──
+    if(isset($_POST['save_phone_info'])){
+        $countryCode = $_POST['phone_country_code'];
+        $phoneNumber = preg_replace('/[^0-9]/', '', $_POST['phone_number']);
+        $receiveTexts = isset($_POST['receive_texts']) ? (int)$_POST['receive_texts'] : 0;
+        if(SetArtistPhoneInfo($_SESSION['username'], $countryCode, $phoneNumber, $receiveTexts)){
+            $_SESSION['phone_country_code'] = (int)$countryCode;
+            $_SESSION['phone_number'] = $phoneNumber;
+            $_SESSION['receive_texts'] = $receiveTexts;
+            LogSimeckAction('Phone number updated', "Artist updated their phone settings.", 'System');
+            $successMessage = 'Phone number saved successfully.';
+        } else {
+            $errorMessage = 'Database error. Phone number was not saved.';
+        }
+    }
 
     // ── Password Change ──
 
@@ -234,6 +249,54 @@ function verifyCurrentPW($currentPW, $artistData){
             </form>
         </div>
         <!-- ════════════════════════════════════════════════════════════════ -->
+        <!--  PHONE NUMBER (For notifications)                               -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <?php
+        $phoneInfo = GetArtistPhoneInfo($_SESSION['username']);
+        $ccDb      = $phoneInfo['phone_country_code'];
+        $ccOption  = '+' . $ccDb;
+        $phoneVal  = $phoneInfo['phone_number'] ?? '';
+        $receive   = (int)($phoneInfo['receive_texts'] ?? 0);
+        ?>
+        <div class="module-card module-card--span-1">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Phone Number (For notifications)</h3>
+            </div>
+            <div class="module-card__content">
+                <form method="POST" action="">
+                    <label class="module-form-group" style="margin-bottom:8px;">
+                        <span style="margin-bottom:4px;">Country Code</span>
+                        <select name="phone_country_code" class="module-input" style="width:auto;min-width:200px;">
+                            <?php echo GetCountryCodeOptions($ccOption); ?>
+                        </select>
+                    </label>
+                    <label class="module-form-group" style="margin-bottom:8px;">
+                        <span style="margin-bottom:4px;">Phone Number</span>
+                        <input class="module-input" type="text" name="phone_number"
+                               value="<?php echo htmlspecialchars($phoneVal); ?>"
+                               placeholder="5551234567" style="width:auto;min-width:200px;" />
+                    </label>
+                    <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+                        <span>Receive notification texts:</span>
+                        <a href="#" class="toggle-receive-texts"
+                           data-receive="<?php echo $receive; ?>"
+                           style="font-size:1.5rem;text-decoration:none;">
+                            <?php echo $receive ? '✅' : '❌'; ?>
+                        </a>
+                        <input type="hidden" name="receive_texts" id="receive_texts_input" value="<?php echo $receive; ?>" />
+                    </div>
+                    <input type="hidden" name="save_phone_info" value="1" />
+                    <button type="submit" class="module-button" style="padding:6px 18px;">Save Phone Info</button>
+                </form>
+            </div>
+        </div>
+             <div class="module-card module-card--placeholder"></div>           
+             <div class="module-card module-card--placeholder"></div>
+             <div class="module-card module-card--placeholder"></div>
+
+
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
         <!--  AVAILABILITY GRID — Half Width                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="module-card module-card--span-3" style="overflow:visible;">
@@ -340,5 +403,20 @@ document.addEventListener('DOMContentLoaded', function(){
             timeFields.style.display = this.checked ? 'none' : 'block';
         });
     }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.toggle-receive-texts').forEach(function(link){
+        link.addEventListener('click', function(e){
+            e.preventDefault();
+            var input = document.getElementById('receive_texts_input');
+            var current = parseInt(this.dataset.receive);
+            var newVal = current ? 0 : 1;
+            this.dataset.receive = newVal;
+            this.innerHTML = newVal ? '✅' : '❌';
+            input.value = newVal;
+        });
+    });
 });
 </script>

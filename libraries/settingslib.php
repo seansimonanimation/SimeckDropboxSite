@@ -64,3 +64,65 @@ function SetArtistAvailability($username, $availabilityString){
     $stmt = $pdo->prepare("UPDATE artists SET availability = ? WHERE username = ?");
     return $stmt->execute([$availabilityString, $username]);
 }
+// ════════════════════════════════════════════════════════════════
+//  PHONE NUMBER / NOTIFICATION SETTINGS
+// ════════════════════════════════════════════════════════════════
+
+function GetArtistPhoneInfo($username){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+        'phone_country_code' => 1,
+        'phone_number' => null,
+        'receive_texts' => 0
+    ];
+}
+
+function SetArtistPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE artists SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
+    return $stmt->execute([(int)$countryCode, $phoneNumber, (int)$receiveTexts, $username]);
+}
+
+function GetClientPhoneInfo($username){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM clients WHERE username = ?");
+    $stmt->execute([$username]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+        'phone_country_code' => '+1',
+        'phone_number' => null,
+        'receive_texts' => 0
+    ];
+}
+
+function SetClientPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE clients SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
+    return $stmt->execute([$countryCode, $phoneNumber, (int)$receiveTexts, $username]);
+}
+
+function GetCountryCodeOptions($selected = '+1'){
+    $autoloadPath = __ROOT__ . '/vendor/autoload.php';
+    if(!file_exists($autoloadPath)){
+        // Fallback if Composer not available (dev without Docker)
+        return '<option value="+1" selected>United States (+1)</option>';
+    }
+    require_once $autoloadPath;
+    $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+    $regions = $phoneUtil->getSupportedRegions();
+    $codes = [];
+    foreach($regions as $region){
+        $code = $phoneUtil->getCountryCodeForRegion($region);
+        $label = $phoneUtil->getRegionCodeForCountryCode($code) . ' (+' . $code . ')';
+        $key = '+' . $code;
+        $codes[$key] = $label;
+    }
+    ksort($codes);
+    $html = '';
+    foreach($codes as $code => $label){
+        $sel = ($code === $selected) ? ' selected' : '';
+        $html .= '<option value="' . $code . '"' . $sel . '>' . $label . '</option>';
+    }
+    return $html;
+}
