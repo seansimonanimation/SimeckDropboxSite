@@ -27,7 +27,8 @@ elFinder.prototype.commands.sendToMondayChat = function() {
 
         $.post('/libraries/elfinderLibs/endpoints/discordWebhookEndpoint.php', {
             action: 'sendToMondayChat',
-            files: JSON.stringify(fileData)
+            files: JSON.stringify(fileData),
+            folderHash: files[0].phash
         }).done(function(resp) {
             if (resp.success) {
                 var msg = 'Sent ' + resp.files_sent + ' file(s) to Monday Chat';

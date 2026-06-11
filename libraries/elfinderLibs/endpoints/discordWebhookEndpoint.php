@@ -103,6 +103,14 @@ $currentSize  = 0;
 $channelLabel = ($action === 'sendToMondayChat') ? 'Monday Chat' : 'Thursday Chat';
 $totalFiles   = count($fileEntries);
 
+// ---------- Build folder link from provided hash ----------
+$folderLink = '';
+$rawFolderHash = $_POST['folderHash'] ?? '';
+if (!empty($rawFolderHash)) {
+    $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
+               . $_SERVER['HTTP_HOST'];
+    $folderLink = "\nTo see this file in its native habitat, click [here]({$baseUrl}/viewfolder.php?folderid=" . urlencode($rawFolderHash) . ")";
+}
 foreach ($fileEntries as $fe) {
     // Start a new batch if the current one would exceed limits
     $wouldOverflowCount = count($currentBatch) >= DISCORD_MAX_ATTACHMENTS;
@@ -134,9 +142,11 @@ foreach ($batches as $idx => $batch) {
         : '';
 
     // Build the embed message
-    $content = "📁 **" . count($batch) . " file(s) uploaded to the channel by {$senderName}{$partLabel}";
+    $messageContentCount = count($batch);
+    $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? '' : 's') . " were uploaded to the channel by {$senderName}{$partLabel}";
     $fileList = array_map(function($fe) { return '• `' . $fe['name'] . '`'; }, $batch);
     $content .= "\n" . implode("\n", $fileList);
+    $content .= $folderLink;
 
     // Build multipart form data for the webhook
     $postFields = [
