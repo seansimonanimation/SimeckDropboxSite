@@ -15,7 +15,7 @@ include_once __ROOT__ . '/libraries/projectlib.php';
 
 
 // Handle comment submission BEFORE loading project data
-if(!IsReadOnly()){
+if(!IsImpersonating()){
     if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content'])){
         $pdo = DBConnect();
         $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");

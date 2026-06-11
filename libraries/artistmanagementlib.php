@@ -74,7 +74,7 @@ function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
 }
 
 function SearchArtistsByName($query){
-    $SQLString = "SELECT username, firstname, lastname, availability, availability_this_week, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
+    $SQLString = "SELECT username, firstname, lastname, nickname, availability, availability_this_week, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
     $pdo = DBConnect();
     $likeTerm = '%' . $query . '%';
     $stmt = $pdo->prepare($SQLString);
@@ -93,10 +93,11 @@ function GenerateArtistCards() {
     foreach ($artists as $artist) {
         echo '<div class="module-card module-card--span-4">';
         echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
-        echo '<thead><tr><th>Username</th><th>Human Name</th><th>Active</th><th>Role</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
+        echo '<thead><tr><th>Username</th><th>Legal Name</th><th>Active</th><th>Role</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
-        echo '<td class="module-tablecell">' . htmlspecialchars($artist['firstname']) . ' ' . htmlspecialchars($artist['lastname']) . '</td>';
+        echo '<td class="module-tablecell">' . htmlspecialchars(GetArtistNicknameAndLegalName($artist)) . '</td>';
+
         echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
         echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
         echo '<td class="module-tablecell">' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
@@ -112,15 +113,16 @@ function GenerateArtistCards() {
     }
 }
 function GetAllArtists(){
-    $SQLString = "SELECT username, firstname, lastname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists";
+    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
 function GetAllActiveArtists(){
-    $SQLString = "SELECT username, firstname, lastname, availability, availability_this_week, timezone FROM artists WHERE active = 1";
+    $SQLString = "SELECT username, firstname, lastname, nickname, availability, availability_this_week, timezone FROM artists WHERE active = 1";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -164,13 +166,14 @@ function ToggleArtistStatus($artistUsername, $isActive){
     RefreshPortal();
 }
 function GetSearchedArtist($searchterm){
-    $SQLString = "SELECT username, firstname, lastname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
+    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $likeTerm = '%' . $searchterm . '%';
     $stmt->execute([$likeTerm, $likeTerm, $likeTerm]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 function ResetArtistPassword($username){
     $defaultPW = '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy'; // This is the hash for "SimeckArtist01".

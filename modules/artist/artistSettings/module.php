@@ -38,8 +38,20 @@ if(isset($_SESSION['username'])){
     }
 }
 
-if(!IsReadOnly()){
+if(!IsImpersonating()){
+    // ── Nickname Change ──
+    if(isset($_POST['change_nickname'])){
+        $newNickname = trim($_POST['nickname'] ?? '');
+        $pdo = DBConnect();
+        $stmt = $pdo->prepare("UPDATE artists SET nickname = ? WHERE username = ?");
+        $stmt->execute([$newNickname, $_SESSION['username']]);
+        $_SESSION['nickname'] = $newNickname;
+        LogSimeckAction('Nickname changed', "Artist changed their nickname to '{$newNickname}'.", 'System');
+        $successMessage = 'Nickname updated successfully.';
+    }
+
     // ── Password Change ──
+
     if(isset($_POST['ArtistChangePW'])){
         $username = $_SESSION['username'];
         $currentPW = $_POST['currentPW'];
@@ -187,12 +199,31 @@ function verifyCurrentPW($currentPW, $artistData){
                 </form>
             </div>
         </div>
-        <div class="module-card module-card--placeholder"></div>
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!--  NICKNAME                                                       -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <div class="module-card module-card--span-1">
+            <div class="module-card__header">
+                <h3 class="module-card__title">Nickname</h3>
+            </div>
+            <div class="module-card__content">
+                <?php $currentNickname = $_SESSION['nickname'] ?? ''; ?>
+                <form method="POST" action="">
+                    <label class="module-form-group" style="margin-bottom:12px;">
+                        <span style="margin-bottom:4px;">Set your nickname</span>
+                        <input class="module-input" type="text" name="nickname" value="<?php echo htmlspecialchars($currentNickname); ?>" placeholder="Enter nickname" style="width:auto;min-width:200px;" />
+                    </label>
+                    <input type="hidden" name="change_nickname" value="1" />
+                    <button type="submit" class="module-button" style="padding:6px 18px;">Save Nickname</button>
+                </form>
+            </div>
+        </div>
 
         <!-- ════════════════════════════════════════════════════════════════ -->
         <!--  PASSWORD CHANGE                                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
         <div class="module-card module-card--span-1">
+
             <h1>Password change</h1>
             <form method="POST" class="module-create-form" action="">
                 <input class="module-input" type="hidden" name="ArtistChangePW" placeholder="Change Password" />

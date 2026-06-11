@@ -17,8 +17,7 @@ include_once __ROOT__ . '/libraries/projectlib.php';
 include_once __ROOT__ . '/libraries/logging.php';
 
 // Handle comment submission BEFORE loading project data
-// Handle comment submission BEFORE loading project data
-if(!IsReadOnly()){
+if(!IsImpersonating()){
     if(isset($_POST['submit_dir_comment']) && !empty($_POST['dir_comment_content']) && isset($_POST['dir_comment_path'])){
         $pdo = DBConnect();
         $orderStmt = $pdo->prepare("SELECT COALESCE(MAX(comment_order), 0) + 1 FROM filecomments WHERE parent_file_url = ?");

@@ -98,9 +98,10 @@ if(isset($_GET['action']) && $_GET['action'] === 'search_artists'){
     foreach($artists as $a){
         $results[] = [
             'username' => $a['username'],
-            'name' => $a['firstname'] . ' ' . $a['lastname']
+            'name' => GetArtistNicknameAndLegalName($a)
         ];
     }
+
     echo json_encode($results);
     exit;
 }

@@ -22,7 +22,7 @@ if(isset($_GET['pw_changed'])){
     $successMessage = 'Password changed successfully.';
 }
 
-if(!IsReadOnly()){
+if(!IsImpersonating()){
     if(isset($_POST['ClientChangePW'])){
         $username = $_SESSION['username'];
         $currentPW = $_POST['currentPW'];

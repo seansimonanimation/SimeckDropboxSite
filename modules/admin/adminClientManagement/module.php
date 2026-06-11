@@ -54,10 +54,11 @@ include_once __ROOT__ . '/modules/admin/adminClientManagement/issets.php';
                     <?php
                         $pocs = GetAllArtists();
                         foreach($pocs as $poc){
-                            echo '<option value="'.$poc['username'].'">'.$poc['firstname'].' '.$poc['lastname'].'</option>';
+                            echo '<option value="'.$poc['username'].'">'.htmlspecialchars(GetArtistNicknameAndLegalName($poc)).'</option>';
                         }
                     ?>
                 </select><br />
+
                 <button class="module-button" type="submit">Create Client</button>
             </form>
         </div>

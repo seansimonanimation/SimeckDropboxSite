@@ -13,7 +13,7 @@ include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/download.php';
 
-if(!IsReadOnly()){
+if(!IsImpersonating()){
     if(isset($_GET['clock_in'])){
         ArtistClockIn($_SESSION['username']);
     }
