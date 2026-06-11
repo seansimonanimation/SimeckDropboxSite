@@ -34,3 +34,6 @@ body.theme-ketchup-mustard {
   --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
   --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
 }
+.theme-ketchup-mustard {
+    --av-active: #ff9800;
+}

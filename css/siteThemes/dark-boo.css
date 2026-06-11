@@ -34,3 +34,6 @@ body.theme-dark-boo {
   --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
   --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
 }
+.theme-dark-boo {
+    --av-active: #1e88e5;
+}
