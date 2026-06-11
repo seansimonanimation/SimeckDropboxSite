@@ -151,7 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>This module allows admins to manage projects.</p></center> 
         </div>
         <div class="module-card module-card--placeholder"></div>
-    
         <div class="module-card module-card--span-1">
         <form method="post" class="module-create-form">
             <h1 class="module-form-title"><center>Create New Project</center></h1>

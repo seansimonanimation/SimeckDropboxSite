@@ -128,7 +128,7 @@ body.page-full {
 
 #sidebar {
   grid-area:        sidebar;
-  background:       var(--color-bg-mid);
+  background:       var(--glass-bg);
   border-right:     var(--glass-border);
   display:          flex;
   flex-direction:   column;
@@ -200,7 +200,44 @@ body.page-full {
   transition:  color var(--transition-fast);
 }
 #sidebar .sidebar-footer a:hover { color: var(--color-danger); }
+/* ─── 6. Sidebar / Impersonation ──────────────────────────────────────────── */
+#sidebar .sidebar-footer .sidebar-label {
+    display: block;
+    font-size: 0.70rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+    margin-bottom: 4px;
+}
 
+.impersonate-form {
+    margin-bottom: 8px;
+}
+
+.impersonate-select {
+    width: 100%;
+    padding: 6px 8px;
+    font-family: var(--font-sans);
+    font-size: 0.80rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-bright);
+    cursor: pointer;
+}
+
+.impersonate-select:hover {
+    border-color: var(--color-primary-light);
+}
+
+.stop-impersonate-btn {
+    display: block;
+    color: var(--color-warning) !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px;
+    padding: 6px 0;
+}
 #topbar {
   grid-area:       topbar;
   display:         flex;
@@ -345,44 +382,7 @@ button:disabled {
 .btn--block {
   width:            100%;
 }
-/* ─── 6. Sidebar / Impersonation ──────────────────────────────────────────── */
-#sidebar .sidebar-footer .sidebar-label {
-    display: block;
-    font-size: 0.70rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-text-dim);
-    margin-bottom: 4px;
-}
 
-.impersonate-form {
-    margin-bottom: 8px;
-}
-
-.impersonate-select {
-    width: 100%;
-    padding: 6px 8px;
-    font-family: var(--font-sans);
-    font-size: 0.80rem;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg);
-    color: var(--color-text);
-    border: 1px solid var(--color-border-bright);
-    cursor: pointer;
-}
-
-.impersonate-select:hover {
-    border-color: var(--color-primary-light);
-}
-
-.stop-impersonate-btn {
-    display: block;
-    color: var(--color-warning) !important;
-    font-weight: 700 !important;
-    margin-bottom: 6px;
-    padding: 6px 0;
-}
 
 /* ─── Sidebar Footer Separators ────────────────────────────────────────── */
 #sidebar .sidebar-footer > * + * {

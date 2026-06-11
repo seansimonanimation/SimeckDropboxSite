@@ -97,7 +97,7 @@ if(isset($_POST['See_Project'])){
                 </div>
 
             </div>
-            <div class="elfinder module-card module-card--span-2">
+            <div class="module-card module-card--span-2">
                 <h1> Project Comments</h1>
                 <?php if(empty($CurrentProjectData['project'])): ?>
                     <p>This is where you will be able to see comments on the project directory!</p>
