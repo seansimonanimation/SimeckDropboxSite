@@ -88,7 +88,7 @@ function CloseTimeclockShift($shiftID){
     $SQLString = 'UPDATE timeclockshifts SET time_out = CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix") WHERE shift_id = ?';
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
-    if(IsReadOnly()){ return false;}
+    if(IsImpersonating()){ return false;}
     $stmt->execute([$shiftID]);
     LogSimeckAction('Closed timeclock shift', "Shift #$shiftID was closed.", 'System');
 }
@@ -101,7 +101,7 @@ function UpdateTimeclockShiftField($shiftId, $field, $value){
     $SQLString = "UPDATE timeclockshifts SET $field = ? WHERE shift_id = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
-    if(IsReadOnly()){ return false;}
+    if(IsImpersonating()){ return false;}
     $result = $stmt->execute([$value, $shiftId]);
     if($result){
         LogSimeckAction('Updated timeclock shift', "Shift #$shiftId had its $field updated to $value.", 'System');
@@ -118,10 +118,11 @@ function GetDataFromDB($SQLString, $params = []){
 }
 function ListAllActiveArtists(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists WHERE active = 1 ORDER BY username");
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname, nickname FROM artists WHERE active = 1 ORDER BY username");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 function ListAllActiveClients(){
     $pdo = DBConnect();

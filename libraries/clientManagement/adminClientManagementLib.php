@@ -39,10 +39,12 @@ function GenerateClientCards(){
         $allArtists = GetAllArtists();
         foreach($allArtists as $artist){
             $selected = ($artist['username'] === $client['point_of_contact']) ? ' selected' : '';
-            echo '<option value="' . htmlspecialchars($artist['username']) . '"' . $selected . '>' . htmlspecialchars($artist['firstname'] . ' ' . $artist['lastname']) . '</option>';
+            echo '<option value="' . htmlspecialchars($artist['username']) . '"' . $selected . '>' . htmlspecialchars(GetArtistNicknameAndLegalName($artist)) . '</option>';
         }
+
         echo '</select></td>';
         echo '</tr>';
+
 
         // Row: Outstanding Balance
         echo '<tr>';
@@ -118,21 +120,24 @@ function CreateNewClient($username, $firstname, $lastname, $PoC, $pid){
 
 function GetPoCName($username){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT firstname, lastname FROM artists WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT firstname, lastname, nickname FROM artists WHERE username = ?");
     $stmt->execute([$username]);
     $artist = $stmt->fetch(PDO::FETCH_ASSOC);
     if($artist){
-        return $artist['firstname'] . ' ' . $artist['lastname'];
+        return GetArtistNicknameAndLegalName($artist);
     }
+
     return 'Unknown';
 }
 
+
 function GetAllArtists(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists");
+    $stmt = $pdo->prepare("SELECT username, firstname, lastname, nickname FROM artists");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 /**
  * Universal field updater for client records.

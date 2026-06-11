@@ -349,7 +349,7 @@ function ShowAdminLogPageData(){
     echo '<tbody>';
 
     foreach ($logs as $row) {
-        $username = htmlspecialchars($row['username'] ?? '');
+        $username = GetLogUsernameDisplay($row['username'] ?? '');
         $time     = htmlspecialchars($row['time'] ?? '');
         $action   = htmlspecialchars($row['user_action'] ?? '');
         $ip       = htmlspecialchars($row['ip_address'] ?? '');
@@ -488,3 +488,34 @@ function ShowArtistLogPageData(){
 
     echo '</div>';
 }
+
+/**
+ * Get a formatted username string for log display.
+ * Returns "username (First Last)" or "username (First Last) (Nickname)".
+ */
+function GetLogUsernameDisplay($username){
+    if(empty($username)){
+        return '';
+    }
+    $pdo = DBConnect();
+    // Check artists first
+    $stmt = $pdo->prepare("SELECT firstname, lastname, nickname FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($result){
+        $base = htmlspecialchars($username) . ' (' . htmlspecialchars($result['firstname']) . ' ' . htmlspecialchars($result['lastname']) . ')';
+        if(!empty($result['nickname'])){
+            $base .= ' (' . htmlspecialchars($result['nickname']) . ')';
+        }
+        return $base;
+    }
+    // Check clients
+    $stmt = $pdo->prepare("SELECT firstname, lastname FROM clients WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if($result){
+        return htmlspecialchars($username) . ' (' . htmlspecialchars($result['firstname']) . ' ' . htmlspecialchars($result['lastname']) . ')';
+    }
+    return htmlspecialchars($username);
+}
+

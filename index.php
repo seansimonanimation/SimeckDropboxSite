@@ -86,12 +86,13 @@ function adminSwitchViewButtonActivation(){
                  <select name="artist" class="impersonate-select" onchange="this.form.submit()">
                      <option value="">— Select —</option>
                      <?php
-                         $artists = ListAllActiveArtists();
-                         foreach($artists as $a){
-                             echo '<option value="' . htmlspecialchars($a['username']) . '">'
-                                  . htmlspecialchars($a['firstname'] . ' ' . $a['lastname'])
-                                  . '</option>';
-                         }
+                        $artists = ListAllActiveArtists();
+                        foreach($artists as $a){
+                            echo '<option value="' . htmlspecialchars($a['username']) . '">'
+                                 . htmlspecialchars(GetArtistNicknameAndLegalName($a))
+                                 . '</option>';
+                        }
+
                      ?>
                  </select>
              </form>
@@ -104,9 +105,10 @@ function adminSwitchViewButtonActivation(){
    <header id="topbar" role="banner">
 <div class="topbar-title">
             <?php if(IsImpersonating()){
-                echo '<span class="read-only-badge">❄️❄️READ ONLY MODE ENGAGED!!! Impersonating: ' . GetHumanName('firstlast') . ' (' . GetTempRole() . ')❄️❄️</span>';
+                echo '<span class="read-only-badge">❄️❄️READ ONLY MODE ENGAGED!!! Impersonating: ' . GetHumanName('greeting') . ' (' . GetTempRole() . ')❄️❄️</span>';
             } else {
-                echo 'Hi, ' . GetHumanName('first') . '!';
+                echo 'Hi, ' . GetHumanName('greeting') . '!';
+
             }
              ?>
              </div>

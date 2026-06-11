@@ -19,7 +19,7 @@ function PutArtistDataInSession($artistData){
     $_SESSION['timezone'] = $artistData['timezone'] ?? 'UTC';
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['availability_this_week'] = $artistData['availability_this_week'] ?? '0|0|0|0|0|0|0'; 
-
+    $_SESSION['nickname'] = $artistData['nickname'] ?? '';
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
@@ -60,10 +60,15 @@ function GetHumanName($format){
             return $_SESSION['firstname'] . ' ' . $_SESSION['lastname'];
         case 'lastfirst':
             return $_SESSION['lastname'] . ', ' . $_SESSION['firstname'];
+        case 'nickname':
+            return (!empty($_SESSION['nickname'])) ? $_SESSION['nickname'] : $_SESSION['firstname'];
+        case 'greeting':
+            return (!empty($_SESSION['nickname'])) ? $_SESSION['nickname'] : $_SESSION['firstname'];
         default:
             return $_SESSION['firstname'] . ' ' . $_SESSION['lastname'];
     }
 }
+
 function GetRole(){
 
         return $_SESSION['role'];
@@ -92,14 +97,17 @@ function ImpersonateArtist($artistData){
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
     $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
+    $_SESSION['_imp_orig_nickname']  = $_SESSION['nickname'] ?? '';
 
     // Override with impersonated artist's data
     $_SESSION['username']  = $artistData['username'];
     $_SESSION['firstname'] = $artistData['firstname'];
     $_SESSION['lastname']  = $artistData['lastname'];
+    $_SESSION['nickname']  = $artistData['nickname'] ?? '';
     $_SESSION['userID']    = $artistData['userID'];
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['impersonating'] = true;
+    
     $_SESSION['tempRole'] = 'artist'; // Shows artist modules
 
 }
@@ -132,6 +140,7 @@ function StopImpersonating(){
     $_SESSION['username']  = $_SESSION['_imp_orig_username'];
     $_SESSION['firstname'] = $_SESSION['_imp_orig_firstname'];
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
+    $_SESSION['nickname']  = $_SESSION['_imp_orig_nickname'] ?? '';
     $_SESSION['userID']    = $_SESSION['_imp_orig_userID'];
 
     if(isset($_SESSION['point_of_contact'])) unset($_SESSION['point_of_contact']);
@@ -139,9 +148,11 @@ function StopImpersonating(){
     unset($_SESSION['_imp_orig_firstname']);
     unset($_SESSION['_imp_orig_lastname']);
     unset($_SESSION['_imp_orig_userID']);
+    unset($_SESSION['_imp_orig_nickname']);
     unset($_SESSION['impersonating']);
     unset($_SESSION['clientProjects']);
     unset($_SESSION['lock_overrides']);
+
 
     $_SESSION['tempRole'] = 'admin';
 }
@@ -150,6 +161,17 @@ function StopImpersonating(){
 function IsImpersonating(){
     return $_SESSION['impersonating'] ?? false;
 }
-function IsReadOnly(){
-    return $_SESSION['impersonating'] ?? false;
+function GetArtistNicknameOrLegalFallback($artistData){
+    if(!empty($artistData['nickname'])){
+        return $artistData['nickname'];
+    } else {
+        return $artistData['firstname'] . ' ' . $artistData['lastname'];
+    }
+}
+function GetArtistNicknameAndLegalName($artistData){
+    if(!empty($artistData['nickname'])){
+        return $artistData['nickname'] . ' (' . $artistData['firstname'] . ' ' . $artistData['lastname'] . ')';
+    } else {
+        return $artistData['firstname'] . ' ' . $artistData['lastname'];
+    }
 }

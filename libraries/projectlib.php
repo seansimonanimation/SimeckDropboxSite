@@ -69,7 +69,7 @@ function GetProjectLeadDropdown($pid, $type, $currentLead){
     foreach ($people as $person) {
         $selected = ($person['username'] === $currentLead) ? ' selected' : '';
         $html .= '<option value="' . htmlspecialchars($person['username']) . '"' . $selected . '>';
-        $html .= htmlspecialchars($person['firstname'] . ' ' . $person['lastname'] . ' (' . $person['username'] . ')');
+        $html .= htmlspecialchars(GetArtistNicknameAndLegalName($person) . ' - ' . $person['username']);
         $html .= '</option>';
     }
     $html .= '</select>';
@@ -284,7 +284,7 @@ function GetAllDataForProject($pid){
     $pdo = DBConnect();
     $ProjectDataString = "SELECT * FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
     $ProjectFileCommentsString = "SELECT * FROM filecomments WHERE parent_file_url LIKE ? AND parent_file_url != ? ORDER BY comment_time DESC";
-    $ProjectArtistListString = "SELECT username, firstname, lastname FROM artists WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
+    $ProjectArtistListString = "SELECT username, firstname, lastname, nickname FROM artists WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
     $ProjectClientListString = "SELECT username, firstname, lastname FROM clients WHERE CONCAT(',', project_assignments, ',') LIKE CONCAT('%,', ?, ',')";
     $projectDirLocString = "SELECT active_path FROM projects WHERE pid = ? AND active = 1 AND transitioning = 0";
     $ProjectDirCommentString = "SELECT * FROM filecomments WHERE parent_file_url = ? ORDER BY comment_time ASC";
@@ -348,7 +348,8 @@ function DisplayProjectTeamMembers($artists, $lead){
             echo '⭐';
         }
         $isAdmin = ($_SESSION['role'] === 'admin');
-        echo htmlspecialchars($artist['firstname'] . ' ' . $artist['lastname'] . ' (' . $artist['username'] . ')');
+        $displayName = GetArtistNicknameOrLegalFallback($artist);
+        echo htmlspecialchars($displayName . ' (' . $artist['username'] . ')');
         if(($isAdmin || $lead === $_SESSION['username']) && $artist['username'] !== $_SESSION['username']){
             echo ' <button onclick="removeTeamMember(\''.$artist['username'].'\')">❌</button>';
         }
@@ -356,17 +357,20 @@ function DisplayProjectTeamMembers($artists, $lead){
     }
 }
 
+
 function GetClientPoC($poc){
     if (empty($poc)) {
         return 'No client point of contact assigned.';
     }
-    $SQLstring = "SELECT firstname, lastname FROM artists WHERE username = ?";
+    $SQLstring = "SELECT firstname, lastname, nickname FROM artists WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLstring);
     $stmt->execute([$poc]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return htmlspecialchars($result['firstname'] . ' ' . $result['lastname']);
+    return htmlspecialchars(GetArtistNicknameAndLegalName($result));
+
 }
+
 
 
 function DisplayProjectDirComments($comments, $projectPath){
@@ -398,10 +402,13 @@ function DisplayProjectDirComments($comments, $projectPath){
 function GetUserDisplayName($username) {
     $pdo = DBConnect();
     // Check artists first
-    $stmt = $pdo->prepare("SELECT firstname, lastname FROM artists WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT firstname, lastname, nickname FROM artists WHERE username = ?");
     $stmt->execute([$username]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($result) {
+        if(!empty($result['nickname'])){
+            return $result['nickname'] . ' ' . $result['lastname'];
+        }
         return $result['firstname'] . ' ' . $result['lastname'];
     }
     // Check clients
@@ -414,6 +421,7 @@ function GetUserDisplayName($username) {
     // Fallback to username
     return $username;
 }
+
 
 function DisplayProjectFileComments($comments){
     if(empty($comments)){
