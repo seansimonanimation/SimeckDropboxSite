@@ -143,7 +143,7 @@ foreach ($batches as $idx => $batch) {
 
     // Build the embed message
     $messageContentCount = count($batch);
-    $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? '' : 's') . " were uploaded to the channel by {$senderName}{$partLabel}";
+    $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? ' was' : 's were') . " uploaded to the channel by {$senderName}{$partLabel}";
     $fileList = array_map(function($fe) { return '• `' . $fe['name'] . '`'; }, $batch);
     $content .= "\n" . implode("\n", $fileList);
     $content .= $folderLink;
