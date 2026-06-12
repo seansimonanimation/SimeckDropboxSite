@@ -270,7 +270,7 @@ function LoadSendToDiscordIsland($files)
     }
 
     // Build a JSON blob the endpoint expects: [{ name: "…", url: "…" }, …]
-    $filesJson = htmlspecialchars(json_encode($files), ENT_QUOTES, 'UTF-8');
+    $filesJson = json_encode($files);
 
     // We need a unique ID per instance so multiple islands can coexist
     $uid = 'fi-discord-' . md5(uniqid('', true));
@@ -304,7 +304,7 @@ BODY;
 
     $js = <<<JS
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     var btn = document.getElementById('{$uid}-send');
     if (!btn) return;
 
@@ -343,7 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.disabled = false;
         });
     });
-});
+})();
+
 </script>
 JS;
 

@@ -146,6 +146,11 @@ foreach ($batches as $idx => $batch) {
     $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? ' was' : 's were') . " uploaded to the channel by {$senderName}{$partLabel}";
     $fileList = array_map(function($fe) { return '• `' . $fe['name'] . '`'; }, $batch);
     $content .= "\n" . implode("\n", $fileList);
+    $note = trim($_POST['note'] ?? '');
+    if ($note !== '') {
+        $content .= "\n\n> *{$note}*\n";
+    }
+
     $content .= $folderLink;
 
     // Build multipart form data for the webhook
