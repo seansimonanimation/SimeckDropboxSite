@@ -20,6 +20,7 @@
             "Take breaks. Step outside. Breathe. Touch grass. Your work will be better for it, and so will you.",
             "If you're struggling more than a one-armed cowboy trying to lasso a prize bull, remember stop and ask for help.",
             "Clients will always be clients. If you're struggling with yours, please reach out for help.",
+            "Remember: No idea is a bad idea. If you have an idea for something, speak up!",
             "Simeck's mission statement: Simeck Entertainment exists to be a place where people can come together and work towards a common goal. It is a place where artists applaud each other's strengths while assisting each other in their weaknesses, and be able to do everything they do with an endgame of bettering themselves and the world around them."
             ];
 

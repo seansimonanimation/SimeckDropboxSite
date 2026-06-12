@@ -5,6 +5,10 @@
  * 1. Allow locked files to be moved (clears locked flag temporarily)
  * 2. Update filecomments and lockedfiles DB tables after the move
  *    so comments and locks travel with moved files/directories.
+ * @commandID paste
+ * @nicename Paste
+ * @role client
+ * @loc files
  */
 (function() {
     var origPaste = elFinder.prototype.commands.paste;

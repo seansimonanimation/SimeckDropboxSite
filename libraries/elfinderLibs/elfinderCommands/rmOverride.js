@@ -1,6 +1,8 @@
 /**
  * @commandID rm
  * @nicename Delete
+ * @role client
+ * @loc files
  */
 //
 elFinder.prototype.commands.rm = function() {
@@ -10,10 +12,27 @@ elFinder.prototype.commands.rm = function() {
         this.title = 'Delete';
     };
     
-    this.getstate = function() {
-        // Enable only if there are selected files/folders
-        return this.fm.selectedFiles().length ? 0 : -1;
-    };
+this.getstate = function() {
+    var fm = this.fm;
+    var sel = fm.selectedFiles();
+    if (sel.length === 0) return -1;
+    
+    // For clients, hide delete if any selected file has ANY lock
+    if (window.simeckSession && window.simeckSession.tempRole === 'client') {
+        for (var i = 0; i < sel.length; i++) {
+            var url = fm.url(sel[i].hash);
+            if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[url]) {
+                var lock = fm.cache.lockedPaths[url];
+                if (lock.assetlock == 1 || lock.commentlock == 1) {
+                    return -1;
+                }
+            }
+        }
+    }
+    
+    return 0;
+};
+
     
     this.exec = function() {
         var fm = this.fm;

@@ -24,6 +24,8 @@ foreach ($elfinderOptions['roots'] as &$root) {
     if (isset($root['path']) && strpos($root['path'], __ROOT__ . '/files/Projects') === 0) {
         $root['accessControl'] = 'lockAccessControl';
     }
+    // Raise the video thumbnail size limit from 10MB to 50GB
+    $root['tmbVideoConvLen'] = 50000000000;
 }
 unset($root);
 

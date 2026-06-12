@@ -1,0 +1,39 @@
+/* @name Touch Grass
+/* @description A green theme that makes you want to go outside.*/
+/* @author Simeck Entertainment */
+
+body.theme-touch-grass {
+  --color-primary:        #2D8A4E;
+  --color-primary-dark:   #1E6B3A;
+  --color-primary-light:  #4CAF64;
+  --color-primary-xlight: #E8F5E9;
+
+  --color-bg:             #0D1F12;
+  --color-bg-mid:         #142E1A;
+  --color-bg-raised:      #1A3822;
+  --color-surface:        #21452C;
+  --color-surface-hover:  #2A5436;
+
+  --color-text:           #D6F0DC;
+  --color-text-muted:     #7BB889;
+  --color-text-dim:       #4F8D63;
+  --color-heading:        #FFFFFF;
+
+  --color-border:         rgba(45, 138, 78, 0.25);
+  --color-border-bright:  rgba(45, 138, 78, 0.55);
+
+  --color-success:        #2ECC71;
+  --color-warning:        #F39C12;
+  --color-danger:         #E74C3C;
+  --color-info:           #3498DB;
+
+  --glass-bg:             rgba(20, 46, 26, 0.72);
+  --glass-border:         1px solid rgba(45, 138, 78, 0.30);
+
+  --shadow-sm:            0 2px 8px rgba(0,0,0,0.35);
+  --shadow-md:            0 4px 20px rgba(0,0,0,0.45);
+  --shadow-lg:            0 8px 40px rgba(0,0,0,0.60);
+}
+.theme-touch-grass {
+    --av-active: #2D8A4E;
+}

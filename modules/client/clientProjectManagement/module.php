@@ -33,6 +33,8 @@ define('EF_ROOT', 'libraries/elfinder');
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.version.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/jquery.elfinder.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.mimetypes.js"></script>
+<?php echo OutputElfinderCommandsMeta(); ?>
+<?php OutputSimeckSessionScript(); ?>
 <script src="libraries/elfinderLibs/opt/<?php echo $_SESSION['tempRole'];?>ElfinderOptions.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.options.netmount.js"></script>
 <script src="<?php echo EF_ROOT; ?>/js/elFinder.history.js"></script>

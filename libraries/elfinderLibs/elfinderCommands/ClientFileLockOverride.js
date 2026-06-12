@@ -1,6 +1,10 @@
 /**
  * @commandID clientLockOverride
  * @nicename Use Lock Override
+ * @role clientOnly
+ * @loc files
+ * @order 1
+ * @contextMenuDividers below
  */
 elFinder.prototype.commands.clientLockOverride = function() {
     //Sets this as a context menu item, but only if the user has overrides available.

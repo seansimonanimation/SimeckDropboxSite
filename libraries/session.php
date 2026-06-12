@@ -165,6 +165,7 @@ function StopImpersonating(){
     $_SESSION['phone_country_code'] = $_SESSION['_imp_orig_phone_country_code'] ?? 1;
     $_SESSION['phone_number'] = $_SESSION['_imp_orig_phone_number'] ?? null;
     $_SESSION['receive_texts'] = $_SESSION['_imp_orig_receive_texts'] ?? 0;
+    $_SESSION['availability'] = $_SESSION['_imp_orig_availability'] ?? '0|0|0|0|0|0|0';
 
 
     if(isset($_SESSION['point_of_contact'])) unset($_SESSION['point_of_contact']);
@@ -179,6 +180,8 @@ function StopImpersonating(){
     unset($_SESSION['impersonating']);
     unset($_SESSION['clientProjects']);
     unset($_SESSION['lock_overrides']);
+    unset($_SESSION['_imp_orig_availability']);
+
 
 
     $_SESSION['tempRole'] = 'admin';

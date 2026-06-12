@@ -9,6 +9,10 @@
  *
  * @commandID CopyLinkToFolder
  * @nicename Copy link to this folder
+ * @role artist
+ * @loc cwd, files
+ * @order 5
+ * @contextMenuDividers below
  */
 
 elFinder.prototype.commands.CopyLinkToFolder = function() {

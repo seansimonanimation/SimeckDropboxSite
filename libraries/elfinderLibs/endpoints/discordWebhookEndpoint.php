@@ -109,7 +109,7 @@ $rawFolderHash = $_POST['folderHash'] ?? '';
 if (!empty($rawFolderHash)) {
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
                . $_SERVER['HTTP_HOST'];
-    $folderLink = "\nTo see this file in its native habitat, click [here]({$baseUrl}/viewfolder.php?folderid=" . urlencode($rawFolderHash) . ")";
+    $folderLink = "\nTo see " . (count($currentBatch) === 1 ? 'this file in its' : 'these files in their') . " native habitat, click [here]({$baseUrl}/viewfolder.php?folderid=" . urlencode($rawFolderHash) . ")";
 }
 foreach ($fileEntries as $fe) {
     // Start a new batch if the current one would exceed limits
@@ -146,6 +146,11 @@ foreach ($batches as $idx => $batch) {
     $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? ' was' : 's were') . " uploaded to the channel by {$senderName}{$partLabel}";
     $fileList = array_map(function($fe) { return '• `' . $fe['name'] . '`'; }, $batch);
     $content .= "\n" . implode("\n", $fileList);
+    $note = trim($_POST['note'] ?? '');
+    if ($note !== '') {
+        $content .= "\n\n> *{$note}*\n";
+    }
+
     $content .= $folderLink;
 
     // Build multipart form data for the webhook
