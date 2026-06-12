@@ -51,7 +51,17 @@ if ($action === 'fetch') {
         echo json_encode(['error' => 'Missing file_url or content.']);
         exit;
     }
-
+    // Before the INSERT logic, add:
+    if ($_SESSION['role'] === 'client') {
+        include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
+        $GLOBALS['db'] = $pdo;
+        $lock = IsFileLocked($fileUrl);
+        if ($lock && (int)$lock['commentlock'] === 1) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Comments are locked on this file.']);
+            exit;
+        }
+    }
     $stmt = $pdo->prepare('SELECT COALESCE(MAX(comment_order), 0) + 1 AS next_order FROM filecomments WHERE parent_file_url = ?');
     $stmt->execute([$fileUrl]);
     $nextOrder = (int)$stmt->fetch(PDO::FETCH_ASSOC)['next_order'];

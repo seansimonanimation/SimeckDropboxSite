@@ -812,15 +812,15 @@ elFinder.prototype._options = {
 		// toolbar configuration
 		toolbar : [
 			['home', 'back', 'forward', 'up', 'reload'],
-			['netmount'],
+			//['netmount'],
 			['mkdir', 'mkfile', 'upload'],
 			['open', 'download', 'getfile'],
-			['undo', 'redo'],
-			['copy', 'cut', 'paste', 'rm', 'empty', 'hide'],
-			['duplicate', 'rename', 'edit', 'resize', 'chmod'],
-			['selectall', 'selectnone', 'selectinvert'],
+			//['undo', 'redo'],
+			//['copy', 'cut', 'paste', 'rm', 'empty', 'hide'],
+			//['duplicate', 'rename', 'edit', 'resize', 'chmod'],
+			/*['selectall', 'selectnone', 'selectinvert'],
 			['quicklook', 'info'],
-			/*['extract', 'archive'],
+			['extract', 'archive'],
 			['search'],
 			['view', 'sort'],
 			['preference', 'help'],
@@ -1308,11 +1308,11 @@ elFinder.prototype._options = {
 	 */
 contextmenu : {
     // navbarfolder menu
-    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', '|', 'rename', '|', '|', 'info'],
+    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir','|', 'rm', '|', 'rename'],
     // current directory menu
-    cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort', 'selectall', '|', 'info'],
+    cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir'],
     // current directory file menu
-    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', '|', 'rename', '|', 'selectall', 'selectinvert', '|', 'info']
+    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'rename']
 },
 
 

@@ -152,6 +152,20 @@ JS;
 function LoadCommentsIsland($filepath)
 {
     $fileUrl = htmlspecialchars($filepath, ENT_QUOTES, 'UTF-8');
+
+    // Check if comments are locked for clients
+    $isCommentLocked = false;
+    $role = $_SESSION['role'] ?? '';
+    if ($role === 'client') {
+        include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
+        $GLOBALS['db'] = DBConnect();
+        $lock = IsFileLocked($filepath);
+
+        if ($lock && (int)$lock['commentlock'] === 1) {
+            $isCommentLocked = true;
+        }
+    }
+
     $containerId = 'fi-comments-' . md5($filepath);
 
     // The body starts with a loading indicator; the script below replaces it.
@@ -160,6 +174,20 @@ function LoadCommentsIsland($filepath)
     <p class="seecm-loading">Loading comments…</p>
 </div>
 BODY;
+
+    // Before the $js heredoc, determine the add-form HTML to inject
+    if ($isCommentLocked) {
+        $addFormHtml = "'<p style=\"color:var(--color-text-muted);font-style:italic;margin-top:12px;\">Comments are locked on this file.</p>'";
+    } else {
+        $addFormHtml = <<<FORM
+        '<hr class="seecm-divider">' +
+        '<div class="seecm-add-form">' +
+        '<textarea id="{$containerId}-input" placeholder="Write a comment…" style="width:100%;height:64px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"></textarea>' +
+        '<button id="{$containerId}-submit" style="margin-top:8px;">Add Comment</button>' +
+        '</div>'
+    FORM;
+    }
+
 
     $js = <<<JS
 <script>
@@ -195,12 +223,8 @@ BODY;
                 });
             }
             html += '</div>';
+            html += {$addFormHtml};
 
-            html += '<hr class="seecm-divider">';
-            html += '<div class="seecm-add-form">';
-            html += '<textarea id="{$containerId}-input" placeholder="Write a comment…" style="width:100%;height:64px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"></textarea>';
-            html += '<button id="{$containerId}-submit" style="margin-top:8px;">Add Comment</button>';
-            html += '</div>';
 
             container.innerHTML = html;
 
