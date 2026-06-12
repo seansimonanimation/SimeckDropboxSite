@@ -17,5 +17,5 @@ if (empty($files) || !is_array($files)) {
     echo LoadSendToDiscordIsland([]);
     exit;
 }
-
-echo LoadSendToDiscordIsland($files);
+$folderHash = $_POST['folderHash'] ?? '';
+echo LoadSendToDiscordIsland($files, $folderHash);

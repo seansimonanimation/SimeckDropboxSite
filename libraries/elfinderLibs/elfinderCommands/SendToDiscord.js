@@ -26,7 +26,8 @@ elFinder.prototype.commands.sendToDiscord = function() {
         });
 
         $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
-            files: JSON.stringify(fileData)
+            files: JSON.stringify(fileData),
+            folderHash: fm.cwd().hash
         }, function(html) {
             $('body').append(html);
         }, 'html').fail(function() {

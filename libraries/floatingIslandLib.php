@@ -276,7 +276,7 @@ JS;
  * @param  array  $files   Array of ['name' => '…', 'url' => '…', …]
  * @return string          HTML snippet.
  */
-function LoadSendToDiscordIsland($files)
+function LoadSendToDiscordIsland($files, $folderHash = '')
 {
     if (empty($files) || !is_array($files)) {
         return SpawnFloatingIsland(
@@ -321,6 +321,7 @@ function LoadSendToDiscordIsland($files)
         Thursday Chat
     </label>
 </div>
+<input type="hidden" id="{$uid}-folderHash" value="{$folderHash}" />
 
 <button id="{$uid}-send" style="margin-top:4px;">Send to Discord</button>
 <div id="{$uid}-status" style="margin-top:10px;"></div>
@@ -347,6 +348,8 @@ BODY;
         if (note) {
             formData.append('note', note);
         }
+        var fh = document.getElementById('{$uid}-folderHash');
+        if (fh && fh.value) formData.append('folderHash', fh.value);
 
         fetch('libraries/elfinderLibs/endpoints/discordWebhookEndpoint.php', {
             method: 'POST',
