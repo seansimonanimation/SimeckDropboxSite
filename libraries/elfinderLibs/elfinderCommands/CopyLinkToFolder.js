@@ -41,11 +41,21 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         }
 
         var baseUrl = window.location.protocol + '//' + window.location.host;
+        var session = window.simeckSession;
         var links = [];
         $.each(parentHashes, function(i, phash) {
-            links.push(baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(phash));
+            var adjustedHash = phash;
+            if (phash.startsWith('s1_')) {
+                var raw = phash.substring(3);
+                var b64 = raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
+                var path = atob(b64);
+                var userName = session.lastname + ', ' + session.firstname;
+                var reEncoded = btoa(userName + '/' + path)
+                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '.');
+                adjustedHash = 's2_' + reEncoded;
+            }
+            links.push(baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash));
         });
-
         var linkText = links.join('\n');
 
         // Copy to clipboard
