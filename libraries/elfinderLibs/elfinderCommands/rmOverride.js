@@ -1,6 +1,8 @@
 /**
  * @commandID rm
  * @nicename Delete
+ * @role client
+ * @loc files
  */
 //
 elFinder.prototype.commands.rm = function() {

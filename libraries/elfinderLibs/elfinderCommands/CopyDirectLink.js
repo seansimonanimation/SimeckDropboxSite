@@ -6,6 +6,10 @@
  *
  * @commandID CopyDirectLink
  * @nicename Copy Download Link
+ * @role artist
+ * @loc files
+ * @order 4
+ * @contextMenuDividers none
  */
 //
 elFinder.prototype.commands.CopyDirectLink = function() {

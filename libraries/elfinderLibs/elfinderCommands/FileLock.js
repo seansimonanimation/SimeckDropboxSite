@@ -1,6 +1,10 @@
 /**
  * @commandID lockFile
  * @nicename Lock File
+ * @role admin
+ * @loc files
+ * @order 2
+ * @contextMenuDividers below
  */
 
 

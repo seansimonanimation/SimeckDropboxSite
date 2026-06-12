@@ -1,12 +1,16 @@
 /**
- * @commandID mv
- * @nicename Move To
+ * @commandID mvToPrj
+ * @nicename Move To Project
+ * @role artist
+ * @loc files
+ * @order 6
+ * @contextmenuDividers below
  */
 elFinder.prototype.commands.mv = function() {
     this.contextmenu = true;
 
         this.init = function() {
-        this.title = 'Move to ➡️';
+        this.title = 'Move to Project➡️';
     };
 
     this.exec = function() {
