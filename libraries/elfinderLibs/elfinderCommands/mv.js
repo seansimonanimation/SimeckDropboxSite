@@ -6,7 +6,7 @@
  * @order 6
  * @contextmenuDividers below
  */
-elFinder.prototype.commands.mv = function() {
+elFinder.prototype.commands.mvToPrj = function() {
     this.contextmenu = true;
 
         this.init = function() {

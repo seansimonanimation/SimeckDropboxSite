@@ -163,3 +163,34 @@ function DecodeElfinderHash($hash, $elfinderOptions) {
     
     return null;
 }
+function OutputElfinderCommandsMeta() {
+    $dirpath = __ROOT__ . '/libraries/elfinderLibs/elfinderCommands/';
+    $metaArray = array();
+    
+    foreach (new DirectoryIterator($dirpath) as $file) {
+        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'CommonFuncs.js') continue;
+        
+        $content = file_get_contents($file->getPathname());
+        
+        preg_match('/@commandID\s+(\w+)/', $content, $cmdId);
+        preg_match('/@role\s+(\w+)/', $content, $role);
+        preg_match('/@loc\s+(.+)/', $content, $loc);
+        preg_match('/@order\s+(\d+)/', $content, $order);
+        preg_match('/@contextMenuDividers\s+(\w+)/', $content, $divider);
+        
+        if (empty($cmdId)) continue;
+        
+        $locStr = trim($loc[1] ?? 'files');
+        $locArray = preg_split('/[\s,]+/', $locStr);
+        
+        $metaArray[] = array(
+            'commandID' => trim($cmdId[1]),
+            'role' => trim($role[1] ?? 'client'),
+            'loc' => $locArray,
+            'order' => (int)($order[1] ?? 99),
+            'divider' => trim($divider[1] ?? 'none')
+        );
+    }
+    
+    echo '<script>window.elfinderCommandsMeta = ' . json_encode($metaArray, JSON_PRETTY_PRINT) . ';</script>' . "\n";
+}
