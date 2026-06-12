@@ -109,7 +109,7 @@ $rawFolderHash = $_POST['folderHash'] ?? '';
 if (!empty($rawFolderHash)) {
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://')
                . $_SERVER['HTTP_HOST'];
-    $folderLink = "\nTo see " . (count($currentBatch) === 1 ? 'this file in its' : 'these files in their') . "native habitat, click [here]({$baseUrl}/viewfolder.php?folderid=" . urlencode($rawFolderHash) . ")";
+    $folderLink = "\nTo see " . (count($currentBatch) === 1 ? 'this file in its' : 'these files in their') . " native habitat, click [here]({$baseUrl}/viewfolder.php?folderid=" . urlencode($rawFolderHash) . ")";
 }
 foreach ($fileEntries as $fe) {
     // Start a new batch if the current one would exceed limits
