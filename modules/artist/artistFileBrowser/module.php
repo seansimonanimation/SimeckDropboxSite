@@ -72,6 +72,8 @@ $(function() {
         });
         fm = $('#elfinder').elfinder('instance');
         fm.simeckSession = window.simeckSession;
+        populateLockCache(fm);
+        bindLockRefreshOnNavigate(fm);
         $(window).on('resize', resizeElfinder);
         // Update preview pane when file selection changes
         fm.bind('select', function() {

@@ -1,6 +1,18 @@
 $(function() {
-        resizeElfinder();
+    // Restore preview pane collapsed state
+    if (localStorage.getItem('simeck_previewPaneCollapsed') === '1') {
+        $('#preview-pane').addClass('collapsed');
+        $('#preview-toggle').html('<');
+        // Trigger resize after elFinder initializes
+        setTimeout(function() {
+            var instance = $('#elfinder').elfinder('instance');
+            if (instance) instance.resize();
+        }, 100);
+    }
+    //fm.bind('load', function() { refreshLockOverrides(fm); });
+    resizeElfinder();
 });
+
 
 function populateLockCache(fm) {
     $.post('libraries/elfinderLibs/endpoints/GetLockedfilesInProjectEndpoint.php', {}, function(response) {
@@ -13,8 +25,26 @@ function populateLockCache(fm) {
                 commentlock: lock.commentlock
             };
         });
+        refreshLockOverrides(fm);
     }, 'json');
 }
+function bindLockRefreshOnNavigate(fm) {
+    // Refresh lock cache whenever elFinder finishes opening a directory.
+    fm.bind('opendone', function() {
+        setTimeout(function() {
+            populateLockCache(fm);
+        }, 50);
+    });
+
+    // Also refresh overlays after redraws, as a fallback for UI repaint cycles.
+    fm.bind('redraw', function() {
+        setTimeout(function() {
+            refreshLockOverrides(fm);
+        }, 50);
+    });
+}
+
+
 
 
 function resizeElfinder() {
@@ -43,16 +73,21 @@ function updatePreviewPane(fm) {
     var isImage = f.mime && f.mime.startsWith('image/');
     var isLocked = false;
     var commentLocked = false;
-    
+    var rawCommentLocked = false;
+
     // Check lock status from cache
-    if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[fileUrl]) {
-        var lockData = fm.cache.lockedPaths[fileUrl];
+    var decodedUrl = decodeURIComponent(fileUrl);
+    if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[decodedUrl]) {
+        var lockData = fm.cache.lockedPaths[decodedUrl];
         isLocked = lockData.assetlock ? true : false;
         commentLocked = lockData.commentlock ? true : false;
+        rawCommentLocked = commentLocked;
     }
-    
     // Determine role for context-sensitive buttons
     var role = window.simeckSession.tempRole || '';
+    // Admins and artists bypass comment locks (for form visibility, not badge display)
+    if (role === 'admin' || role === 'artist') { commentLocked = false; }
+
     
     var html = '';
     
@@ -79,8 +114,14 @@ function updatePreviewPane(fm) {
         html += '  <div class="preview-generic-icon ' + iconClass + '"></div>';
     }
     if (isLocked) {
-        html += '  <span class="preview-lock-badge">🔒</span>';
+        if (rawCommentLocked) {
+            html += '  <span class="preview-lock-badge preview-lock-badge--locked">🔒</span>';
+        } else {
+            html += '  <span class="preview-lock-badge preview-lock-badge--open">🔓</span>';
+        }
     }
+
+
     html += '</div>';
     
     // 4. Filename (centered)
@@ -377,11 +418,11 @@ function togglePreviewPane() {
     
     $pane.toggleClass('collapsed');
     
-    if ($pane.hasClass('collapsed')) {
-        $btn.html('<');
-    } else {
-        $btn.html('>');
-    }
+    var isCollapsed = $pane.hasClass('collapsed');
+    $btn.html(isCollapsed ? '<' : '>');
+    
+    // NEW: Save state to localStorage
+    localStorage.setItem('simeck_previewPaneCollapsed', isCollapsed ? '1' : '0');
     
     // Recalculate elFinder layout
     var instance = $('#elfinder').elfinder('instance');
@@ -389,3 +430,57 @@ function togglePreviewPane() {
         instance.resize();
     }
 }
+
+function refreshLockOverrides(fm) {
+    if (!fm.cache || !fm.cache.lockedPaths) return;
+
+    $('.elfinder-cwd-file').each(function() {
+        var hash = this.id;
+        if (!hash) return;
+
+        var $file = $(this);
+        var $icon = $file.find('.elfinder-cwd-icon');
+        if (!$icon.length) return;
+
+        // Remove any existing overlay
+        $icon.find('.simeck-lock-overlay').remove();
+
+        // Decode the elFinder hash to get the file's relative path
+        var sepIdx = hash.indexOf('_');
+        if (sepIdx === -1) return;
+        var encoded = hash.substring(sepIdx + 1);
+        var b64 = encoded.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
+        try {
+            var relPath = atob(b64);
+        } catch(e) { return; }
+
+        // Match against cache: cache keys are full paths like
+        // "/files/Projects/clientProjects/C01/file.jpg"
+        // Decoded relPath is "clientProjects/C01/file.jpg"
+        var lockData = null;
+        for (var cachedPath in fm.cache.lockedPaths) {
+            if (cachedPath.endsWith('/' + relPath) || cachedPath === relPath) {
+                lockData = fm.cache.lockedPaths[cachedPath];
+                break;
+            }
+        }
+
+        if (!lockData) return;  // No lock = no overlay
+
+        // Determine lock icon by state:
+        //   Fully locked  (assetlock=1, commentlock=1) → 🔒
+        //   Lock override (assetlock=1, commentlock=0) → 🔓
+        var icon = '🔒';
+        if (lockData.assetlock && !lockData.commentlock) {
+            icon = '🔓';
+        }
+
+        $icon.append('<span class="simeck-lock-overlay">' + icon + '</span>');
+    });
+}
+
+
+
+
+
+

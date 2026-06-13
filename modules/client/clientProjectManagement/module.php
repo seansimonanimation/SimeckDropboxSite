@@ -71,6 +71,7 @@ $(function() {
         fm = $('#elfinder').elfinder('instance');
         fm.simeckSession = window.simeckSession;
         populateLockCache(fm);
+        bindLockRefreshOnNavigate(fm);
         // Update preview pane when file selection changes
         fm.bind('select', function() {
             updatePreviewPane(fm);

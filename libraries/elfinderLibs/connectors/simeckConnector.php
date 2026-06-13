@@ -4,9 +4,7 @@ include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 require __ROOT__ . '/libraries/elfinder/php/autoload.php';
 require_once __ROOT__ . '/libraries/elfinderLibs/SimeckVolumeDriver.php';
 
-
-
-// Get admin options
+// Get role-specific options
 $elfinderOptions = array();
 switch($_SESSION['tempRole']){
     case 'admin':
@@ -19,12 +17,8 @@ switch($_SESSION['tempRole']){
         $elfinderOptions = getClientFileBrowserOptions();
 }
 
-// Apply lock accessControl to every volume that has a path under /files/Projects
+// Apply tmbVideoConvLen to all volumes only (no accessControl override)
 foreach ($elfinderOptions['roots'] as &$root) {
-    if (isset($root['path']) && strpos($root['path'], __ROOT__ . '/files/Projects') === 0) {
-        $root['accessControl'] = 'lockAccessControl';
-    }
-    // Raise the video thumbnail size limit from 10MB to 50GB
     $root['tmbVideoConvLen'] = 50000000000;
 }
 unset($root);

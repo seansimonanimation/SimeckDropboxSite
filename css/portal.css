@@ -423,6 +423,15 @@ button:disabled {
     pointer-events: none;
     z-index: 10;
 }
+.elfinder-cwd-file.elfinder-locked--override .elfinder-cwd-icon::after {
+    content: '\01F513';
+    color: #f1c40f;
+}
+/* Also for list view */
+.elfinder-cwd table tr.elfinder-locked--override td.elfinder-col-name .elfinder-cwd-icon::after {
+    content: '\01F513';
+    color: #f1c40f;
+}
 
 /* List view variant */
 .elfinder-cwd table tr.elfinder-locked td.elfinder-col-name .elfinder-cwd-icon::after {
@@ -584,6 +593,14 @@ button:disabled {
     line-height: 1;
     text-shadow: 0 0 4px rgba(0,0,0,0.7);
     pointer-events: none;
+}
+
+.preview-lock-badge--locked {
+    color: #e74c3c;
+}
+
+.preview-lock-badge--open {
+    color: #f1c40f;
 }
 
 .preview-filename {
@@ -787,3 +804,18 @@ body.portal-layout.clientProjectManagement .file-browser-container .preview-pane
   user-select:        text;           /* body text is selectable */
   min-height:         0;              /* let flex shrink below content */
 }
+/* ── Lock overlay on elFinder file icons ── */
+.elfinder-cwd-file.elfinder-locked--override .elfinder-cwd-icon {
+    position: relative !important;
+}
+.simeck-lock-overlay {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    font-size: 16px;
+    line-height: 1;
+    text-shadow: 0 0 4px rgba(0,0,0,0.7);
+    pointer-events: none;
+    z-index: 10;
+}
+
