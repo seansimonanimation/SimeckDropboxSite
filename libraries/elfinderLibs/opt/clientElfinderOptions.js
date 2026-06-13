@@ -1308,11 +1308,11 @@ elFinder.prototype._options = {
 	 */
 contextmenu : {
     // navbarfolder menu
-    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir','|', 'rm', '|', 'rename'],
+    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir','|', 'rm'],
     // current directory menu
     cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir'],
     // current directory file menu
-    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'rename']
+    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'download', 'opendir', '|', 'upload', 'mkdir']
 },
 
 

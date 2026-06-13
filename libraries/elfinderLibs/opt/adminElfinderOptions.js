@@ -811,6 +811,18 @@ commands : ['*', ...CommandsList()],
 		// toolbar configuration
 		toolbar : [
 			['home', 'back', 'forward', 'up', 'reload'],
+			['mkdir', 'mkfile', 'upload'],
+			['open', 'download'],
+			['undo', 'redo'],
+			['copy', 'cut', 'paste', 'rm',],
+			['duplicate', 'rename', 'chmod'],
+			['extract', 'archive'],
+			['search'],
+			['view', 'sort'],
+			['preference'],
+		],
+/** 		toolbar : [ //full toolbar config
+			['home', 'back', 'forward', 'up', 'reload'],
 			['netmount'],
 			['mkdir', 'mkfile', 'upload'],
 			['open', 'download', 'getfile'],
@@ -825,6 +837,9 @@ commands : ['*', ...CommandsList()],
 			['preference', 'help'],
 			['fullscreen']
 		],
+*/
+
+
 		// toolbar extra options
 		toolbarExtra : {
 			// also displays the text label on the button (true / false / 'none')
@@ -1307,11 +1322,11 @@ commands : ['*', ...CommandsList()],
 	 */
 contextmenu : {
     // navbarfolder menu
-    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', '|', 'archive', '|', 'places', 'info', 'chmod', 'netunmount'],
+    navbar : [...NavbarCommands(), 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rm', 'empty', 'hide', '|', 'rename', '|', 'archive', '|', 'places', 'info', 'chmod', 'netunmount'],
     // current directory menu
     cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'mkfile', 'paste', '|', 'empty', 'hide', '|', 'view', 'sort', 'selectall', 'colwidth', '|', 'places', 'info', 'chmod', 'netunmount', '|', 'fullscreen', '|', 'preference'],
     // current directory file menu
-    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', '|', 'duplicate', '|', 'empty', 'hide', '|', 'rename', 'edit', 'resize', '|', 'archive', 'extract', '|', 'selectall', 'selectinvert', '|', 'places', 'info', 'chmod', 'netunmount']
+    files  : [...FilesCommands(), '|', 'getfile', '|', 'download', 'opendir', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', '|', 'duplicate', '|', 'empty', 'hide', '|', 'rename', 'edit', 'resize', '|', 'archive', 'extract', '|', 'selectall', 'selectinvert', '|', 'places', 'info', 'chmod', 'netunmount']
 },
 
 

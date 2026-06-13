@@ -811,6 +811,18 @@ elFinder.prototype._options = {
 		// toolbar configuration
 		toolbar : [
 			['home', 'back', 'forward', 'up', 'reload'],
+			['mkdir', 'mkfile', 'upload'],
+			['open', 'download'],
+			['undo', 'redo'],
+			['copy', 'cut', 'paste', 'rm',],
+			['duplicate', 'rename', 'chmod'],
+			['extract', 'archive'],
+			['search'],
+			['view', 'sort'],
+			['preference'],
+		],
+/** 		toolbar : [ //full toolbar config
+			['home', 'back', 'forward', 'up', 'reload'],
 			['netmount'],
 			['mkdir', 'mkfile', 'upload'],
 			['open', 'download', 'getfile'],
@@ -825,6 +837,7 @@ elFinder.prototype._options = {
 			['preference', 'help'],
 			['fullscreen']
 		],
+*/
 		// toolbar extra options
 		toolbarExtra : {
 			// also displays the text label on the button (true / false / 'none')
@@ -839,7 +852,7 @@ elFinder.prototype._options = {
 			// If you do not include 'preference' in the context menu you should specify 'auto' or 'always'
 			showPreferenceButton: 'none',
 			// show Preference button into contextmenu of the toolbar (true / false)
-			preferenceInContextmenu: true
+			preferenceInContextmenu: false
 		},
 		// directories tree options
 		tree : {
@@ -1307,11 +1320,11 @@ elFinder.prototype._options = {
 	 */
 contextmenu : {
     // navbarfolder menu
-    navbar : [...NavbarCommands(), 'open', 'opennew', 'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'empty', '|', 'rename', '|', 'archive', '|', 'info', 'chmod'],
+    navbar : [...NavbarCommands(),'download', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rename', '|', 'archive'],
     // current directory menu
-    cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort', 'selectall', '|'],
+    cwd    : [...CWDCommands(), 'undo', 'redo', '|', 'back', 'up', 'reload', '|', 'upload', 'mkdir', 'paste', '|', 'view', 'sort'],
     // current directory file menu
-    files  : [...FilesCommands(), '|', 'getfile', '|', 'open', 'opennew', 'download', 'opendir', 'quicklook', '|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'empty', '|', 'rename', 'edit', '|', 'archive', 'extract', '|']
+    files  : [...FilesCommands(), '|', 'getfile', '|', 'download','|', 'upload', 'mkdir', '|', 'copy', 'cut', 'paste', 'duplicate', '|', 'rename', '|', 'archive', 'extract']
 },
 
 	/**
