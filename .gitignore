@@ -4,3 +4,4 @@ libraries/dbconfig.php
 composer.json
 vendor/
 .clinerules
+composer.lock
