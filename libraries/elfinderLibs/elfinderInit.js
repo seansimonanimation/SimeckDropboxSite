@@ -20,7 +20,8 @@ function populateLockCache(fm) {
         if (!fm.cache) fm.cache = {};
         fm.cache.lockedPaths = {};
         response.lockedFiles.forEach(function(lock) {
-            fm.cache.lockedPaths[lock.filepath] = {
+            var normalizedPath = normalizeSimeckFilePath(lock.filepath);
+            fm.cache.lockedPaths[normalizedPath] = {
                 assetlock: lock.assetlock,
                 commentlock: lock.commentlock
             };
@@ -29,12 +30,24 @@ function populateLockCache(fm) {
     }, 'json');
 }
 
+function normalizeSimeckFilePath(path) {
+    if (!path) return '';
+    path = path.replace(/\\/g, '/');
+    path = path.replace(/\+/g, ' ');
+    try {
+        path = decodeURIComponent(path);
+    } catch (e) {
+        // leave as-is if decode fails
+    }
+    return path;
+}
+
 function getSimeckLockFilePath(fm, hash) {
     var relPath = fm.path(hash) || '';
     relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
-    return relPath ? '/files/Projects/' + relPath : '';
+    relPath = normalizeSimeckFilePath(relPath);
+    return '/files/Projects/' + relPath;
 }
-
 function bindLockRefreshOnNavigate(fm) {
     // Refresh lock cache whenever elFinder finishes opening a directory.
     fm.bind('opendone', function() {
@@ -84,8 +97,9 @@ function updatePreviewPane(fm) {
 
     // Check lock status from cache
     var decodedUrl = decodeURIComponent(fileUrl);
-    if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[decodedUrl]) {
-        var lockData = fm.cache.lockedPaths[decodedUrl];
+var normalizedUrl = normalizeSimeckFilePath(fileUrl);
+    if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[normalizedUrl]) {
+        var lockData = fm.cache.lockedPaths[normalizedUrl];
         isLocked = lockData.assetlock ? true : false;
         commentLocked = lockData.commentlock ? true : false;
         rawCommentLocked = commentLocked;
@@ -464,9 +478,12 @@ function refreshLockOverrides(fm) {
         // Match against cache: cache keys are full paths like
         // "/files/Projects/clientProjects/C01/file.jpg"
         // Decoded relPath is "clientProjects/C01/file.jpg"
+        var normalizedRelPath = normalizeSimeckFilePath(relPath);
+
         var lockData = null;
         for (var cachedPath in fm.cache.lockedPaths) {
-            if (cachedPath.endsWith('/' + relPath) || cachedPath === relPath) {
+            var normalizedCachedPath = normalizeSimeckFilePath(cachedPath);
+            if (normalizedCachedPath.endsWith('/' + normalizedRelPath) || normalizedCachedPath === normalizedRelPath) {
                 lockData = fm.cache.lockedPaths[cachedPath];
                 break;
             }

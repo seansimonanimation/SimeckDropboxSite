@@ -34,9 +34,10 @@ this.init = function(){
         if (!confirm('Use one lock override to unlock comments on "' + files[0].name + '"?')) {
             return dfrd.reject();
         }
+        var filepath = getSimeckLockFilePath(fm, files[0].hash);
 
-        $.post('libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
-            filepath: getSimeckLockFilePath(fm, sel[0].hash)
+        $.post('libraries/elfinderLibs/endpoints/ClientUseOverrideTokenEndpoint.php', {
+            filepath: filepath
         }, function(response) {
             if (response.success) {
                 if (fm.simeckSession) {
