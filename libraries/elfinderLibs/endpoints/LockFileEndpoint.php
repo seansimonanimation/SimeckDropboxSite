@@ -1,4 +1,6 @@
 <?php
+$filepath = str_replace('\\', '/', $_REQUEST['filepath'] ?? '');
+$filepath = rawurldecode(str_replace('+', '%20', $filepath));
 /**
  * API endpoint that has ONE JOB. To lock a file.
  * Called via AJAX from elFinder frontend.
@@ -15,7 +17,6 @@ include_once __ROOT__ . '/libraries/elfinderLibs/lockHelpers.php';
 include_once __ROOT__ . '/libraries/logging.php';
 $GLOBALS['db'] = DBConnect();
 header('Content-Type: application/json');
-$filepath = $_REQUEST['filepath'] ?? '';
 if(!$filepath) {
     echo json_encode(['success' => false, 'error' => 'No filepath provided']);
     exit;

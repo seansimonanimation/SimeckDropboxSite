@@ -34,8 +34,9 @@ elFinder.prototype.commands.lockFile = function() {
             return dfrd.reject();
         }
 
+        var filepath = getSimeckLockFilePath(fm, sel[0].hash);
         $.post('libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
-            filepath: getSimeckLockFilePath(fm, sel[0].hash)
+            filepath: filepath
         }, function(response) {
             if (response.success) {
                 populateLockCache(fm);
@@ -60,7 +61,7 @@ elFinder.prototype.commands.lockFile = function() {
         if (sel.length !== 1) return -1;
         var role = fm.options.role || '';
         if (role !== 'admin' && role !== 'artist') return -1;
-        var url = fm.url(sel[0].hash);
+        var url = getSimeckLockFilePath(fm, sel[0].hash);
         if (fm.cache?.lockedPaths?.[url]) return -1;
         return 0;
     };

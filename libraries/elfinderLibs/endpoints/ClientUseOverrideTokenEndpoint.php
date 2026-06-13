@@ -1,4 +1,6 @@
 <?php
+$filepath = str_replace('\\', '/', $_REQUEST['filepath'] ?? '');
+$filepath = rawurldecode(str_replace('+', '%20', $filepath));
 /**
  * API endpoint that has ONE JOB. To consume a client override token and mark the corresponding lock as overridden.
  * Called via AJAX from elFinder frontend.
