@@ -52,7 +52,7 @@ function adminSwitchViewButtonActivation(){
 ?>
    <title>Simeck Entertainment <?php echo GetTempRole(); ?> Portal<br /></title>
 </head>
-<body class="portal-layout <?php echo GetThemeClass(); ?>">
+<body class="portal-layout <?php echo GetThemeClass(); ?> <?php echo htmlspecialchars($_SESSION['ActiveModule'] ?? ''); ?>">
 
    <aside id="sidebar" role="navigation">
       <div class="sidebar-header"><?php echo $_SESSION['tempRole']; ?> portal

@@ -3,3 +3,4 @@ login.conf.php
 libraries/dbconfig.php
 composer.json
 vendor/
+.clinerules

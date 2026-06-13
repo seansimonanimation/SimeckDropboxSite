@@ -103,6 +103,26 @@ function ApplyElfinderCommandOverrides() { //actually applies the commands that 
     }
 }
 function OutputSimeckSessionScript() {
+    // Query client projects that have a leader assigned
+    $leaderStmt = $GLOBALS['db']->prepare(
+        "SELECT p.active_path, p.leader 
+        FROM projects p
+        JOIN clients c ON c.username = p.leader
+        WHERE p.active_path LIKE '%/clientProjects/%'
+        AND p.leader IS NOT NULL 
+        AND p.leader != ''
+        AND c.point_of_contact = ?"
+    );
+    $leaderStmt->execute([$_SESSION['username']]);
+
+    $leaderStmt->execute();
+    $projectLeaders = [];
+    while ($row = $leaderStmt->fetch(PDO::FETCH_ASSOC)) {
+        // Extract the folder name from e.g. "/files/Projects/clientProjects/C01_SetSail"
+        $folderName = basename(rtrim($row['active_path'], '/'));
+        $projectLeaders[$folderName] = $row['leader'];
+    }
+    
     $sessionData = [
         'username'             => $_SESSION['username'] ?? null,
         'firstname'            => $_SESSION['firstname'] ?? null,
@@ -116,9 +136,11 @@ function OutputSimeckSessionScript() {
         'project_assignments'  => $_SESSION['project_assignments'] ?? null,
         'point_of_contact'     => $_SESSION['point_of_contact'] ?? null,
         'lock_overrides'       => $_SESSION['lock_overrides'] ?? null,
+        'projectLeaders'       => $projectLeaders,
     ];
     echo '<script>window.simeckSession = ' . json_encode($sessionData, JSON_PRETTY_PRINT) . ';</script>' . "\n";
 }
+
 function DecodeElfinderHash($hash, $elfinderOptions) {
     // elFinder hash format: "<volumeId><base64_of_path>"
     $underscorePos = strpos($hash, '_');

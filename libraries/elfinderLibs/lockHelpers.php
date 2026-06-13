@@ -115,24 +115,6 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
         ? !($attr == 'read' || $attr == 'write')
         :  null;
 }
-
-/**
- * elFinder accessControl callback for setting the `locked` flag on files.
- * Pass this as the `accessControl` option on a volume root.
- * Only applies to files under /files/Projects.
- */
-function lockAccessControl($attr, $path, $data, $volume, $isDir, $relpath) {
-    if ($attr === 'locked' && !$isDir) {
-        $normalized = NormalizeFilePath($path);
-        if ($normalized && strpos($normalized, '/files/Projects') === 0) {
-            $lock = IsFileLocked($normalized);
-            if ($lock) {
-                return array('locked' => true);
-            }
-        }
-    }
-    return null;
-}
 function GetLockedFilesForDirectoryRecursively($directory) {
     $directory = rtrim($directory, '/') . '/%';
     $stmt = $GLOBALS['db']->prepare(
