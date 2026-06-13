@@ -68,13 +68,22 @@ $(function() {
         baseUrl: 'libraries/elfinder/',
         url: `libraries/elfinderLibs/connectors/simeckConnector.php`,
         height: $(window).height() - $('#elfinder').offset().top,
-        width: $(window).width()*0.7,
         role: window.simeckSession.tempRole,
         });
         fm = $('#elfinder').elfinder('instance');
         fm.simeckSession = window.simeckSession;
         $(window).on('resize', resizeElfinder);
+        // Update preview pane when file selection changes
+        fm.bind('select', function() {
+            updatePreviewPane(fm);
+        });
+        // Toggle preview pane on button click
+        $('#preview-toggle').on('click', togglePreviewPane);
+        // Override open command for preview island
+        overrideOpenCommand(fm);
+
 });
+
 </script>
 
 
@@ -85,10 +94,11 @@ $(function() {
     <div id="elfinder"><center><h1>If you are seeing this, that means that your file browser is broken. Please reach out to your point of contact.</h1></center></div>
     
     <!-- Preview Pane - part of module content -->
+<div class="preview-sidebar">
+    <button class="preview-toggle" id="preview-toggle">></button>
     <div id="preview-pane" class="preview-pane">
         <div class="preview-header">
             <h3>Preview</h3>
-            <button class="close-preview" id="close-preview">✕</button>
         </div>
         <div class="preview-content">
             <p>Select a file to view details</p>
