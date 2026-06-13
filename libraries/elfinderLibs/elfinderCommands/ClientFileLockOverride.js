@@ -22,36 +22,47 @@ this.init = function(){
     }
 };
 
-    this.exec = function(){
-        var fm= this.fm;
+    this.exec = function() {
+        var fm = this.fm;
+        var dfrd = $.Deferred();
         var files = fm.selectedFiles();
-        if(files.length !== 1){
+
+        if (files.length !== 1) {
             fm.error('You can only override one file at a time.');
-            return $.Deferred().resolve();
+            return dfrd.reject();
         }
         if (!confirm('Use one lock override to unlock comments on "' + files[0].name + '"?')) {
-            return $.Deferred().resolve();
+            return dfrd.reject();
         }
-        $.post('libraries/elfinderLibs/endpoints/ClientUseOverrideTokenEndpoint.php', {
-            filepath: fm.url(files[0].hash)
+
+        $.post('libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
+            filepath: getSimeckLockFilePath(fm, sel[0].hash)
         }, function(response) {
             if (response.success) {
-                fm.simeckSession.lock_overrides -= 1;
-                location.reload();
+                if (fm.simeckSession) {
+                    fm.simeckSession.lock_overrides = Math.max(0, (fm.simeckSession.lock_overrides || 0) - 1);
+                }
+                populateLockCache(fm);
+                if (fm.selectedFiles().length === 1) {
+                    updatePreviewPane(fm);
+                }
+                dfrd.resolve();
             } else {
                 fm.error(response.error || 'Override failed.');
+                dfrd.reject();
             }
         }, 'json').fail(function() {
             fm.error('Server error while performing override.');
+            dfrd.reject();
         });
 
-        return $.Deferred().resolve();
+        return dfrd.promise();
     };
     this.getstate = function() {
         var fm = this.fm;
         var sel = fm.selectedFiles();
         if (sel.length !== 1) return -1;
-        var url = fm.url(sel[0].hash);
+        var url = getSimeckLockFilePath(fm, sel[0].hash);
         // Only show if the file has a comment lock
         if (!fm.cache?.lockedPaths?.[url]?.commentlock) return -1;
         // Only show if the user has overrides

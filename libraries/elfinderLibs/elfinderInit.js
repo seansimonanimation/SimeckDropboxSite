@@ -28,6 +28,13 @@ function populateLockCache(fm) {
         refreshLockOverrides(fm);
     }, 'json');
 }
+
+function getSimeckLockFilePath(fm, hash) {
+    var relPath = fm.path(hash) || '';
+    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+    return relPath ? '/files/Projects/' + relPath : '';
+}
+
 function bindLockRefreshOnNavigate(fm) {
     // Refresh lock cache whenever elFinder finishes opening a directory.
     fm.bind('opendone', function() {

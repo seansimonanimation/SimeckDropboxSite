@@ -24,18 +24,35 @@ elFinder.prototype.commands.lockFile = function() {
         this.title = 'Lock File';
     };
 
-    this.exec = function(){
+    this.exec = function() {
         var fm = this.fm;
+        var dfrd = $.Deferred();
+        var sel = fm.selectedFiles();
+
+        if (sel.length !== 1) {
+            fm.error('You must select exactly one file to lock.');
+            return dfrd.reject();
+        }
+
         $.post('libraries/elfinderLibs/endpoints/LockFileEndpoint.php', {
-            filepath: fm.url(fm.selectedFiles()[0].hash)
-        }, function(response){
+            filepath: getSimeckLockFilePath(fm, sel[0].hash)
+        }, function(response) {
             if (response.success) {
-                fm.exec('reload');
+                populateLockCache(fm);
+                if (fm.selectedFiles().length === 1) {
+                    updatePreviewPane(fm);
+                }
+                dfrd.resolve();
             } else {
                 fm.error(response.error || 'File was already locked.');
+                dfrd.reject();
             }
-            return $.Deferred().resolve();
+        }, 'json').fail(function() {
+            fm.error('Server error while locking file.');
+            dfrd.reject();
         });
+
+        return dfrd.promise();
     };
     this.getstate = function() {
         var fm = this.fm;
