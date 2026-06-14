@@ -1,3 +1,6 @@
 [submodule "libraries/elfinder"]
 	path = libraries/elfinder
 	url = https://github.com/Studio-42/elFinder.git
+[submodule "libraries/threejs"]
+	path = libraries/threejs
+	url = https://github.com/mrdoob/three.js.git

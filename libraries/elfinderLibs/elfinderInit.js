@@ -97,7 +97,7 @@ function updatePreviewPane(fm) {
 
     // Check lock status from cache
     var decodedUrl = decodeURIComponent(fileUrl);
-var normalizedUrl = normalizeSimeckFilePath(fileUrl);
+    var normalizedUrl = normalizeSimeckFilePath(fileUrl);
     if (fm.cache && fm.cache.lockedPaths && fm.cache.lockedPaths[normalizedUrl]) {
         var lockData = fm.cache.lockedPaths[normalizedUrl];
         isLocked = lockData.assetlock ? true : false;
@@ -379,6 +379,20 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         contentHtml += '  <p style="color:var(--color-text-muted);">' + formatBytes(file.size) + '</p>';
         contentHtml += '</div>';
     }
+    // detect ext and embed iframe preview (insert into existing openPreviewIsland flow)
+        var name = file && file.name ? file.name : '';
+        var ext = (name.split('.').pop() || '').toLowerCase();
+        if (ext === 'docx' || ext === 'doc') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else if (ext === 'xlsx' || ext === 'xls' || ext === 'csv' || ext === 'ods') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?url=' + fileUrl;
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else if (ext === 'pptx' || ext === 'ppt' || ext === 'odp') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        }
+
     
     var islandHtml = '<div class="floating-island preview-island" id="' + islandId + '" style="width:90vw;height:90vh;max-width:1400px;max-height:900px;">';
     islandHtml += '  <div class="floating-island__header">';
