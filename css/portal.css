@@ -819,3 +819,106 @@ body.portal-layout.clientProjectManagement .file-browser-container .preview-pane
     z-index: 10;
 }
 
+/* ─── DOCX Preview (PHPWord) ──────────────────────────────────────────────── */
+.docx-preview {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  line-height: 1.6;
+  padding: 20px;
+  background-color: var(--color-bg);
+}
+
+.docx-preview h1, 
+.docx-preview h2, 
+.docx-preview h3, 
+.docx-preview h4, 
+.docx-preview h5, 
+.docx-preview h6 {
+  color: var(--color-heading);
+  font-weight: 700;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.docx-preview h1 { font-size: 1.80rem; }
+.docx-preview h2 { font-size: 1.40rem; }
+.docx-preview h3 { font-size: 1.15rem; }
+.docx-preview h4 { font-size: 1.00rem; }
+
+.docx-preview p {
+  margin-bottom: 12px;
+}
+
+.docx-preview strong, .docx-preview b {
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
+.docx-preview em, .docx-preview i {
+  font-style: italic;
+}
+
+.docx-preview a {
+  color: var(--color-primary-light);
+  text-decoration: underline;
+}
+
+.docx-preview a:hover {
+  color: var(--color-primary);
+}
+
+.docx-preview img {
+  max-width: 100%;
+  height: auto;
+  margin: 16px 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.docx-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.docx-preview th, .docx-preview td {
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.docx-preview th {
+  background: var(--color-bg-raised);
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+.docx-preview ul, .docx-preview ol {
+  margin: 12px 0 12px 24px;
+}
+
+.docx-preview li {
+  margin-bottom: 8px;
+}
+
+.docx-preview hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 20px 0;
+}
+
+.docx-preview code {
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--color-primary-light);
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.docx-preview blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 16px;
+  margin-left: 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
