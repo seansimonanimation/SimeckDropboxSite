@@ -385,7 +385,14 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         if (ext === 'docx' || ext === 'doc') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else if (ext === 'xlsx' || ext === 'xls' || ext === 'csv' || ext === 'ods') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?url=' + fileUrl;
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else if (ext === 'pptx' || ext === 'ppt' || ext === 'odp') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         }
+
     
     var islandHtml = '<div class="floating-island preview-island" id="' + islandId + '" style="width:90vw;height:90vh;max-width:1400px;max-height:900px;">';
     islandHtml += '  <div class="floating-island__header">';
