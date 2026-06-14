@@ -363,7 +363,16 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
     $('#' + islandId).remove();
     
     var contentHtml = '';
-    if (isImage) {
+    
+        // ─── 3D Model Detection ──────────────────────────────────────────
+    var ext = (file.name.split('.').pop() || '').toLowerCase();
+    var is3DModel = ['obj', 'fbx', 'blend', 'mb'].indexOf(ext) !== -1;
+
+    if (is3DModel) {
+        // Build a container div that the 3D viewer will use, plus a loading placeholder
+        var modelContainerId = 'model-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
+        contentHtml = '<div id="' + modelContainerId + '" style="width:100%;height:100%;position:relative;background:#1a1a1a;overflow:hidden;"></div>';
+    } else if (isImage) {
         contentHtml = '<img src="' + fm.escape(fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else if (file.mime && file.mime.indexOf('video') === 0) {
         contentHtml = '<video controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000;">';
@@ -371,29 +380,29 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         contentHtml += '  Your browser does not support the video tag.';
         contentHtml += '</video>';
     } else {
-        var iconClass = getElfinderIconClass(file.mime, file.name);
-        contentHtml = '<div style="text-align:center;padding:40px;">';
-        contentHtml += '  <div class="' + iconClass + '" style="font-size:128px;width:128px;height:128px;margin:0 auto 20px;"></div>';
-        contentHtml += '  <h2>' + fm.escape(file.name) + '</h2>';
-        contentHtml += '  <p style="color:var(--color-text-muted);">' + (file.mime || 'Unknown type') + '</p>';
-        contentHtml += '  <p style="color:var(--color-text-muted);">' + formatBytes(file.size) + '</p>';
-        contentHtml += '</div>';
-    }
-    // detect ext and embed iframe preview (insert into existing openPreviewIsland flow)
+        // detect ext and embed iframe preview (docx, xlsx, pptx)
         var name = file && file.name ? file.name : '';
-        var ext = (name.split('.').pop() || '').toLowerCase();
-        if (ext === 'docx' || ext === 'doc') {
+        var ext2 = (name.split('.').pop() || '').toLowerCase();
+        if (ext2 === 'docx' || ext2 === 'doc') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
-        } else if (ext === 'xlsx' || ext === 'xls' || ext === 'csv' || ext === 'ods') {
+        } else if (ext2 === 'xlsx' || ext2 === 'xls' || ext2 === 'csv' || ext2 === 'ods') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
-        } else if (ext === 'pptx' || ext === 'ppt' || ext === 'odp') {
+        } else if (ext2 === 'pptx' || ext2 === 'ppt' || ext2 === 'odp') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else {
+            var iconClass = getElfinderIconClass(file.mime, file.name);
+            contentHtml = '<div style="text-align:center;padding:40px;">';
+            contentHtml += '  <div class="' + iconClass + '" style="font-size:128px;width:128px;height:128px;margin:0 auto 20px;"></div>';
+            contentHtml += '  <h2>' + fm.escape(file.name) + '</h2>';
+            contentHtml += '  <p style="color:var(--color-text-muted);">' + (file.mime || 'Unknown type') + '</p>';
+            contentHtml += '  <p style="color:var(--color-text-muted);">' + formatBytes(file.size) + '</p>';
+            contentHtml += '</div>';
         }
+    }
 
-    
     var islandHtml = '<div class="floating-island preview-island" id="' + islandId + '" style="width:90vw;height:90vh;max-width:1400px;max-height:900px;">';
     islandHtml += '  <div class="floating-island__header">';
     islandHtml += '    <h3 class="floating-island__title">' + fm.escape(file.name) + '</h3>';
@@ -406,6 +415,27 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
     islandHtml += '</div>';
     
     $('body').append(islandHtml);
+    // ─── If it's a 3D model, initialize the viewer ───────────────────
+    if (is3DModel) {
+        var container = document.getElementById(modelContainerId);
+        if (container) {
+            if (typeof window.open3DViewer === 'function') {
+                window.open3DViewer(container, fileUrl, ext, file.name);
+            } else {
+                // Dynamically load 3dViewer.js first, then call it
+                var script = document.createElement('script');
+                script.src = '/libraries/elfinderLibs/3dViewer.js';
+                script.onload = function() {
+                    window.open3DViewer(container, fileUrl, ext, file.name);
+                };
+                script.onerror = function() {
+                    container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-family:sans-serif;">Failed to load 3D viewer.</div>';
+                };
+                document.head.appendChild(script);
+            }
+        }
+    }
+
     
     // Add drag behavior (reuse the same pattern from floatingIslandLib.php)
     var island = document.getElementById(islandId);
@@ -516,9 +546,3 @@ function refreshLockOverrides(fm) {
         $icon.append('<span class="simeck-lock-overlay">' + icon + '</span>');
     });
 }
-
-
-
-
-
-

@@ -922,3 +922,13 @@ body.portal-layout.clientProjectManagement .file-browser-container .preview-pane
   color: var(--color-text-muted);
   font-style: italic;
 }
+/* ─── 3D Viewer inside Floating Island ─────────────────────────── */
+.preview-island .floating-island__body {
+    padding: 0;
+}
+
+.preview-island .floating-island__body canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
