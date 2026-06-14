@@ -108,6 +108,32 @@ function updatePreviewPane(fm) {
     var role = window.simeckSession.tempRole || '';
     // Admins and artists bypass comment locks (for form visibility, not badge display)
     if (role === 'admin' || role === 'artist') { commentLocked = false; }
+    // Detect text/code file for inline snippet
+    var isTextFile = false;
+    if (f.mime) {
+        var textMimePrefixes = ['text/', 'application/json', 'application/xml',
+            'application/x-yaml', 'application/x-sh'];
+        for (var p = 0; p < textMimePrefixes.length; p++) {
+            if (f.mime.indexOf(textMimePrefixes[p]) === 0) {
+                isTextFile = true;
+                break;
+            }
+        }
+    }
+    if (!isTextFile && f.name) {
+        var ext = (f.name.split('.').pop() || '').toLowerCase();
+        var codeExtensions = ['txt', 'md', 'json', 'xml', 'html', 'htm', 'css', 'js', 'ts',
+            'jsx', 'tsx', 'php', 'py', 'rb', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go', 'rs',
+            'swift', 'kt', 'sql', 'sh', 'bash', 'zsh', 'bat', 'cmd', 'ps1', 'yaml', 'yml',
+            'ini', 'cfg', 'conf', 'log', 'gitignore', 'dockerfile', 'makefile', 'gradle',
+            'sass', 'scss', 'less', 'vue', 'svelte', 'env', 'toml', 'r', 'pl', 'lua', 'scala',
+            'coffee', 'mjs', 'cjs', 'mts', 'cts', 'tex', 'latex', 'rtf', 'diff', 'patch',
+            'glsl', 'frag', 'vert', 'hlsl', 'cmake', 'properties', 'desktop', 'service'];
+        if (codeExtensions.indexOf(ext) !== -1) {
+            isTextFile = true;
+        }
+    }
+
 
     
     var html = '';
@@ -130,6 +156,31 @@ function updatePreviewPane(fm) {
         html += '  <img src="' + fm.escape(fileUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '">';
     } else if (f.mime && f.mime.indexOf('video') === 0) {
         html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(fileUrl) + '"></video>';
+    } else if (isTextFile) {
+        // Show inline text snippet in the side pane
+        var snippetUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl) + '&lines=5&page=1';
+        html += '  <div class="preview-text-snippet" id="preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '') + '">';
+        html += '    <p class="seecm-loading">Loading preview…</p>';
+        html += '  </div>';
+
+        // Load the snippet
+        var snippetContainerId = 'preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '');
+        (function(containerId, snippetUrl) {
+            $.get(snippetUrl, function(html) {
+                // Extract just the <pre><code> block from the response
+                var match = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+                if (match) {
+                    var snippet = '<pre>' + match[1] + '</pre>';
+                    $('#' + containerId).html(snippet);
+                } else {
+                    $('#' + containerId).html('<p class="seecm-status-empty">No preview available.</p>');
+                }
+            }).fail(function() {
+                $('#' + containerId).html('<p class="seecm-status-error">Failed to load preview.</p>');
+            });
+        })(snippetContainerId, snippetUrl);
+
+    
     } else {
         var iconClass = getElfinderIconClass(f.mime, f.name);
         html += '  <div class="preview-generic-icon ' + iconClass + '"></div>';
@@ -380,10 +431,45 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         contentHtml += '  Your browser does not support the video tag.';
         contentHtml += '</video>';
     } else {
-        // detect ext and embed iframe preview (docx, xlsx, pptx)
+        // detect ext and embed iframe preview (docs, spreadsheets, text/code)
         var name = file && file.name ? file.name : '';
         var ext2 = (name.split('.').pop() || '').toLowerCase();
-        if (ext2 === 'docx' || ext2 === 'doc') {
+
+        // ─── Text / Code file detection ────────────────────────────
+        var textMimePrefixes = ['text/', 'application/json', 'application/xml',
+            'application/x-yaml', 'application/x-sh'];
+
+        var codeExtensions = ['txt', 'md', 'json', 'xml', 'html', 'htm', 'css', 'js', 'ts',
+            'jsx', 'tsx', 'php', 'py', 'rb', 'java', 'c', 'cpp', 'h', 'hpp', 'cs', 'go', 'rs',
+            'swift', 'kt', 'sql', 'sh', 'bash', 'zsh', 'bat', 'cmd', 'ps1', 'yaml', 'yml',
+            'ini', 'cfg', 'conf', 'log', 'gitignore', 'dockerfile', 'makefile', 'gradle',
+            'sass', 'scss', 'less', 'vue', 'svelte', 'env', 'toml', 'r', 'pl', 'lua', 'scala',
+            'coffee', 'mjs', 'cjs', 'mts', 'cts', 'tex', 'latex', 'rtf', 'diff', 'patch',
+            'glsl', 'frag', 'vert', 'hlsl', 'cmake', 'makefile', 'yml', 'yaml', 'lock',
+            'properties', 'desktop', 'service', 'svg'];
+
+        var isTextFile = false;
+        if (file.mime) {
+            for (var p = 0; p < textMimePrefixes.length; p++) {
+                if (file.mime.indexOf(textMimePrefixes[p]) === 0) {
+                    isTextFile = true;
+                    break;
+                }
+            }
+        }
+        if (!isTextFile && codeExtensions.indexOf(ext2) !== -1) {
+            isTextFile = true;
+        }
+        // rtf should show as text, not generic icon
+        if (ext2 === 'rtf') {
+            isTextFile = true;
+        }
+
+        if (isTextFile) {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl);
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+
+        } else if (ext2 === 'docx' || ext2 === 'doc') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'xlsx' || ext2 === 'xls' || ext2 === 'csv' || ext2 === 'ods') {
@@ -402,6 +488,7 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
             contentHtml += '</div>';
         }
     }
+
 
     var islandHtml = '<div class="floating-island preview-island" id="' + islandId + '" style="width:90vw;height:90vh;max-width:1400px;max-height:900px;">';
     islandHtml += '  <div class="floating-island__header">';
