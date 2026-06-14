@@ -478,7 +478,11 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         } else if (ext2 === 'pptx' || ext2 === 'ppt' || ext2 === 'odp') {
             var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
+        } else if (ext2 === 'pdf') {
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPdf.php?url=' + encodeURIComponent(fileUrl);
+            contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else {
+
             var iconClass = getElfinderIconClass(file.mime, file.name);
             contentHtml = '<div style="text-align:center;padding:40px;">';
             contentHtml += '  <div class="' + iconClass + '" style="font-size:128px;width:128px;height:128px;margin:0 auto 20px;"></div>';
