@@ -10,7 +10,7 @@
  *   check  – Check lock status of a single file
  */
 
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';

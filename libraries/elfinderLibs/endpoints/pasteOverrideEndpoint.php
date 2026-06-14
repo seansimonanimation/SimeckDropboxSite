@@ -11,7 +11,7 @@
  * For directories, uses SQL REPLACE() to recursively update all sub-paths.
  */
 
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
 

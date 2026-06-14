@@ -1,0 +1,258 @@
+/* highlightjs-custom.css
+   Custom syntax highlighting theme that plugs into the site's 
+   CSS custom properties (--color-*).  No hardcoded colors — the
+   theme changes automatically when the user switches site themes.
+   Mirrors the approach used for elFinder themes. */
+
+/* ── Code block container ──────────────────────────────────── */
+.text-preview-body {
+    margin: 0;
+    padding: 0;
+    background: var(--color-bg, #0F1729);
+    color: var(--color-text, #D6E1F5);
+    font-family: 'JetBrains Mono', 'Fira Mono', 'Cascadia Code', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.text-preview-body pre {
+    margin: 0;
+    padding: 16px 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+    background: var(--color-bg-raised, #1C2C4D);
+    border: 1px solid var(--color-border, rgba(30, 90, 196, 0.25));
+    border-radius: 6px;
+    max-height: calc(100vh - 120px);
+}
+
+.text-preview-body code {
+    background: none;
+    padding: 0;
+    color: var(--color-text, #D6E1F5);
+}
+
+/* ── Info bar (filename, size, encoding, page) ──────────────── */
+.text-info-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 0.82rem;
+    color: var(--color-text-muted, #7B9AD4);
+    background: var(--color-surface, #23365C);
+    border-bottom: 1px solid var(--color-border, rgba(30, 90, 196, 0.25));
+    user-select: none;
+}
+
+.text-info-filename {
+    font-weight: 700;
+    color: var(--color-heading);
+}
+
+.text-info-sep {
+    color: var(--color-text-dim, #4F73B8);
+    opacity: 0.5;
+}
+
+.text-info-lang {
+    display: inline-block;
+    padding: 1px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: var(--color-primary, #1E5AC4);
+    color: #fff;
+    border-radius: 4px;
+}
+
+.text-info-page {
+    font-weight: 600;
+}
+
+/* ── Pagination (matches log pagination style) ──────────────── */
+.text-pagination {
+    text-align: center;
+    padding: 12px 20px;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 0.85rem;
+    background: var(--color-surface, #23365C);
+    border-top: 1px solid var(--color-border, rgba(30, 90, 196, 0.25));
+}
+
+.text-pagination .page-link {
+    display: inline-block;
+    padding: 4px 10px;
+    margin: 0 2px;
+    border: 1px solid var(--color-border-bright, rgba(30, 90, 196, 0.55));
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--color-text, #D6E1F5);
+    background: transparent;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.text-pagination .page-link:hover {
+    background: var(--color-surface-hover, #2A4270);
+    color: var(--color-heading, #FFFFFF);
+}
+
+.text-pagination .page-link.current {
+    border-color: var(--color-primary, #1E5AC4);
+    background: var(--color-primary, #1E5AC4);
+    color: #fff;
+    font-weight: 700;
+    cursor: default;
+}
+
+.text-pagination .page-link.disabled {
+    border-color: var(--color-text-dim, #4F73B8);
+    color: var(--color-text-dim, #4F73B8);
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
+.text-pagination .page-ellipsis {
+    padding: 4px 6px;
+    color: var(--color-text-dim, #4F73B8);
+}
+
+/* ── highlight.js token colors using CSS variables ──────────── */
+/* These cascade through and work as a base dark scheme that 
+   picks up the site's design tokens automatically. */
+
+.hljs {
+    color: var(--color-text);
+    background: transparent;
+}
+
+/* Comments / doctags */
+.hljs-comment,
+.hljs-quote,
+.hljs-doctag,
+.hljs-meta .hljs-keyword {
+    color: var(--color-text-dim, #4F73B8);
+    font-style: italic;
+}
+
+/* Keywords */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-link,
+.hljs-built_in,
+.hljs-type,
+.hljs-name {
+    color: #C792EA;  /* purple — consistent brightness across themes */
+}
+
+/* Strings */
+.hljs-string,
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_,
+.hljs-attr,
+.hljs-attribute,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-tag,
+.hljs-template-variable {
+    color: #C3E88D;  /* green — good contrast on dark */
+}
+
+/* Numbers */
+.hljs-number,
+.hljs-regexp,
+.hljs-literal.hljs-number {
+    color: #F78C6C;  /* orange */
+}
+
+/* Built-ins / constants */
+.hljs-built_in {
+    color: #82AAFF;  /* blue */
+}
+
+/* Punctuation / operators */
+.hljs-punctuation,
+.hljs-operator,
+.hljs-deletion {
+    color: #89DDFF;  /* cyan */
+}
+
+/* Meta / preprocessor */
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-meta .hljs-string {
+    color: #FF5370;  /* red/pink */
+}
+
+/* Tags (HTML/XML) */
+.hljs-tag,
+.hljs-tag .hljs-name,
+.hljs-tag .hljs-attr {
+    color: #F07178;  /* soft red */
+}
+
+/* Selectors (CSS) */
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-selector-pseudo,
+.hljs-selector-attr {
+    color: #FFCB6B;  /* yellow */
+}
+
+/* Params / property names */
+.hljs-params,
+.hljs-property {
+    color: var(--color-text, #D6E1F5);
+}
+
+/* ── Line number styling ────────────────────────────────────── */
+:root {
+    --hljs-linenum: var(--color-text-dim, #4F73B8);
+}
+
+/* ── Inline snippet in side pane (smaller) ──────────────────── */
+.preview-text-snippet {
+    width: 100%;
+    overflow: hidden;
+}
+
+.preview-text-snippet pre {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    max-height: 140px;
+    background: var(--color-bg-raised, #1C2C4D);
+    border: 1px solid var(--color-border, rgba(30, 90, 196, 0.25));
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.preview-text-snippet pre::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: linear-gradient(transparent, var(--color-bg-raised, #1C2C4D));
+    pointer-events: none;
+}
+
+.preview-text-snippet code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+    color: var(--color-text, #D6E1F5);
+}

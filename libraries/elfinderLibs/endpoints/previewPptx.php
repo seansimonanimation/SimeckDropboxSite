@@ -2,7 +2,7 @@
 // previewPptx.php
 // Minimal PPTX/PPT/ODP -> HTML preview endpoint using PHPPresentation.
 // Falls back to ZIP/XML extraction if the PHPPresentation reader crashes on images.
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/vendor/autoload.php';
 
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);

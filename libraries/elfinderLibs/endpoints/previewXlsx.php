@@ -3,7 +3,7 @@
 // Minimal XLSX/XLS/CSV -> HTML preview endpoint using PHPSpreadsheet.
 // Accepts ?hash=... (elfinder hash) or ?path=/absolute/path/to/file.xlsx
 // Caching: stores converted HTML in sys_get_temp_dir() by default.
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/vendor/autoload.php';
 
 // Suppress PHPSpreadsheet deprecation notices if any
