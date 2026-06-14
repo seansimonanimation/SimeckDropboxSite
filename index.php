@@ -120,5 +120,22 @@ function adminSwitchViewButtonActivation(){
 <main id="content">
    <?php echo DisplayActiveModuleContent(); ?>
 </main>
+
+<script>(function() {
+  // Window Guard: only initialize once
+  if (window.__fi_activeWindowInited) return;
+  window.__fi_activeWindowInited = true;
+
+  var baseZ = 9999;
+  var maxZ = baseZ;
+
+  document.addEventListener('mousedown', function(e) {
+    var island = e.target.closest('.floating-island');
+    if (!island) return;
+    maxZ++;
+    island.style.zIndex = maxZ;
+  });
+})();
+</script>
    </body>
 </html>
