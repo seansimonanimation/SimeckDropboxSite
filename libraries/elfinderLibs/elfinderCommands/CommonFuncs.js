@@ -1,16 +1,5 @@
 
 //
-
-    this.GetAllLockedFilesInProjects = function() {
-        var fm = this.fm;
-        $.post('libraries/elfinderLibs/endpoints/GetLockedSubfilesInProjectEndpoint.php', {
-            directory: '/files/Projects'
-        }, function(response) {
-            if (response.success) {
-                fm.cache.lockedPaths = response.lockedPaths;
-            }
-        }, 'json');
-    }
     this.GetAllLockedFilesInProjects = function(projectPath) {
         var fm = this.fm;
         $.post('libraries/elfinderLibs/endpoints/GetLockedSubfilesInProjectEndpoint.php', {
@@ -36,3 +25,85 @@
         $(window).off('beforeunload');  // In case it was attached via jQuery
         location.reload();
     }
+function populateLockCache(fm) {
+    $.post('libraries/elfinderLibs/endpoints/GetLockedfilesInProjectEndpoint.php', {}, function(response) {
+        if (!response.success || !response.lockedFiles) return;
+        if (!fm.cache) fm.cache = {};
+        fm.cache.lockedPaths = {};
+        response.lockedFiles.forEach(function(lock) {
+            var normalizedPath = normalizeSimeckFilePath(lock.filepath);
+            fm.cache.lockedPaths[normalizedPath] = {
+                assetlock: lock.assetlock,
+                commentlock: lock.commentlock
+            };
+        });
+        refreshLockOverrides(fm);
+    }, 'json');
+}
+
+function normalizeSimeckFilePath(path) {
+    if (!path) return '';
+    path = path.replace(/\\/g, '/');
+    path = path.replace(/\+/g, ' ');
+    try {
+        path = decodeURIComponent(path);
+    } catch (e) {
+        // leave as-is if decode fails
+    }
+    return path;
+}
+
+function getSimeckLockFilePath(fm, hash) {
+    var relPath = fm.path(hash) || '';
+    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+    relPath = normalizeSimeckFilePath(relPath);
+    return '/files/Projects/' + relPath;
+}
+
+// ── elFinder Hash Decode ──────────────────────────────────────────
+// Converts elFinder's custom base64 hash to a filesystem path string
+function decodeElfinderHash(hash) {
+    var b64 = hash.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
+    try { return atob(b64); } catch(e) { return null; }
+}
+
+// ── elFinder Path Encode ──────────────────────────────────────────
+// Converts a filesystem path to elFinder's custom base64 hash format
+function encodeElfinderPath(path) {
+    return btoa(path)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '.');
+}
+
+// ── Clipboard Copy with Fallback ──────────────────────────────────
+// Copies text to clipboard. Falls back to prompt() if clipboard API unavailable.
+// fm parameter is optional — omitting it skips notify messages.
+function copyToClipboard(text, successMsg, fm) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            if (fm) fm.notify({ type: 'info', msg: successMsg || 'Copied to clipboard!' });
+        }).catch(function() {
+            prompt('Copy this text (Ctrl+C, then Enter):', text);
+        });
+    } else {
+        prompt('Copy this text (Ctrl+C, then Enter):', text);
+    }
+}
+
+// ── Normalize File Path ───────────────────────────────────────────
+function normalizeSimeckFilePath(path) {
+    if (!path) return '';
+    path = path.replace(/\\/g, '/');
+    path = path.replace(/\+/g, ' ');
+    try { path = decodeURIComponent(path); } catch (e) {}
+    return path;
+}
+
+// ── Get Lock File Path from Hash ──────────────────────────────────
+function getSimeckLockFilePath(fm, hash) {
+    var relPath = fm.path(hash) || '';
+    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+    relPath = normalizeSimeckFilePath(relPath);
+    return '/files/Projects/' + relPath;
+}

@@ -44,20 +44,7 @@ if (!is_array($hashes) || empty($hashes)) {
 // Build the elFinder volumes for the current user's role so we can decode hashes
 $role = $_SESSION['tempRole'] ?? $_SESSION['role'] ?? 'artist';
 
-switch ($role) {
-    case 'admin':
-        $elfinderOptions = getAdminFileBrowserOptions();
-        break;
-    case 'artist':
-        $elfinderOptions = getArtistFileBrowserOptions();
-        break;
-    case 'client':
-        $elfinderOptions = getClientFileBrowserOptions();
-        break;
-    default:
-        echo json_encode(['success' => false, 'error' => 'Unknown role.']);
-        exit;
-}
+$elfinderOptions = GetRoleElfinderOptions();
 
 // Collect the filepath for each volume so we can reject paths outside them
 $volumeRoots = [];

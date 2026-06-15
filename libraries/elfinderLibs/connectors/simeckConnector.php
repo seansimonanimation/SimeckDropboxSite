@@ -5,17 +5,7 @@ require __ROOT__ . '/libraries/elfinder/php/autoload.php';
 require_once __ROOT__ . '/libraries/elfinderLibs/SimeckVolumeDriver.php';
 
 // Get role-specific options
-$elfinderOptions = array();
-switch($_SESSION['tempRole']){
-    case 'admin':
-        $elfinderOptions = getAdminFileBrowserOptions();
-        break;
-    case 'artist':
-        $elfinderOptions = getArtistFileBrowserOptions();
-        break;
-    case 'client':
-        $elfinderOptions = getClientFileBrowserOptions();
-}
+$elfinderOptions = GetRoleElfinderOptions();
 
 // Apply tmbVideoConvLen to all volumes only (no accessControl override)
 foreach ($elfinderOptions['roots'] as &$root) {

@@ -13,41 +13,6 @@ $(function() {
     resizeElfinder();
 });
 
-
-function populateLockCache(fm) {
-    $.post('libraries/elfinderLibs/endpoints/GetLockedfilesInProjectEndpoint.php', {}, function(response) {
-        if (!response.success || !response.lockedFiles) return;
-        if (!fm.cache) fm.cache = {};
-        fm.cache.lockedPaths = {};
-        response.lockedFiles.forEach(function(lock) {
-            var normalizedPath = normalizeSimeckFilePath(lock.filepath);
-            fm.cache.lockedPaths[normalizedPath] = {
-                assetlock: lock.assetlock,
-                commentlock: lock.commentlock
-            };
-        });
-        refreshLockOverrides(fm);
-    }, 'json');
-}
-
-function normalizeSimeckFilePath(path) {
-    if (!path) return '';
-    path = path.replace(/\\/g, '/');
-    path = path.replace(/\+/g, ' ');
-    try {
-        path = decodeURIComponent(path);
-    } catch (e) {
-        // leave as-is if decode fails
-    }
-    return path;
-}
-
-function getSimeckLockFilePath(fm, hash) {
-    var relPath = fm.path(hash) || '';
-    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
-    relPath = normalizeSimeckFilePath(relPath);
-    return '/files/Projects/' + relPath;
-}
 function bindLockRefreshOnNavigate(fm) {
     // Refresh lock cache whenever elFinder finishes opening a directory.
     fm.bind('opendone', function() {
@@ -128,7 +93,7 @@ function updatePreviewPane(fm) {
             'ini', 'cfg', 'conf', 'log', 'gitignore', 'dockerfile', 'makefile', 'gradle',
             'sass', 'scss', 'less', 'vue', 'svelte', 'env', 'toml', 'r', 'pl', 'lua', 'scala',
             'coffee', 'mjs', 'cjs', 'mts', 'cts', 'tex', 'latex', 'rtf', 'diff', 'patch',
-            'glsl', 'frag', 'vert', 'hlsl', 'cmake', 'properties', 'desktop', 'service'];
+            'glsl', 'frag', 'vert', 'hlsl', 'cmake', 'properties', 'desktop', 'service', 'prefab', 'unity', 'cs'];
         if (codeExtensions.indexOf(ext) !== -1) {
             isTextFile = true;
         }
@@ -347,15 +312,7 @@ function copyDirectLink(fm, file) {
     }, function(response) {
         if (response.success && response.urls.length > 0) {
             var link = response.urls[0];
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(link).then(function() {
-                    fm.notify({ type: 'info', msg: 'Download link copied to clipboard!' });
-                }).catch(function() {
-                    prompt('Copy this download link:', link);
-                });
-            } else {
-                prompt('Copy this download link:', link);
-            }
+            copyToClipboard(link, 'Download link copied to clipboard!', fm);
         } else {
             fm.notify({ type: 'error', msg: response.error || 'Failed to generate link.' });
         }
@@ -369,28 +326,18 @@ function copyFolderLink(fm, file) {
     
     // Adjust hash the same way CopyLinkToFolder does
     var adjustedHash = phash;
-    if (phash.startsWith('s1_')) {
-        var raw = phash.substring(3);
-        var b64 = raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
-        var path = atob(b64);
+        if (phash.startsWith('s1_')) {
+        var path = decodeElfinderHash(phash);
         var session = window.simeckSession;
         var userName = session.lastname + ', ' + session.firstname;
-        var reEncoded = btoa(userName + '/' + path)
-            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '.');
+        var reEncoded = encodeElfinderPath(userName + '/' + path);
         adjustedHash = 's2_' + reEncoded;
     }
     
     var link = baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash);
     
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(function() {
-            fm.notify({ type: 'info', msg: 'Folder link copied to clipboard!' });
-        }).catch(function() {
-            prompt('Copy this folder link:', link);
-        });
-    } else {
-        prompt('Copy this folder link:', link);
-    }
+    copyToClipboard(link, 'Folder link copied to clipboard!', fm);
+
 }
 
 function sendToDiscord(fm, file) {
@@ -601,14 +548,9 @@ function refreshLockOverrides(fm) {
         // Remove any existing overlay
         $icon.find('.simeck-lock-overlay').remove();
 
-        // Decode the elFinder hash to get the file's relative path
-        var sepIdx = hash.indexOf('_');
-        if (sepIdx === -1) return;
-        var encoded = hash.substring(sepIdx + 1);
-        var b64 = encoded.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
-        try {
-            var relPath = atob(b64);
-        } catch(e) { return; }
+        // Decode the elFinder hash to get the file's reFhlative path
+        var relPath = decodeElfinderHash(hash);
+        if (!relPath) return;
 
         // Match against cache: cache keys are full paths like
         // "/files/Projects/clientProjects/C01/file.jpg"

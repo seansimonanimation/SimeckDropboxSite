@@ -7,28 +7,11 @@
 if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/libraries/session.php';
 require_once __ROOT__ . '/libraries/db.php';
+include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
 // ─── Parameter parsing ───────────────────────────────────────────────
-$path = $_GET['url'] ?? $_GET['path'] ?? '';
-if (!$path) {
-    http_response_code(400);
-    echo 'Missing path or url parameter';
-    exit;
-}
-$path = urldecode($path);
-$path = str_replace('\\', '/', $path);
+$filePath = ResolvePreviewFilePath();
 
-if (strpos($path, '/') === 0) {
-    $filePath = rtrim(__ROOT__, '/\\') . $path;
-} else {
-    $filePath = rtrim(__ROOT__, '/\\') . '/' . ltrim($path, '/');
-}
-
-if (!file_exists($filePath) || !is_readable($filePath)) {
-    http_response_code(404);
-    echo 'File not found: ' . htmlspecialchars($filePath);
-    exit;
-}
 
 // ─── Extension validation ────────────────────────────────────────────
 $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));

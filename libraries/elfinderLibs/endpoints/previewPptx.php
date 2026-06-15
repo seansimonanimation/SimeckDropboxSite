@@ -4,30 +4,11 @@
 // Falls back to ZIP/XML extraction if the PHPPresentation reader crashes on images.
 if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/vendor/autoload.php';
+include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+//error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
-$path = $_GET['url'] ?? $_GET['path'] ?? '';
-if (!$path) {
-    http_response_code(400);
-    echo 'Missing path or url parameter';
-    exit;
-}
-
-$path = urldecode($path);
-$path = str_replace('\\', '/', $path);
-
-if (strpos($path, '/') === 0) {
-    $filePath = rtrim(__ROOT__, '/\\') . $path;
-} else {
-    $filePath = rtrim(__ROOT__, '/\\') . '/' . ltrim($path, '/');
-}
-
-if (!file_exists($filePath) || !is_readable($filePath)) {
-    http_response_code(404);
-    echo 'File not found: ' . $filePath;
-    exit;
-}
+$filePath = ResolvePreviewFilePath();
 
 $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 $allowedExts = ['pptx', 'ppt', 'odp'];

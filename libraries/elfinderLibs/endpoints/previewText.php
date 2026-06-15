@@ -7,7 +7,7 @@ if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/libraries/session.php';
 require_once __ROOT__ . '/libraries/db.php';
 require_once __ROOT__ . '/libraries/logging.php';
-
+include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
 // ─── Theme support ───────────────────────────────────────────────────
 $themeId = $_SESSION['theme'] ?? 'dark-boo';
@@ -15,26 +15,7 @@ $themeClass = 'theme-' . $themeId;
 
 
 // ─── Parameter parsing ───────────────────────────────────────────────
-$path = $_GET['url'] ?? $_GET['path'] ?? '';
-if (!$path) {
-    http_response_code(400);
-    echo 'Missing path or url parameter';
-    exit;
-}
-$path = urldecode($path);
-$path = str_replace('\\', '/', $path);
-
-if (strpos($path, '/') === 0) {
-    $filePath = rtrim(__ROOT__, '/\\') . $path;
-} else {
-    $filePath = rtrim(__ROOT__, '/\\') . '/' . ltrim($path, '/');
-}
-
-if (!file_exists($filePath) || !is_readable($filePath)) {
-    http_response_code(404);
-    echo 'File not found: ' . htmlspecialchars($filePath);
-    exit;
-}
+$filePath = ResolvePreviewFilePath();
 
 // ─── Encoding detection ──────────────────────────────────────────────
 $raw = file_get_contents($filePath);

@@ -216,3 +216,43 @@ function OutputElfinderCommandsMeta() {
     
     echo '<script>window.elfinderCommandsMeta = ' . json_encode($metaArray, JSON_PRETTY_PRINT) . ';</script>' . "\n";
 }
+/**
+ * Resolve a URL/path parameter from a preview endpoint to an absolute filesystem path.
+ * Handles the common boilerplate: parameter extraction, URL decoding, path resolution,
+ * and existence checking.
+ *
+ * @param string $paramName  The GET parameter name (default 'url')
+ * @return string|null       The absolute filesystem path, or null on failure
+ */
+function ResolvePreviewFilePath($paramName = 'url') {
+    $path = $_GET[$paramName] ?? $_GET['path'] ?? '';
+    if (!$path) {
+        http_response_code(400);
+        echo 'Missing ' . $paramName . ' or path parameter';
+        exit;
+    }
+    $path = urldecode($path);
+    $path = str_replace('\\', '/', $path);
+    
+    if (strpos($path, '/') === 0) {
+        $filePath = rtrim(__ROOT__, '/\\') . $path;
+    } else {
+        $filePath = rtrim(__ROOT__, '/\\') . '/' . ltrim($path, '/');
+    }
+    
+    if (!file_exists($filePath) || !is_readable($filePath)) {
+        http_response_code(404);
+        echo 'File not found: ' . htmlspecialchars($filePath);
+        exit;
+    }
+    
+    return $filePath;
+}
+function GetRoleElfinderOptions() {
+    switch ($_SESSION['tempRole'] ?? $_SESSION['role'] ?? 'artist') {
+        case 'admin':  return getAdminFileBrowserOptions();
+        case 'artist': return getArtistFileBrowserOptions();
+        case 'client': return getClientFileBrowserOptions();
+        default:       return getArtistFileBrowserOptions();
+    }
+}
