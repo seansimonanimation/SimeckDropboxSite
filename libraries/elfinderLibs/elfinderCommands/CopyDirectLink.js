@@ -53,21 +53,11 @@ elFinder.prototype.commands.CopyDirectLink = function() {
                 var linkText = response.urls.join('\n');
 
                 // Copy to clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(linkText).then(function() {
-                        var msg = response.urls.length + ' download link(s) copied to clipboard!';
-                        if (response.errors && response.errors.length > 0) {
-                            msg += ' (' + response.errors.length + ' file(s) failed)';
-                        }
-                        fm.notify({ type: 'info', msg: msg });
-                    }).catch(function() {
-                        // Clipboard API failed (e.g., not in secure context), fallback to prompt
-                        prompt('Copy these download link(s) (Ctrl+C, then Enter):', linkText);
-                    });
-                } else {
-                    // Fallback for browsers without clipboard API
-                    prompt('Copy these download link(s) (Ctrl+C, then Enter):', linkText);
+                var msg = response.urls.length + ' download link(s) copied to clipboard!';
+                if (response.errors && response.errors.length > 0) {
+                    msg += ' (' + response.errors.length + ' file(s) failed)';
                 }
+                copyToClipboard(linkText, msg, fm);
             } else {
                 fm.notify({ type: 'error', msg: response.error || 'Failed to generate download links.' });
             }

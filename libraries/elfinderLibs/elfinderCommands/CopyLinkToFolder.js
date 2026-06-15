@@ -46,12 +46,9 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         $.each(parentHashes, function(i, phash) {
             var adjustedHash = phash;
             if (phash.startsWith('s1_')) {
-                var raw = phash.substring(3);
-                var b64 = raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
-                var path = atob(b64);
+                var path = decodeElfinderHash(phash);
                 var userName = session.lastname + ', ' + session.firstname;
-                var reEncoded = btoa(userName + '/' + path)
-                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '.');
+                var reEncoded = encodeElfinderPath(userName + '/' + path);
                 adjustedHash = 's2_' + reEncoded;
             }
             links.push(baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash));
@@ -59,22 +56,7 @@ elFinder.prototype.commands.CopyLinkToFolder = function() {
         var linkText = links.join('\n');
 
         // Copy to clipboard
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(linkText).then(function() {
-                var message = '';
-                if (links.length === 1) {
-                    message = 'Folder link copied to clipboard!';
-                } else {
-                    message = links.length + ' folder link(s) copied to clipboard!';
-                }
-                fm.notify({ type: 'info', msg: message });
-            }).catch(function() {
-                prompt('Copy these folder link(s) (Ctrl+C, then Enter):', linkText);
-            });
-        } else {
-            prompt('Copy these folder link(s) (Ctrl+C, then Enter):', linkText);
-        }
-
+        copyToClipboard(linkText, links.length === 1 ? 'Folder link copied to clipboard!' : links.length + ' folder link(s) copied to clipboard!', fm);
         return dfrd.promise();
     };
 

@@ -141,7 +141,9 @@ SetActiveModule('Dashboard');  // Stores session vars, redirects to index.php
 | Module | @nav-text | @nav-order |
 |--------|-----------|------------|
 | adminDashboard | Admin Dashboard | 1 |
+| adminClientManagement | Client Management | 5 |
 | adminFileBrowser | Full File Browser | 10 |
+| adminTimeclockManagement | Timeclock Management | 10 |
 | adminProjectManagement | Project Management | 70 |
 | adminArtistManagement | Artist Management | 80 |
 | adminLogging | System Logs | 90 |
@@ -379,9 +381,34 @@ Commands are auto-discovered via `LoadElfinderJSCommands()` and `OutputElfinderC
 - `CopyDirectLink.js` — Copy direct download link
 - `CopyLinkToFolder.js` — Copy link to folder
 - `NotifyClient.js` — Notify client about file
+- `PreviewOpenOverride.js` — Override file preview/open behavior
 - `mv.js` — Move override
 - `pasteOverride.js` — Paste override
 - `rmOverride.js` — Delete override
+- `CommonFuncs.js` — Shared utility functions for custom commands
+
+**Preview Endpoints (in `libraries/elfinderLibs/endpoints/`):**
+- `previewText.php` — Preview plain text files
+- `previewPdf.php` — Preview PDF files
+- `previewDocx.php` — Preview DOCX files
+- `previewXlsx.php` — Preview XLSX files
+- `previewPptx.php` — Preview PPTX files
+
+**Lock & Override Endpoints (in `libraries/elfinderLibs/endpoints/`):**
+- `LockFileEndpoint.php` — Lock/Unlock a file
+- `lockedFilesEndpoint.php` — Query locked file status
+- `GetLockedfilesInProjectEndpoint.php` — Get all locked files in a project
+- `GetClientOverridesEndpoint.php` — Get client's remaining overrides
+- `ClientUseOverrideTokenEndpoint.php` — Consume a client lock override
+- `RmOverrideEndpoint.php` — Override the delete operation
+- `pasteOverrideEndpoint.php` — Override the paste operation
+
+**Other Endpoints (in `libraries/elfinderLibs/endpoints/`):**
+- `commentsEndpoint.php` — CRUD for file comments
+- `discordWebhookEndpoint.php` — Send file to Discord
+- `getCommentsIsland.php` — Load comments floating island HTML
+- `getDiscordIsland.php` — Load Discord send floating island HTML
+- `getElfinderDownloadLinksEndpoint.php` — Generate download link tokens
 
 ### elFinder Module Pages
 Both `adminFileBrowser/module.php` and `artistFileBrowser/module.php`:
@@ -441,7 +468,7 @@ $token = Generateb64EncodedDownloadLink($username, $docID);
 
 | Library File | Key Functions | Purpose |
 |---|---|---|
-| `libraries/db.php` | `DBConnect()`, `GetDataFromDB()`, `pull_artistAdmin_data()`, `pull_client_data()`, `GetTimeclockEntries()`, `CloseTimeclockShift()`, `ListAllActiveArtists()`, `ListAllActiveClients()` | PDO singleton connection factory + common queries |
+| `libraries/db.php` | `DBConnect()`, `GetDataFromDB()`, `pull_artistAdmin_data()`, `pull_client_data()`, `GetTimeclockEntries()`, `CloseTimeclockShift()`, `UpdateTimeclockShiftField()`, `ListAllActiveArtists()`, `ListAllActiveClients()` | PDO singleton connection factory + common queries |
 | `libraries/session.php` | `PutArtistDataInSession()`, `PutClientDataInSession()`, `ImpersonateArtist/Client()`, `StopImpersonating()`, `GetRole/TempRole()`, `IsImpersonating()`, `GetHumanName()`, `RefreshPortal()` | Session data management, impersonation |
 | `libraries/auth.php` | `attempt_login()`, `logout()`, `SetArtistPassword()`, `SetClientPassword()`, `SetUserTheme()`, `SetUserTimezone()` | Authentication + profile persistence |
 | `libraries/logging.php` | `LogSimeckAction()`, `ShowAdminLogPageData()`, `ShowArtistLogPageData()`, `RenderLogFilterBar()`, `RenderLogPagination()`, `BuildLogQueryString()`, `GetLogUsernameDisplay()` | Audit logging + paginated log viewer |
@@ -450,14 +477,15 @@ $token = Generateb64EncodedDownloadLink($username, $docID);
 | `libraries/projectlib.php` | `GenerateProjectCards()`, `GetAllProjects()`, `CreateNewProject()`, `GetAllDataForProject()`, `GetProjectFolderSize()`, `UpdateProjectLead()`, `ToggleProjectActivation()`, `DisplayProjectTeamMembers()`, `DisplayProjectDirComments()`, `DisplayProjectFileComments()`, `DisplayProjectClients()`, `DisplayArtistProject()`, `GetUserDisplayName()` | Project CRUD, card generation, team management |
 | `libraries/settingslib.php` | `GetArtistAvailability()`, `SetArtistAvailability()`, `GetArtistPhoneInfo()`, `SetArtistPhoneInfo()`, `GetClientPhoneInfo()`, `SetClientPhoneInfo()`, `GetCountryCodeOptions()`, `GetClientLockOverrideCount()` | Availability bitmasks, phone/notification settings |
 | `libraries/timeofflib.php` | `SubmitDayOff()`, `RebuildAvailabilityThisWeek()`, `AdjustAvailabilityThisWeek()`, `BuildTimeOffMask()`, `GetEffectiveAvailability()`, `GetCurrentWeekBounds()`, `OverlapsCurrentWeek()` | Day-off requests, weekly availability rebuild |
-| `libraries/timeclock/timeclocklib.php` | `GenerateTimeclockTable()`, `DisplayArtistClockInOutButton()`, `ArtistClockIn()`, `ArtistClockOut()`, `ClockEveryoneOut()`, `GetArtistStats()`, `DisplayArtistStats()`, `ShowArtistFilesForTimeclock()` | Timeclock management |
+| `libraries/timeclock/timeclocklib.php` | `GenerateTimeclockTable()`, `GenerateArtistTimeclockTable()`, `DisplayArtistClockInOutButton()`, `ArtistClockIn()`, `ArtistClockOut()`, `ClockEveryoneOut()`, `DeleteShift()`, `GetClockedInArtistCount()`, `GetArtistStats()`, `DisplayArtistStats()`, `GetArtistShiftDurationSeconds()`, `ShowArtistFilesForTimeclock()`, `UTCToLocal()`, `PhoenixToLocal()`, `DetermineShiftLengthOrSummonButton()`, `DetermineArtistShiftLength()` | Timeclock management |
 | `libraries/artistManagementlib.php` | `GenerateArtistCards()`, `GetAllArtists()`, `SearchArtistsByName()`, `ToggleArtistStatus()`, `ResetArtistPassword()`, `UploadArtistDocument()`, `DisplayArtistDocuments()`, `FetchArtistProjectAssignments()`, `AddArtistToProject()`, `RemoveArtistFromProject()`, `CreateNewArtist()`, `DisplayArtistAvailability()`, `IsArtistAvailableNow()` | Artist CRUD, document upload, availability display |
 | `libraries/dashboardlib.php` | `DisplayChangelog()`, `GetClientCount()`, `GetArtistCount()`, `GetTotalCommentCount()`, `GetNASUsage()`, `FormatBytes()` | Dashboard stats |
 | `libraries/floatingIslandLib.php` | `SpawnFloatingIsland()`, `LoadCommentsIsland()`, `LoadSendToDiscordIsland()`, `LoadMoveFilesToProjectIsland()` | Draggable/resizable popup windows |
+| `libraries/topBarPhrases.php` | `DisplayRandomTopbarPhrase()` | Assigns a random motivational/engagement phrase to the top bar |
 | `libraries/elfinderLibs/elfinderlib.php` | `ConnectorSetup()`, `AttachOrCreateDropbox()`, `DetermineMyDropboxURL()`, `loadElfinderCss()`, `loadElfinderJs()`, `LoadElfinderJSCommands()`, `ApplyElfinderCommandOverrides()`, `OutputSimeckSessionScript()`, `OutputElfinderCommandsMeta()`, `DecodeElfinderHash()` | elFinder integration helpers |
 | `libraries/elfinderLibs/lockHelpers.php` | `IsFileLocked()`, `GetClientLockOverrides()`, `ConsumeClientLockOverride()`, `NormalizeFilePath()`, `access()`, `lockAccessControl()`, `GetLockedFilesForDirectoryRecursively()`, `GetLockedFilesForDirectory()` | File locking + access control callbacks |
 | `libraries/elfinderLibs/volumeConfig.php` | `getAdminFileBrowserOptions()`, `getArtistFileBrowserOptions()`, `getClientFileBrowserOptions()`, `GetClientProjectAssignments()` | Role-specific elFinder volume configs |
-| `libraries/clientManagement/adminClientManagementLib.php` | — | Client management admin functions |
+| `libraries/clientManagement/adminClientManagementLib.php` | `GenerateClientCards()`, `GetAllClients()`, `GetSearchedClient()`, `GetArtistNicknameAndLegalName()` | Client management admin functions |
 | `libraries/clientManagement/artistClientManagement.php` | — | Client management artist functions |
 | `libraries/sharedlib.php` | `SummonActivityButton()` | Small shared utility |
 

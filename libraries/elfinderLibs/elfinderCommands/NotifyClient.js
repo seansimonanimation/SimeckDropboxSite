@@ -22,20 +22,6 @@ this.getstate = function() {
     var fm = this.fm;
     var session = window.simeckSession;
     
-    // Decode elFinder hash to filesystem path
-    function hashToPath(hash) {
-        if (!hash) return null;
-        var b64 = hash.replace(/^s3_/, '')
-                       .replace(/-/g, '+')
-                       .replace(/_/g, '/')
-                       .replace(/\./g, '=');
-        try {
-            return atob(b64);
-        } catch(e) {
-            return null;
-        }
-    }
-    
     // Extract the project folder name from a decoded path
     // e.g. "clientProjects/C01_SetSail/subfolder" -> "C01_SetSail"
     function getProjectFolder(decodedPath) {
@@ -54,7 +40,7 @@ this.getstate = function() {
     var selected = fm.selectedFiles();
     if (selected.length > 0) {
         for (var i = 0; i < selected.length; i++) {
-            var path = hashToPath(selected[i].hash);
+            var path = decodeElfinderHash(selected[i].hash);
             var folder = getProjectFolder(path);
             if (folder && hasClientLead(folder)) {
                 return 0;
@@ -65,7 +51,7 @@ this.getstate = function() {
     
     // Check cwd (for right-click on empty space in the folder)
     var cwd = fm.cwd();
-    var cwdPath = hashToPath(cwd.hash);
+    var cwdPath = decodeElfinderHash(cwd.hash);
     var cwdFolder = getProjectFolder(cwdPath);
     if (cwdFolder && hasClientLead(cwdFolder)) {
         return 0;
