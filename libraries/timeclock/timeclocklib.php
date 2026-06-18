@@ -76,8 +76,9 @@ function DetermineShiftLengthOrSummonButton($timeIn, $timeOut, $shiftID){
     if($timeOut == ''){
         return '<button onclick="clockArtistOut(' . $shiftID . ')">Currently Working.<br /> Click to Clock Out</button>';
     }
-    $start = new DateTime($timeIn);
-    $end = new DateTime($timeOut);
+    $phx = new DateTimeZone('America/Phoenix');
+    $start = new DateTime($timeIn, $phx);
+    $end = new DateTime($timeOut, $phx);
     $interval = $start->diff($end);
     return $interval->format('%h hours %i minutes');
 }
@@ -86,8 +87,9 @@ function DetermineArtistShiftLength($timeIn, $timeOut){
     if($timeOut == ''){
         return 'Currently working...';
     }
-    $start = new DateTime($timeIn);
-    $end = new DateTime($timeOut); // Current time
+    $phx = new DateTimeZone('America/Phoenix');
+    $start = new DateTime($timeIn, $phx);
+    $end = new DateTime($timeOut, $phx);
     $interval = $start->diff($end);
     return $interval->format('%h hours %i minutes');
 }
