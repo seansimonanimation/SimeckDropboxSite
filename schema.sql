@@ -41,27 +41,28 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `firstname` varchar(50) DEFAULT NULL,
   `lastname` varchar(50) DEFAULT NULL,
   `nickname` varchar(50) DEFAULT NULL,
-  `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy',
+  `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy',
   `userID` int unsigned NOT NULL AUTO_INCREMENT,
   `active` int unsigned NOT NULL DEFAULT '1',
-  `role` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'artist',
+  `role` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'artist',
+  `secondary_roles` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
   `project_assignments` varchar(100) DEFAULT NULL,
   `theme` varchar(20) NOT NULL DEFAULT 'dark-boo',
   `timezone` varchar(40) DEFAULT NULL,
-  `availability` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0|0|0|0|0|0|0',
-  `availability_this_week` varchar(50) DEFAULT '0|0|0|0|0|0|0',
-  `log_rows_per_page` int unsigned DEFAULT '50',
+  `availability` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0|0|0|0|0|0|0',
+  `availability_this_week` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0|0|0|0|0|0|0',
+  `log_rows_per_page` int unsigned NOT NULL DEFAULT '50',
   `phone_country_code` int NOT NULL DEFAULT '1',
-  `phone_number` int DEFAULT NULL,
-  `receive_texts` int unsigned DEFAULT '0',
+  `phone_number` bigint DEFAULT NULL,
+  `receive_texts` int unsigned NOT NULL DEFAULT '0',
   KEY `userID` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
-INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `nickname`, `password`, `userID`, `active`, `role`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`, `log_rows_per_page`, `phone_country_code`, `phone_number`, `receive_texts`) VALUES
-	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'C01,C03,C05,P01', 'dark-boo', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 10, 1, NULL, 0),
-	('artist', 'Artist', 'User', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 2, 1, 'artist', ',P00,C05,C03', 'dark-boo', NULL, '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0),
-	('rsimon', 'Randy', 'Simon', NULL, NULL, 3, 1, 'artist', ',P00,P01,C05,C03', 'dark-boo', NULL, '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0);
+INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `nickname`, `password`, `userID`, `active`, `role`, `secondary_roles`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`, `log_rows_per_page`, `phone_country_code`, `phone_number`, `receive_texts`) VALUES
+	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'marketing', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, 1, NULL, 0),
+	('artist', 'Artist', 'User', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 2, 1, 'artist', '', ',P00,C05,C03', 'dark-boo', 'UTC', '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0),
+	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 3, 1, 'artist', 'butters', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0);
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -92,13 +93,13 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `timezone` varchar(40) DEFAULT 'UTC',
   `availability` varchar(120) DEFAULT '0|0|0|0|0|0|0',
   `phone_country_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '+1',
-  `phone_number` int DEFAULT NULL,
+  `phone_number` bigint DEFAULT NULL,
   `receive_texts` int unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.clients: ~3 rows (approximately)
 INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`, `theme`, `lock_overrides`, `timezone`, `availability`, `phone_country_code`, `phone_number`, `receive_texts`) VALUES
-	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 7, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0),
+	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 6, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0),
 	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0),
 	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0);
 
@@ -124,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `filecomments` (
   `comment_content` longtext
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.filecomments: ~27 rows (approximately)
+-- Dumping data for table simeckdb.filecomments: ~31 rows (approximately)
 INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `comment_order`, `comment_content`) VALUES
 	('client', '2026-05-24 15:02:51', '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', 1, 'It\'s Simeck\'s logo.'),
 	('admin', '2026-05-25 17:02:25', '/files/Projects/clientProjects/C01_SetSail', 1, 'Test Comment!'),
@@ -154,8 +155,9 @@ INSERT IGNORE INTO `filecomments` (`owner`, `comment_time`, `parent_file_url`, `
 	('admin', '2026-06-01 11:32:00', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 3, 'Comment!'),
 	('admin', '2026-06-01 11:33:49', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', 4, 'derp!'),
 	('admin', '2026-06-02 11:19:37', '/files/Projects/clientProjects/C01_SetSail/clientUpload/Dragon%20Ball%20Z%20-%20Ova%2001B%20-%20Plan%20To%20Eradicate%20The%20Saiyans%2C%20Part%202%20Of%202%20(1993%20Dvdrip%20-%20480P%20Jap%20Audio).mp4', 1, 'derp'),
-	('admin', '2026-06-02 11:25:42', '/files/Projects/clientProjects/C01_SetSail/clientUpload/mov/CHU_WEBSITE.png', 1, 'Chu!'),
-	('admin', '2026-06-10 16:44:17', '/files/Projects/internal/P01_C City', 3, 'derp');
+	('admin', '2026-06-02 11:25:42', '/files/Projects/clientProjects/C01_SetSail/clientUpload/CHU_WEBSITE.png', 1, 'Chu!'),
+	('admin', '2026-06-10 16:44:17', '/files/Projects/internal/P01_C City', 3, 'derp'),
+	('admin', '2026-06-12 11:41:22', '/files/Dropboxes/User%2C%20Admin/new/IMG_20240820_175126467.jpg', 2, 'Yeah it is!');
 
 -- Dumping structure for table simeckdb.lockedfiles
 CREATE TABLE IF NOT EXISTS `lockedfiles` (
@@ -165,14 +167,17 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   `assetlock` int DEFAULT '1',
   `commentlock` int DEFAULT '1',
   KEY `lockid` (`lockid`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.lockedfiles: ~3 rows (approximately)
+-- Dumping data for table simeckdb.lockedfiles: ~7 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1),
 	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1),
-	(12, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', '2026-06-01 11:31:31', 1, 1),
-	(15, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Dragon%20Ball%20Z%20-%20Ova%2001B%20-%20Plan%20To%20Eradicate%20The%20Saiyans%2C%20Part%202%20Of%202%20(1993%20Dvdrip%20-%20480P%20Jap%20Audio).mp4', '2026-06-02 11:19:49', 1, 1);
+	(12, '/files/Projects/clientProjects/C01_SetSail/clientUpload/Butters.png', '2026-06-01 11:31:31', 1, 0),
+	(16, '/files/Dropboxes/User%2C%20Admin/new/IMG_20240820_175126467.jpg', '2026-06-13 13:05:41', 1, 1),
+	(17, '/files/Corporate/ClientDocuments/User%2C%20Client/Butters.png', '2026-06-13 13:06:32', 1, 1),
+	(18, '/files/Projects/clientProjects/C01_SetSail/clientUpload/CHU_WEBSITE.png', '2026-06-13 13:07:07', 1, 1),
+	(23, '/files/Projects/Projects/clientProjects/C01_SetSail/clientUpload/Enamel Pin Wine Glass.PNG', '2026-06-13 13:54:26', 1, 1);
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -185,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~54 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~88 rows (approximately)
 INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL),
 	('admin', '2026-06-03 12:16:33', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
@@ -249,7 +254,46 @@ INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `ext
 	('admin', '2026-06-10 17:09:35', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
 	('admin', '2026-06-11 10:51:49', 'Nickname changed', '127.0.0.1', 'Artist changed their nickname to \'Ran-Dizzle\'.', 'System', NULL),
 	('admin', '2026-06-11 15:55:03', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
-	('client', '2026-06-11 15:55:07', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin');
+	('client', '2026-06-11 15:55:07', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-11 16:46:10', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('admin', '2026-06-12 09:25:02', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'touch-grass\'.', 'System', NULL),
+	('admin', '2026-06-12 09:31:00', 'Nickname changed', '127.0.0.1', 'Artist changed their nickname to \'\'.', 'System', NULL),
+	('admin', '2026-06-12 09:31:10', 'Nickname changed', '127.0.0.1', 'Artist changed their nickname to \'Ran-Dizzle\'.', 'System', NULL),
+	('admin', '2026-06-12 09:37:39', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL),
+	('admin', '2026-06-12 09:37:40', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'touch-grass\'.', 'System', NULL),
+	('admin', '2026-06-12 09:37:44', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
+	('admin', '2026-06-12 12:04:51', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-12 12:04:52', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-12 12:05:54', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-12 12:27:01', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-12 12:37:22', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'test\'.', 'System', NULL),
+	('test', '2026-06-12 12:38:45', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'test\'.', 'System', 'admin'),
+	('admin', '2026-06-12 15:58:56', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-12 16:04:52', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 12:22:49', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-13 12:23:00', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 12:44:38', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-13 12:45:29', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 12:46:27', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-13 12:46:38', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 12:59:08', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-13 13:00:36', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 13:05:41', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:06:09', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-13 13:06:24', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-06-13 13:06:32', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:07:07', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:27:56', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:38:16', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:40:09', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:50:18', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-13 13:54:26', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-14 13:57:33', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'touch-grass\'.', 'System', NULL),
+	('admin', '2026-06-14 14:00:59', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'fat-butters\'.', 'System', NULL),
+	('admin', '2026-06-14 14:01:06', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
+	('admin', '2026-06-14 15:12:02', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
+	('admin', '2026-06-14 15:12:43', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
+	('admin', '2026-06-14 15:16:51', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL);
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (

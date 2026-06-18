@@ -667,7 +667,7 @@ button:disabled {
     padding: 5px 14px;
 }
 
-.seecm-locked-notice {
+.seeComments-locked-notice {
     color: var(--color-text-muted);
     font-style: italic;
     font-size: 0.85rem;
