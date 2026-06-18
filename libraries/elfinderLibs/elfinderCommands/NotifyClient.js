@@ -15,9 +15,24 @@ elFinder.prototype.commands.notifyClient = function() {
     };
     
     this.exec = function(hashes) {
+        var fm = this.fm;
+        var files = fm.selectedFiles();
+        if (files.length === 0) {
+            return $.Deferred().resolve();
+        }
+
+        var f = files[0];
+        $.post('libraries/elfinderLibs/endpoints/notifyClientEndpoint.php', {
+            filepath: fm.url(f.hash)
+        }, function(html) {
+            $('body').append(html);
+        }, 'html').fail(function() {
+            fm.notify({ type: 'error', msg: 'Failed to load Notify Client dialog.' });
+        });
+
         return $.Deferred().resolve();
     };
-    
+
 this.getstate = function() {
     var fm = this.fm;
     var session = window.simeckSession;
