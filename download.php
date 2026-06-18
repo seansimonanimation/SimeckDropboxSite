@@ -10,6 +10,9 @@
  * 
  * Legacy flow: Looks up artistdocuments/clientdocuments table by uploadID, verifies ownership.
  * elFinder flow: Decodes hash, verifies HMAC + volume access, serves file directly.
+ * 
+ * Thumbnail mode: Add ?thumb=1 to serve the cached thumbnail from /files/.tmb/
+ * instead of the original file. Only works for elFinder filepath tokens.
  */
 
 include_once __DIR__ . '/libraries/session.php';
@@ -90,7 +93,7 @@ function InitiateDownload($encodedData) {
     }
 
     if ($username === 'elFinder') {
-        // ─── elFinder filepath download ────────────────────────────
+        // ─── elFinder filepath download (or thumbnail) ────────────
         ServeElfinderFile($identifier);
     } else {
         // ─── Legacy DB document download ───────────────────────────
@@ -166,6 +169,9 @@ function UserHasAccessToElfinderPath($filepath) {
 
 /**
  * Serve a file directly from the filesystem (elFinder download path).
+ * 
+ * If ?thumb=1 (or ?thumbnail=1) is present, serves the cached thumbnail
+ * from /files/.tmb/ instead of the original file.
  */
 function ServeElfinderFile($filepath) {
     if (!UserHasAccessToElfinderPath($filepath)) {
@@ -179,6 +185,33 @@ function ServeElfinderFile($filepath) {
         return;
     }
 
+    // ── Thumbnail mode ──────────────────────────────────────────
+    $thumbMode = isset($_GET['thumb']) || isset($_GET['thumbnail']);
+    
+    if ($thumbMode) {
+        // Compute thumbnail name matching SimeckVolumeDriver::tmbname()
+        // Format: md5(realPath) . filemtime . '.png'
+        $tmbName = md5($realPath) . filemtime($realPath) . '.png';
+        $tmbPath = __ROOT__ . '/files/.tmb/' . $tmbName;
+        
+        if (!file_exists($tmbPath)) {
+            http_response_code(404);
+            echo "Thumbnail not available.";
+            return;
+        }
+        
+        header('Content-Description: Thumbnail');
+        header('Content-Type: image/png');
+        header('Content-Disposition: inline; filename="' . $tmbName . '"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($tmbPath));
+        readfile($tmbPath);
+        exit;
+    }
+
+    // ── Normal (original file) mode ─────────────────────────────
     // Detect MIME type from the file extension
     $mimeTypes = [
         'png'  => 'image/png',
