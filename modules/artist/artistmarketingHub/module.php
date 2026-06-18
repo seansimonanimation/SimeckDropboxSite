@@ -1,6 +1,6 @@
 <?php 
 /**
- * @module marketingHub
+ * @module MarketingHub
  * @name MarketingHub
  * @role artist
  * @secondary-role marketing
