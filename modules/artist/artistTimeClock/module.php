@@ -9,24 +9,18 @@
  */
 include_once __DIR__ . '/../../../libraries/session.php';
 include_once __ROOT__ . '/libraries/timeclock/timeclocklib.php';
+include_once __ROOT__ . '/libraries/timeclock/timeclock_issets.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/download.php';
 
-if(!IsImpersonating()){
-    if(isset($_GET['clock_in'])){
-        ArtistClockIn($_SESSION['username']);
-    }
-    if(isset($_GET['clock_out'])){
-        ArtistClockOut($_SESSION['username']);
-    }
-}
-if(isset($_GET['download_file'])){
-    InitiateDownload($_GET['download']);
-}
+RunArtistTimeclockIssets();
 ?>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="/css/moduleStyle.css" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="/libraries/timeclock/timeclocklib.js"></script>
 
 <div class="module">
     <div class="module-header">
@@ -39,7 +33,6 @@ if(isset($_GET['download_file'])){
             <h3>Your Stats</h3>
             <?php DisplayArtistStats($_SESSION['username']); ?>
         </div>
-
         <div class="module-card module-card--span-1">
             <?php echo DisplayArtistClockInOutButton($_SESSION['username']); ?>
         </div>
@@ -54,6 +47,6 @@ if(isset($_GET['download_file'])){
                 <h1>Your important documents</h1>
                 <p><?php ShowArtistFilesForTimeclock(); ?></p>
             </center>
-    </div>
+        </div>
     </div>
 </div>

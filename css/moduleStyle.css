@@ -426,3 +426,13 @@
 #calcModeToggle .module-toggle__option[data-value="timezone"].module-toggle__option--active ~ .module-toggle__slider {
   transform: translateX(100%);
 }
+.temporal-error {
+    animation: flash 1s step-end infinite;
+    color: var(--color-text);
+    font-weight: bold;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
