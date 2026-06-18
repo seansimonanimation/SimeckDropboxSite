@@ -103,7 +103,7 @@ function ImpersonateArtist($artistData){
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
-    $_SESSION['_imp_orig_secondary-roles'] = $_SESSION['secondary_roles'];
+    $_SESSION['_imp_orig_secondary-roles'] = $_SESSION['secondary-roles'];
     $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
     $_SESSION['_imp_orig_nickname']  = $_SESSION['nickname'] ?? '';
     $_SESSION['_imp_orig_phone_country_code'] = $_SESSION['phone_country_code'] ?? 1;
