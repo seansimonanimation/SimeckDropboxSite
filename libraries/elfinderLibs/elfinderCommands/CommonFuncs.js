@@ -63,9 +63,15 @@ function getSimeckLockFilePath(fm, hash) {
 // ── elFinder Hash Decode ──────────────────────────────────────────
 // Converts elFinder's custom base64 hash to a filesystem path string
 function decodeElfinderHash(hash) {
-    var b64 = hash.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
+    // Strip the volume ID prefix (e.g., "s1_", "s2_", "t1_", "l1_")
+    var underscoreIndex = hash.indexOf('_');
+    if (underscoreIndex === -1) return null;
+    var b64 = hash.substring(underscoreIndex + 1);
+    b64 = b64.replace(/-/g, '+').replace(/_/g, '/').replace(/\./g, '=');
     try { return atob(b64); } catch(e) { return null; }
 }
+
+
 
 // ── elFinder Path Encode ──────────────────────────────────────────
 // Converts a filesystem path to elFinder's custom base64 hash format
