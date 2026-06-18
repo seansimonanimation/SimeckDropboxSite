@@ -169,61 +169,61 @@ function LoadCommentsIsland($filepath)
     $containerId = 'fi-comments-' . md5($filepath);
 
     // The body starts with a loading indicator; the script below replaces it.
-    $bodyHtml = <<<BODY
+    $bodyHtml = <<<ISLANDBODY
 <div id="{$containerId}">
-    <p class="seecm-loading">Loading comments…</p>
+    <p class="seeComments-loading">Loading comments…</p>
 </div>
-BODY;
+ISLANDBODY;
 
     // Before the $js heredoc, determine the add-form HTML to inject
     if ($isCommentLocked) {
-        $addFormHtml = "'<p style=\"color:var(--color-text-muted);font-style:italic;margin-top:12px;\">Comments are locked on this file.</p>'";
+        $addCommentFormHTML = "'<p style=\"color:var(--color-text-muted);font-style:italic;margin-top:12px;\">Comments are locked on this file.</p>'";
     } else {
-        $addFormHtml = <<<FORM
-        '<hr class="seecm-divider">' +
-        '<div class="seecm-add-form">' +
+        $addCommentFormHTML = <<<COMMENTFORM
+        '<hr class="seeComments-divider">' +
+        '<div class="seeComments-add-form">' +
         '<textarea id="{$containerId}-input" placeholder="Write a comment…" style="width:100%;height:64px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"></textarea>' +
         '<button id="{$containerId}-submit" style="margin-top:8px;">Add Comment</button>' +
         '</div>'
-    FORM;
+    COMMENTFORM;
     }
 
 
-    $js = <<<JS
+    $commentJS = <<<COMMENTJS
 <script>
 (function() {
     var container = document.getElementById('{$containerId}');
     if (!container) return;
 
-    function loadComments() {
-        container.innerHTML = '<p class="seecm-loading">Loading comments…</p>';
+    function loadComments() { //It's built into a function so that we can call it when we post a new comment.
+        container.innerHTML = '<p class="seeComments-loading">Loading comments…</p>';
 
         $.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
             action: 'fetch',
             file_url: '{$fileUrl}'
         }, function(response) {
             if (!response.success) {
-                container.innerHTML = '<p class="seecm-status-error">Failed to load comments.</p>';
+                container.innerHTML = '<p class="seeComments-status-error">Failed to load comments.</p>';
                 return;
             }
 
-            var html = '<div class="seecm-comments-list">';
+            var html = '<div class="seeComments-comments-list">';
 
             if (response.comments.length === 0) {
-                html += '<p class="seecm-status-empty">No comments yet.</p>';
+                html += '<p class="seeComments-status-empty">No comments yet.</p>';
             } else {
                 $.each(response.comments, function(i, c) {
-                    html += '<div class="seecm-comment">';
-                    html += '<div class="seecm-comment__header">';
-                    html += '<span class="seecm-comment__author">' + $('<span>').text(c.owner).html() + '</span>';
-                    html += '<span class="seecm-comment__time">' + $('<span>').text(c.comment_time).html() + '</span>';
+                    html += '<div class="seeComments-comment">';
+                    html += '<div class="seeComments-comment__header">';
+                    html += '<span class="seeComments-comment__author">' + $('<span>').text(c.owner).html() + '</span>';
+                    html += '<span class="seeComments-comment__time">' + $('<span>').text(c.comment_time).html() + '</span>';
                     html += '</div>';
-                    html += '<p class="seecm-comment__body">' + c.comment_content + '</p>';
+                    html += '<p class="seeComments-comment__body">' + c.comment_content + '</p>';
                     html += '</div>';
                 });
             }
             html += '</div>';
-            html += {$addFormHtml};
+            html += {$addCommentFormHTML};
 
 
             container.innerHTML = html;
@@ -245,7 +245,7 @@ BODY;
                         alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
                     }
                 }, 'json').fail(function() {
-                    alert('Failed to add comment due to a server error.');
+                    alert('Failed to add comment.');
                 });
             });
 
@@ -253,16 +253,16 @@ BODY;
             $('#{$containerId}-input').on('keydown', function(e) { e.stopPropagation(); });
 
         }, 'json').fail(function() {
-            container.innerHTML = '<p class="seecm-status-error">Failed to load comments due to a server error.</p>';
+            container.innerHTML = '<p class="seeComments-status-error">Failed to load comments due to a server error.</p>';
         });
     }
 
     loadComments();
 })();
 </script>
-JS;
+COMMENTJS;
 
-    return SpawnFloatingIsland($bodyHtml . $js, 'Comments');
+    return SpawnFloatingIsland($bodyHtml . $commentJS, 'Comments');
 }
 
 
@@ -280,7 +280,7 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
 {
     if (empty($files) || !is_array($files)) {
         return SpawnFloatingIsland(
-            '<p class="seecm-status-empty">No files selected to send.</p>',
+            '<p class="seeComments-status-empty">No files selected to send.</p>',
             'Send to Discord'
         );
     }
@@ -299,7 +299,7 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
     // We need a unique ID per instance so multiple islands can coexist
     $uid = 'fi-discord-' . md5(uniqid('', true));
 
-    $bodyHtml = <<<BODY
+    $bodyHtml = <<<ISLANDBODYHTML
 <p><strong>{$fileCount} file(s) selected:</strong></p>
 <ul style="margin: 8px 0 16px 20px; padding: 0;">{$fileListHtml}</ul>
 
@@ -325,7 +325,7 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
 
 <button id="{$uid}-send" style="margin-top:4px;">Send to Discord</button>
 <div id="{$uid}-status" style="margin-top:10px;"></div>
-BODY;
+ISLANDBODYHTML;
 
     $js = <<<JS
 <script>
@@ -393,7 +393,7 @@ function LoadMoveFilesToProjectIsland($files)
 {
     if (empty($files) || !is_array($files)) {
         return SpawnFloatingIsland(
-            '<p class="seecm-status-empty">No files selected to move.</p>',
+            '<p class="seeComments-status-empty">No files selected to move.</p>',
             'Move Files to Project'
         );
     }

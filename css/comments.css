@@ -1,70 +1,70 @@
-/* ─── Comments Popup (elFinder seecm) ───────────────────────────────── */
+/* ─── Comments Popup (elFinder seeComments) ───────────────────────────────── */
 /* Matches the portal's dark theme design language                      */
 
 /* ── Loading & status messages ──────────────────────────────────────── */
-.seecm-loading {
+.seeComments-loading {
   text-align: center;
   color: var(--color-text-muted);
   padding: 24px 0;
 }
 
-.seecm-status-error {
+.seeComments-status-error {
   color: var(--color-danger);
   text-align: center;
   padding: 16px;
 }
 
-.seecm-status-empty {
+.seeComments-status-empty {
   color: var(--color-text-dim);
   text-align: center;
   padding: 24px 0;
 }
 
 /* ── Comments list ──────────────────────────────────────────────────── */
-.seecm-comments-list {
+.seeComments-comments-list {
   max-height: 300px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
 }
 
-.seecm-comments-list::-webkit-scrollbar {
+.seeComments-comments-list::-webkit-scrollbar {
   width: 6px;
 }
-.seecm-comments-list::-webkit-scrollbar-thumb {
+.seeComments-comments-list::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: var(--radius-pill);
 }
 
 /* ── Individual comment ─────────────────────────────────────────────── */
-.seecm-comment {
+.seeComments-comment {
   border-bottom: 1px solid var(--color-border);
   padding: 10px 0;
 }
 
-.seecm-comment:last-child {
+.seeComments-comment:last-child {
   border-bottom: none;
 }
 
-.seecm-comment__header {
+.seeComments-comment__header {
   display: flex;
   align-items: baseline;
   gap: 8px;
   margin-bottom: 4px;
 }
 
-.seecm-comment__author {
+.seeComments-comment__author {
   font-weight: 700;
   color: var(--color-primary-light);
   font-size: 0.92rem;
 }
 
-.seecm-comment__time {
+.seeComments-comment__time {
   color: var(--color-text-dim);
   font-size: 0.80rem;
 }
 
-.seecm-comment__body {
+.seeComments-comment__body {
   margin: 0;
   color: var(--color-text);
   font-size: 0.90rem;
@@ -72,18 +72,18 @@
 }
 
 /* ── Divider ────────────────────────────────────────────────────────── */
-.seecm-divider {
+.seeComments-divider {
   border: none;
   border-top: 1px solid var(--color-border);
   margin: 12px 0;
 }
 
 /* ── Add comment form ───────────────────────────────────────────────── */
-.seecm-add-form {
+.seeComments-add-form {
   margin-top: 8px;
 }
 
-.seecm-add-form textarea {
+.seeComments-add-form textarea {
   width: 100%;
   height: 64px;
   box-sizing: border-box;
@@ -98,13 +98,13 @@
   transition: border-color var(--transition-fast);
 }
 
-.seecm-add-form textarea:focus {
+.seeComments-add-form textarea:focus {
   outline: none;
   border-color: var(--color-primary-light);
   box-shadow: 0 0 0 2px rgba(59, 122, 224, 0.15);
 }
 
-.seecm-add-form button {
+.seeComments-add-form button {
   margin-top: 8px;
   padding: 8px 20px;
   font-size: 0.85rem;
@@ -112,7 +112,7 @@
 
 /* ── jQuery UI dialog overrides ────────────────────────────────────── */
 /* Keep the dialog consistent with the dark theme */
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] {
   /*background: var(--color-bg-mid);*/
   background: var(--color-bg);
   border: var(--glass-border);
@@ -121,7 +121,7 @@
   padding: 0;
 }
 
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] .ui-dialog-titlebar {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-titlebar {
   background: var(--color-surface);
   border: none;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
@@ -134,7 +134,7 @@
 }
 
 /* ── Content area ───────────────────────────────────────────────────────── */
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] .ui-dialog-content {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-content {
   background: var(--color-bg);
   padding: 16px 20px;
   color: var(--color-text);
@@ -143,7 +143,7 @@
 }
 
 /* ── Close button ───────────────────────────────────────────────────────── */
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] .ui-dialog-titlebar-close {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-titlebar-close {
   background: transparent;
   border: none;
   box-shadow: none;
@@ -162,14 +162,14 @@
 }
 
 /* Show an ✕ character */
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] .ui-dialog-titlebar-close::before {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-titlebar-close::before {
   content: "✕";
   font-size: 18px;
   color: var(--color-text-dim);
   line-height: 1;
 }
 
-.ui-dialog[aria-describedby="elfinder-seecm-dialog"] .ui-dialog-titlebar-close:hover::before {
+.ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-titlebar-close:hover::before {
   color: var(--color-heading);
 }
 .ui-widget-overlay {

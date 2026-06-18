@@ -15,6 +15,7 @@ function PutArtistDataInSession($artistData){
     $_SESSION['lastname'] = $artistData['lastname'];
     $_SESSION['userID'] = $artistData['userID'];
     $_SESSION['role'] = $artistData['role'];
+    $_SESSION['secondary-roles'] = $artistData ['secondary_roles']; //Secondary roles are secondary_role in the db but in the app it's secondary-role. This is the changepoint that keeps both naming conventions happy.
     $_SESSION['theme'] = $artistData['theme'] ?? 'dark-boo';
     $_SESSION['timezone'] = $artistData['timezone'] ?? 'UTC';
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
@@ -102,6 +103,7 @@ function ImpersonateArtist($artistData){
     $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
     $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
     $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+    $_SESSION['_imp_orig_secondary-roles'] = $_SESSION['secondary_roles'];
     $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
     $_SESSION['_imp_orig_nickname']  = $_SESSION['nickname'] ?? '';
     $_SESSION['_imp_orig_phone_country_code'] = $_SESSION['phone_country_code'] ?? 1;
@@ -115,6 +117,7 @@ function ImpersonateArtist($artistData){
     $_SESSION['lastname']  = $artistData['lastname'];
     $_SESSION['nickname']  = $artistData['nickname'] ?? '';
     $_SESSION['userID']    = $artistData['userID'];
+    $_SESSION['secondary-roles'] = $artistData['secondary_roles'];
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['phone_country_code'] = $artistData['phone_country_code'] ?? 1;
     $_SESSION['phone_number'] = $artistData['phone_number'] ?? null;
@@ -162,6 +165,7 @@ function StopImpersonating(){
     $_SESSION['lastname']  = $_SESSION['_imp_orig_lastname'];
     $_SESSION['nickname']  = $_SESSION['_imp_orig_nickname'] ?? '';
     $_SESSION['userID']    = $_SESSION['_imp_orig_userID'];
+    $_SESSION['secondary-roles'] = $_SESSION['_imp_orig_secondary-roles'];
     $_SESSION['phone_country_code'] = $_SESSION['_imp_orig_phone_country_code'] ?? 1;
     $_SESSION['phone_number'] = $_SESSION['_imp_orig_phone_number'] ?? null;
     $_SESSION['receive_texts'] = $_SESSION['_imp_orig_receive_texts'] ?? 0;
@@ -177,6 +181,7 @@ function StopImpersonating(){
     unset($_SESSION['_imp_orig_phone_country_code']);
     unset($_SESSION['_imp_orig_phone_number']);
     unset($_SESSION['_imp_orig_receive_texts']);
+    unset($_SESSION['_imp_orig_secondary-roles']);
     unset($_SESSION['impersonating']);
     unset($_SESSION['clientProjects']);
     unset($_SESSION['lock_overrides']);

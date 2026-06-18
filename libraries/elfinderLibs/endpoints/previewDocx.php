@@ -43,7 +43,7 @@ header('Content-Type: text/html; charset=utf-8');
             font-family: 'Nunito', Arial, sans-serif;
             line-height: 1.6;
             padding: 20px;
-            background: #aaaaaa;
+            background: #BBB
             color: #111;
         }
         body, body * {

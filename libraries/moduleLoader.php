@@ -5,6 +5,8 @@
 // includes them.
 
 function LoadNavbarContent(){
+
+    //Secondary roles to look for: marketing, programmer, butters
     $moduleDir = '';
     if($_SESSION['tempRole'] == 'admin'){
         $moduleDir = __ROOT__ . '/modules/admin';
@@ -44,6 +46,19 @@ function LoadNavbarContent(){
                 if (preg_match('/@role\s+(.+)/', $fileContent, $matches)) {
                     $metadata['role'] = trim($matches[1]);
                 }
+                // Match @secondary-role
+                
+                if (preg_match('/@secondary-role\s+(.+)/', $fileContent, $matches)) {
+                    $metadata['secondary-role'] = trim($matches[1]);
+                    $userSecondaryRoles = array_map('trim', explode(',', $_SESSION['secondary-roles'] ?? ''));
+                    if (!in_array($metadata['secondary-role'], $userSecondaryRoles)) {
+                        continue;
+                    }
+                }
+                //echo $_SESSION['secondary-roles'];
+                //Secondary role checks.
+                //If the secondary role isn't included in the secondary roles in the session, skip past because we're not loading the module.
+
                 // Match @nav-text
                 if (preg_match('/@nav-text\s+(.+)/', $fileContent, $matches)) {
                     $metadata['nav-text'] = trim($matches[1]);
@@ -64,6 +79,7 @@ function LoadNavbarContent(){
                 $moduleInfo['name'] = $metadata['name'] ?? 'Unnamed Module';
                 $moduleInfo['module'] = $metadata['module'] ?? '';
                 $moduleInfo['role'] = $metadata['role'] ?? '';
+                if(isset($metadata['secondary-role'])){$moduleInfo['secondary-role'] = $metadata['secondary-role'];}
                 $moduleInfo['nav-text'] = $metadata['nav-text'] ?? '';
                 $moduleInfo['nav-icon'] = $metadata['nav-icon'] ?? '';
                 $moduleInfo['nav-order'] = $metadata['nav-order'] ?? 0;
@@ -72,6 +88,9 @@ function LoadNavbarContent(){
 
                 //Set the session module data
                 SetCurrentModuleSessionData($moduleInfo);
+
+
+
                 // Only include modules that match the current role
                 if (empty($metadata['role']) || $metadata['role'] == $_SESSION['tempRole']) {
                     $activeModules[] = $moduleInfo;
