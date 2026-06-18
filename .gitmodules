@@ -4,3 +4,6 @@
 [submodule "libraries/threejs"]
 	path = libraries/threejs
 	url = https://github.com/mrdoob/three.js.git
+[submodule "libraries/flatpickr"]
+	path = libraries/flatpickr
+	url = https://github.com/flatpickr/flatpickr.git

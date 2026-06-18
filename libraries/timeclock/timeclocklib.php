@@ -12,15 +12,15 @@ function GenerateTimeclockTable(){
     echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Delete</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
-        $displayIn = PhoenixToLocal($entry['time_in'], $tz);
-        $displayOut = PhoenixToLocal($entry['time_out'], $tz);
+        $displayIn = PhoenixToLocal($entry['time_in'], $tz, 'F j, Y g:i A');
+        $displayOut = PhoenixToLocal($entry['time_out'], $tz, 'F j, Y g:i A');
         echo '<tr>';
         echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
         echo '<td>' . htmlspecialchars($entry['user']) . '</td>';
-        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_in">';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_in" data-mysql="' . htmlspecialchars($entry['time_in']) . '">';
         echo '  <span class="atc-display">' . htmlspecialchars($displayIn) . '</span>';
         echo '</td>';
-        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_out">';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_out" data-mysql="' . htmlspecialchars($entry['time_out'] ?? '') . '">';
         echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineShiftLengthOrSummonButton($entry['time_in'], $entry['time_out'], $entry['shift_id']) . '</td>';
@@ -31,23 +31,30 @@ function GenerateTimeclockTable(){
 }
 
 
+
 function GenerateArtistTimeclockTable($artistID){
-    $tz = $_SESSION['timezone'] ?? 'UTC';
+    $tz = $_SESSION['timezone'] ?? 'America/Phoenix';
     $entryArray = GetTimeclockEntries(null, null, $artistID);
     echo '<table id="ShiftList" class="display" style="width:100%; border-collapse: collapse;">';
     echo '<thead><tr><th>Shift ID</th><th>Time In</th><th>Time Out</th><th>Shift Length</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
-        // Stripped out the UTCToLocal() — stored times are America/Phoenix, display as-is
+        $displayIn = PhoenixToLocal($entry['time_in'], $tz, 'F j, Y g:i A');
+        $displayOut = PhoenixToLocal($entry['time_out'], $tz, 'F j, Y g:i A');
         echo '<tr>';
         echo '<td>' . htmlspecialchars($entry['shift_id']) . '</td>';
-        echo '<td>' . htmlspecialchars($entry['time_in']) . '</td>';
-        echo '<td>' . htmlspecialchars($entry['time_out'] ?? '') . '</td>';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_in" data-mysql="' . htmlspecialchars($entry['time_in']) . '">';
+        echo '  <span class="atc-display">' . htmlspecialchars($displayIn) . '</span>';
+        echo '</td>';
+        echo '<td class="atc-editable" data-shift-id="' . $entry['shift_id'] . '" data-field="time_out" data-mysql="' . htmlspecialchars($entry['time_out'] ?? '') . '">';
+        echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
+        echo '</td>';
         echo '<td>' . DetermineArtistShiftLength($entry['time_in'], $entry['time_out']) . '</td>';
         echo '</tr>';
     }
     echo '</tbody></table>';
 }
+
 
 
 
@@ -57,12 +64,13 @@ function UTCToLocal($utcDatetime, $targetTimezone){
     $dt->setTimezone(new DateTimeZone($targetTimezone));
     return $dt->format('Y-m-d H:i:s');
 }
-function PhoenixToLocal($phxDatetime, $targetTimezone){
+function PhoenixToLocal($phxDatetime, $targetTimezone, $format = 'Y-m-d H:i:s'){
     if($phxDatetime === null || $phxDatetime === '') return null;
     $dt = new DateTime($phxDatetime, new DateTimeZone('America/Phoenix'));
     $dt->setTimezone(new DateTimeZone($targetTimezone));
-    return $dt->format('Y-m-d H:i:s');
+    return $dt->format($format);
 }
+
 
 function GetClockedInArtistCount(){
     $SQLString = 'SELECT COUNT(*) as clocked_in_count FROM timeclockshifts WHERE time_out IS NULL';
@@ -79,8 +87,14 @@ function DetermineShiftLengthOrSummonButton($timeIn, $timeOut, $shiftID){
     $phx = new DateTimeZone('America/Phoenix');
     $start = new DateTime($timeIn, $phx);
     $end = new DateTime($timeOut, $phx);
+    if ($start > $end) return '<span class="temporal-error">TEMPORAL ERROR</span>';
+    // In both DetermineShiftLengthOrSummonButton() and DetermineArtistShiftLength()
     $interval = $start->diff($end);
-    return $interval->format('%h hours %i minutes');
+    $parts = [];
+    if ($interval->d > 0) $parts[] = $interval->d . ' days';
+    $parts[] = $interval->h . ' hours ' . $interval->i . ' minutes';
+    return implode(', ', $parts);
+
 }
 
 function DetermineArtistShiftLength($timeIn, $timeOut){
@@ -90,8 +104,14 @@ function DetermineArtistShiftLength($timeIn, $timeOut){
     $phx = new DateTimeZone('America/Phoenix');
     $start = new DateTime($timeIn, $phx);
     $end = new DateTime($timeOut, $phx);
+    if ($start > $end) return '<span class="temporal-error">TEMPORAL ERROR</span>';
+
+    // In both DetermineShiftLengthOrSummonButton() and DetermineArtistShiftLength()
     $interval = $start->diff($end);
-    return $interval->format('%h hours %i minutes');
+    $parts = [];
+    if ($interval->d > 0) $parts[] = $interval->d . ' days';
+    $parts[] = $interval->h . ' hours ' . $interval->i . ' minutes';
+    return implode(', ', $parts);
 }
 function ClockEveryoneOut(){
     $SQLString = 'UPDATE timeclockshifts SET time_out = CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", "America/Phoenix") WHERE time_out IS NULL';
