@@ -278,32 +278,6 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
                 e.stopPropagation();
             });
         }
-        
-        // Wire up submit button
-        $list.find('.preview-comment-submit').on('click', function() {
-            var $input = $list.find('.preview-comment-input');
-            var content = $input.val().trim();
-            if (!content) return;
-            
-            $.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
-                action: 'add',
-                file_url: fileUrl,
-                content: content
-            }, function(addResponse) {
-                if (addResponse.success) {
-                    $input.val('');
-                    loadPreviewComments(fileUrl, isCommentLocked);
-                } else {
-                    alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
-                }
-            }, 'json').fail(function() {
-                alert('Failed to add comment.');
-            });
-        });
-    }, 'json').fail(function() {
-        $list.html('<p class="seecm-status-error">Failed to load comments.</p>');
-    });
-}
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
