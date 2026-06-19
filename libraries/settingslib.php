@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__ . '/encryptlib.php';
+
 function ArtistSettingsErrorDisplay($inputMessage){
 if($inputMessage == ""){ return "";}
 echo '<div class="module-card module-card--span-4">';
@@ -65,41 +67,67 @@ function SetArtistAvailability($username, $availabilityString){
     return $stmt->execute([$availabilityString, $username]);
 }
 // ════════════════════════════════════════════════════════════════
-//  PHONE NUMBER / NOTIFICATION SETTINGS
+//  PHONE NUMBER / NOTIFICATION SETTINGS  (ENCRYPTED)
 // ════════════════════════════════════════════════════════════════
 
 function GetArtistPhoneInfo($username){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM artists WHERE username = ?");
     $stmt->execute([$username]);
-    return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
-        'phone_country_code' => 1,
-        'phone_number' => null,
-        'receive_texts' => 0
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return [
+            'phone_country_code' => 1,
+            'phone_number' => null,
+            'receive_texts' => 0
+        ];
+    }
+    return [
+        'phone_country_code' => (int)decryptImportantData($row['phone_country_code']),
+        'phone_number'       => decryptImportantData($row['phone_number']),
+        'receive_texts'      => (int)$row['receive_texts']
     ];
 }
 
 function SetArtistPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("UPDATE artists SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
-    return $stmt->execute([(int)$countryCode, $phoneNumber, (int)$receiveTexts, $username]);
+    return $stmt->execute([
+        encryptImportantData((string)(int)$countryCode),
+        encryptImportantData($phoneNumber),
+        (int)$receiveTexts,
+        $username
+    ]);
 }
 
 function GetClientPhoneInfo($username){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM clients WHERE username = ?");
     $stmt->execute([$username]);
-    return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
-        'phone_country_code' => '+1',
-        'phone_number' => null,
-        'receive_texts' => 0
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return [
+            'phone_country_code' => '+1',
+            'phone_number' => null,
+            'receive_texts' => 0
+        ];
+    }
+    return [
+        'phone_country_code' => decryptImportantData($row['phone_country_code']),
+        'phone_number'       => decryptImportantData($row['phone_number']),
+        'receive_texts'      => (int)$row['receive_texts']
     ];
 }
 
 function SetClientPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("UPDATE clients SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
-    return $stmt->execute([$countryCode, $phoneNumber, (int)$receiveTexts, $username]);
+    return $stmt->execute([
+        encryptImportantData($countryCode),
+        encryptImportantData($phoneNumber),
+        (int)$receiveTexts,
+        $username
+    ]);
 }
 
 function GetCountryCodeOptions($selected = '+1'){
