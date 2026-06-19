@@ -12,6 +12,8 @@ require_once __ROOT__ . '/libraries/floatingIslandLib.php';
 require_once __ROOT__ . '/libraries/db.php';
 require_once __ROOT__ . '/libraries/logging.php';
 require_once __ROOT__ . '/vendor/autoload.php';
+require_once __ROOT__ . '/libraries/encryptlib.php';
+
 
 use Twilio\Rest\Client;
 
@@ -71,7 +73,17 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
     $stmt->execute([$clientUsername]);
     $client = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$client || empty($client['phone_number']) || (int)$client['receive_texts'] !== 1) {
+    if (!$client) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Client not found.']);
+        exit;
+    }
+
+    // Decrypt phone fields
+    $client['phone_country_code'] = decryptImportantData($client['phone_country_code']);
+    $client['phone_number']       = decryptImportantData($client['phone_number']);
+
+    if (empty($client['phone_number']) || (int)$client['receive_texts'] !== 1) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'Client has no phone or has opted out.']);
         exit;

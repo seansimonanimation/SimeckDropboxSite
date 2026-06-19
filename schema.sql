@@ -52,17 +52,17 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `availability` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0|0|0|0|0|0|0',
   `availability_this_week` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '0|0|0|0|0|0|0',
   `log_rows_per_page` int unsigned NOT NULL DEFAULT '50',
-  `phone_country_code` int NOT NULL DEFAULT '1',
-  `phone_number` bigint DEFAULT NULL,
+  `phone_country_code` varchar(300) NOT NULL DEFAULT '1',
+  `phone_number` varchar(300) DEFAULT NULL,
   `receive_texts` int unsigned NOT NULL DEFAULT '0',
   KEY `userID` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
 INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `nickname`, `password`, `userID`, `active`, `role`, `secondary_roles`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`, `log_rows_per_page`, `phone_country_code`, `phone_number`, `receive_texts`) VALUES
-	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'marketing', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, 1, NULL, 0),
-	('artist', 'Artist', 'User', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 2, 1, 'artist', '', ',P00,C05,C03', 'dark-boo', 'UTC', '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0),
-	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 3, 1, 'artist', 'butters', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, 1, NULL, 0);
+	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'marketing,butters', 'C01,C03,C05,P01', 'spite-castle', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, '1', '4806950059', 0),
+	('artist', 'Artist', 'User', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 2, 1, 'artist', '', ',P00,C05,C03', 'dark-boo', 'UTC', '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0),
+	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 3, 1, 'artist', 'butters', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0);
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -92,16 +92,16 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `lock_overrides` int DEFAULT NULL,
   `timezone` varchar(40) DEFAULT 'UTC',
   `availability` varchar(120) DEFAULT '0|0|0|0|0|0|0',
-  `phone_country_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '+1',
-  `phone_number` bigint DEFAULT NULL,
+  `phone_country_code` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '+1',
+  `phone_number` varchar(300) DEFAULT NULL,
   `receive_texts` int unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.clients: ~3 rows (approximately)
 INSERT IGNORE INTO `clients` (`username`, `firstname`, `lastname`, `password`, `project_assignments`, `active`, `outstandingBalance`, `point_of_contact`, `theme`, `lock_overrides`, `timezone`, `availability`, `phone_country_code`, `phone_number`, `receive_texts`) VALUES
-	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 6, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0),
+	('client', 'Client', 'User', '$2y$10$lAndNcOZhHbVknhAm.c8vu6qIVsq/jzSVvT7aFby/Btg05S66gbxK', 'C01', 1, 0.00, 'admin', 'spite-castle', 6, 'UTC', '0|0|0|0|0|0|0', '+1', '4806950059', 1),
 	('seansimonanimation@gmail.com', 'Randy', 'Simon', '$2a$12$8W/f3MGtrOWLfNTGVceEKO8F9WImX4zdpClg1VOi6zlg5hvtj2ZbK', 'C01', 1, 0.00, 'admin', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0),
-	('test', 'Test', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0);
+	('test', 'Test ', 'Client 2', '$2a$12$ptYB7ciliHwMH7VtkyYu5.nUDVVqo.9rVBmxVB/PtRmkCAFH6Qipq', 'C01', 1, 0.00, 'rsimon', 'dark-boo', 0, 'UTC', '0|0|0|0|0|0|0', '+1', NULL, 0);
 
 -- Dumping structure for table simeckdb.daysoff
 CREATE TABLE IF NOT EXISTS `daysoff` (
@@ -167,9 +167,9 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   `assetlock` int DEFAULT '1',
   `commentlock` int DEFAULT '1',
   KEY `lockid` (`lockid`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.lockedfiles: ~7 rows (approximately)
+-- Dumping data for table simeckdb.lockedfiles: ~8 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1),
 	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1),
@@ -177,7 +177,8 @@ INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`,
 	(16, '/files/Dropboxes/User%2C%20Admin/new/IMG_20240820_175126467.jpg', '2026-06-13 13:05:41', 1, 1),
 	(17, '/files/Corporate/ClientDocuments/User%2C%20Client/Butters.png', '2026-06-13 13:06:32', 1, 1),
 	(18, '/files/Projects/clientProjects/C01_SetSail/clientUpload/CHU_WEBSITE.png', '2026-06-13 13:07:07', 1, 1),
-	(23, '/files/Projects/Projects/clientProjects/C01_SetSail/clientUpload/Enamel Pin Wine Glass.PNG', '2026-06-13 13:54:26', 1, 1);
+	(23, '/files/Projects/Projects/clientProjects/C01_SetSail/clientUpload/Enamel Pin Wine Glass.PNG', '2026-06-13 13:54:26', 1, 1),
+	(24, '/files/Projects/My Dropbox/new/IMG_20240820_175126467.jpg', '2026-06-18 12:06:56', 1, 1);
 
 -- Dumping structure for table simeckdb.logs
 CREATE TABLE IF NOT EXISTS `logs` (
@@ -190,7 +191,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~88 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~166 rows (approximately)
 INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL),
 	('admin', '2026-06-03 12:16:33', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
@@ -293,7 +294,75 @@ INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `ext
 	('admin', '2026-06-14 14:01:06', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
 	('admin', '2026-06-14 15:12:02', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
 	('admin', '2026-06-14 15:12:43', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
-	('admin', '2026-06-14 15:16:51', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL);
+	('admin', '2026-06-14 15:16:51', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL),
+	('admin', '2026-06-17 17:08:11', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('admin', '2026-06-17 17:09:26', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'admin\'.', 'System', NULL),
+	('admin', '2026-06-17 17:09:28', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'admin\'.', 'System', 'admin'),
+	('admin', '2026-06-17 17:09:30', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'artist\'.', 'System', NULL),
+	('artist', '2026-06-17 17:09:33', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'artist\'.', 'System', 'admin'),
+	('admin', '2026-06-17 17:09:34', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-17 17:09:36', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-17 17:09:54', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-17 17:09:55', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-17 17:10:54', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
+	('rsimon', '2026-06-17 17:10:58', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'rsimon\'.', 'System', 'admin'),
+	('admin', '2026-06-17 17:17:01', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'artist\'.', 'System', NULL),
+	('artist', '2026-06-17 17:17:03', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'artist\'.', 'System', 'admin'),
+	('admin', '2026-06-18 12:06:56', 'Locked file', '127.0.0.1', 'admin', 'Project', NULL),
+	('admin', '2026-06-18 14:02:06', 'Updated timeclock shift', '127.0.0.1', 'Shift #19 had its time_out updated to 2026-06-12 12:53:54.', 'System', NULL),
+	('admin', '2026-06-18 14:02:06', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:42:59', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-28 05:39:00.', 'System', NULL),
+	('admin', '2026-06-18 14:42:59', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:43:14', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-27 22:39:00.', 'System', NULL),
+	('admin', '2026-06-18 14:43:14', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:43:30', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-27 15:39:00.', 'System', NULL),
+	('admin', '2026-06-18 14:43:30', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:44:46', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-27 00:39:00.', 'System', NULL),
+	('admin', '2026-06-18 14:44:46', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:51:59', 'Updated timeclock shift', '127.0.0.1', 'Shift #19 had its time_in updated to 2026-06-10 11:52:00.', 'System', NULL),
+	('admin', '2026-06-18 14:51:59', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:52:08', 'Updated timeclock shift', '127.0.0.1', 'Shift #17 had its time_out updated to 2026-06-10 14:40:00.', 'System', NULL),
+	('admin', '2026-06-18 14:52:08', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:52:16', 'Updated timeclock shift', '127.0.0.1', 'Shift #17 had its time_out updated to 2026-06-10 12:40:00.', 'System', NULL),
+	('admin', '2026-06-18 14:52:16', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:54:20', 'Updated timeclock shift', '127.0.0.1', 'Shift #17 had its time_in updated to 2026-06-10 12:40:02.', 'System', NULL),
+	('admin', '2026-06-18 14:54:20', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:54:30', 'Updated timeclock shift', '127.0.0.1', 'Shift #19 had its time_in updated to 2026-06-10 11:52:00.', 'System', NULL),
+	('admin', '2026-06-18 14:54:30', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:54:42', 'Updated timeclock shift', '127.0.0.1', 'Shift #2 had its time_in updated to 2026-05-11 21:10:00.', 'System', NULL),
+	('admin', '2026-06-18 14:54:42', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:55:51', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-05-31 19:00:00.', 'System', NULL),
+	('admin', '2026-06-18 14:55:51', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:55:55', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-06-01 17:00:00.', 'System', NULL),
+	('admin', '2026-06-18 14:55:55', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:56:05', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-05-31 17:00:00.', 'System', NULL),
+	('admin', '2026-06-18 14:56:05', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:56:31', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-06-01 17:00:00.', 'System', NULL),
+	('admin', '2026-06-18 14:56:31', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:56:45', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-05-31 17:00:00.', 'System', NULL),
+	('admin', '2026-06-18 14:56:45', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 14:58:27', 'Updated timeclock shift', '127.0.0.1', 'Shift #16 had its time_out updated to 2026-06-07 12:39:00.', 'System', NULL),
+	('admin', '2026-06-18 14:58:27', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 15:00:16', 'Updated timeclock shift', '127.0.0.1', 'Shift #16 had its time_out updated to 2026-06-07 12:39:00.', 'System', NULL),
+	('admin', '2026-06-18 15:00:16', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 15:00:26', 'Updated timeclock shift', '127.0.0.1', 'Shift #4 had its time_out updated to 2026-05-13 08:08:00.', 'System', NULL),
+	('admin', '2026-06-18 15:00:26', 'Updated timeclock shift', '127.0.0.1', 'admin', 'System', NULL),
+	('admin', '2026-06-18 15:21:59', 'Updated timeclock shift', '127.0.0.1', 'Shift #1 had its time_out updated to 2026-05-12 10:32:00.', 'System', NULL),
+	('admin', '2026-06-18 15:21:59', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 1 field time_out to value: 2026-05-12 10:32:00', 'System', NULL),
+	('admin', '2026-06-18 15:22:05', 'Updated timeclock shift', '127.0.0.1', 'Shift #1 had its time_out updated to 2026-05-12 07:32:00.', 'System', NULL),
+	('admin', '2026-06-18 15:22:05', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 1 field time_out to value: 2026-05-12 07:32:00', 'System', NULL),
+	('admin', '2026-06-18 15:22:17', 'Updated timeclock shift', '127.0.0.1', 'Shift #15 had its time_out updated to 2026-05-29 14:00:00.', 'System', NULL),
+	('admin', '2026-06-18 15:22:17', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 15 field time_out to value: 2026-05-29 14:00:00', 'System', NULL),
+	('admin', '2026-06-18 15:22:28', 'Updated timeclock shift', '127.0.0.1', 'Shift #16 had its time_out updated to 2026-06-02 12:39:00.', 'System', NULL),
+	('admin', '2026-06-18 15:22:28', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 16 field time_out to value: 2026-06-02 12:39:00', 'System', NULL),
+	('admin', '2026-06-18 15:24:11', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-26 00:39:00.', 'System', NULL),
+	('admin', '2026-06-18 15:24:11', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 10 field time_out to value: 2026-05-26 00:39:00', 'System', NULL),
+	('admin', '2026-06-18 15:24:18', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its time_out updated to 2026-05-28 00:39:00.', 'System', NULL),
+	('admin', '2026-06-18 15:24:18', 'Updated timeclock shift', '127.0.0.1', 'admin updated shift ID 10 field time_out to value: 2026-05-28 00:39:00', 'System', NULL),
+	('admin', '2026-06-18 16:48:30', 'Phone number updated', '127.0.0.1', 'Artist updated their phone settings.', 'System', NULL),
+	('admin', '2026-06-18 16:49:12', 'Client notification sent', '127.0.0.1', 'Admin sent notification about \'garfina2.jpg\' to client \'client\' (project: Set Sail)', 'System', NULL),
+	('admin', '2026-06-18 17:14:31', 'Client notification sent', '127.0.0.1', 'Admin sent notification about \'garfina2.jpg\' to client \'client\' (project: Set Sail)', 'System', NULL),
+	('admin', '2026-06-18 17:25:58', 'Client notification sent', '127.0.0.1', 'Admin sent notification about \'garfina2.jpg\' to client \'client\' (project: Set Sail)', 'System', NULL);
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -311,7 +380,7 @@ CREATE TABLE IF NOT EXISTS `projects` (
 
 -- Dumping data for table simeckdb.projects: ~3 rows (approximately)
 INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`, `leader`, `size_on_disk`) VALUES
-	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 300173009),
+	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 300768245),
 	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.', 'admin', 19541129),
 	('P01', 'C City', 1, '/files/Projects/internal/P01_C City', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.', 'admin', 1345373);
 
@@ -324,24 +393,24 @@ CREATE TABLE IF NOT EXISTS `timeclockshifts` (
   KEY `shift_id` (`shift_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.timeclockshifts: ~15 rows (approximately)
+-- Dumping data for table simeckdb.timeclockshifts: ~16 rows (approximately)
 INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`) VALUES
-	('artist', 4, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
-	('admin', 2, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
+	('artist', 4, '2026-05-11 19:10:06', '2026-05-13 08:08:00'),
+	('admin', 2, '2026-05-11 21:10:00', '2026-05-12 08:08:02'),
 	('admin', 3, '2026-05-11 19:10:06', '2026-05-12 08:08:02'),
-	('artist', 1, '2026-05-11 19:10:06', '2026-05-12 13:32:30'),
+	('artist', 1, '2026-05-11 19:10:06', '2026-05-12 07:32:00'),
 	('admin', 5, '2026-05-11 19:10:06', '2026-05-12 13:48:03'),
 	('admin', 8, '2026-05-12 14:36:21', '2026-05-12 14:44:00'),
 	('admin', 9, '2026-05-26 13:59:36', '2026-05-26 13:59:39'),
-	('admin', 10, '2026-05-28 12:30:41', '2026-05-28 12:39:43'),
+	('admin', 10, '2026-05-28 12:30:41', '2026-05-28 00:39:00'),
 	('admin', 11, '2026-05-28 12:39:50', '2026-05-28 12:39:56'),
 	('admin', 12, '2026-05-28 12:39:57', '2026-05-28 12:47:36'),
 	('admin', 13, '2026-05-28 12:47:44', '2026-05-28 12:49:33'),
 	('admin', 14, '2026-05-28 12:49:35', '2026-05-28 14:59:06'),
-	('admin', 15, '2026-05-28 12:59:09', '2026-06-01 17:00:17'),
-	('admin', 16, '2026-06-01 14:53:31', '2026-06-10 12:39:38'),
-	('admin', 17, '2026-06-10 12:40:02', '2026-06-10 12:40:04'),
-	('admin', 19, '2026-06-10 12:52:51', '2026-06-10 12:52:54');
+	('admin', 15, '2026-05-28 12:59:09', '2026-05-29 14:00:00'),
+	('admin', 16, '2026-06-01 14:53:31', '2026-06-02 12:39:00'),
+	('admin', 17, '2026-06-10 12:40:02', '2026-06-10 12:40:00'),
+	('admin', 19, '2026-06-10 11:52:00', '2026-06-12 12:53:54');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

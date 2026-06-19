@@ -1,4 +1,21 @@
 <?php
+$cookieParams = [
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+    'httponly' => true,
+    'samesite' => 'Lax'
+];
+session_set_cookie_params($cookieParams);
+
+if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] !== 'on') {
+    $redirect = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    header('Location: ' . $redirect);
+    exit;
+}
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
 session_start();
 //
 //libraries/session.php - Session helpers for Simeck Entertainment's Dropbox.
@@ -7,7 +24,7 @@ session_start();
 if(!defined('__ROOT__')) {
     define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 }
-
+include_once __ROOT__ . '/libraries/encryptlib.php';
 function PutArtistDataInSession($artistData){
     $_SESSION['username'] = $artistData['username'];
     $_SESSION['firstname'] = $artistData['firstname'];
@@ -21,8 +38,8 @@ function PutArtistDataInSession($artistData){
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
     $_SESSION['availability_this_week'] = $artistData['availability_this_week'] ?? '0|0|0|0|0|0|0'; 
     $_SESSION['nickname'] = $artistData['nickname'] ?? '';
-    $_SESSION['phone_country_code'] = $artistData['phone_country_code'] ?? 1;
-    $_SESSION['phone_number'] = $artistData['phone_number'] ?? null;
+    $_SESSION['phone_country_code'] = decryptImportantData($artistData['phone_country_code'] ?? 1);
+    $_SESSION['phone_number'] = decryptImportantData($artistData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $artistData['receive_texts'] ?? 0;
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
@@ -40,8 +57,8 @@ function PutClientDataInSession($clientData){
     $_SESSION['role'] = 'client';
     $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['theme'] = $clientData['theme'] ?? 'dark-boo';
-    $_SESSION['phone_country_code'] = $clientData['phone_country_code'] ?? '+1';
-    $_SESSION['phone_number'] = $clientData['phone_number'] ?? null;
+    $_SESSION['phone_country_code'] = decryptImportantData($clientData['phone_country_code'] ?? '+1');
+    $_SESSION['phone_number'] = decryptImportantData($clientData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $clientData['receive_texts'] ?? 0;
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
@@ -119,8 +136,8 @@ function ImpersonateArtist($artistData){
     $_SESSION['userID']    = $artistData['userID'];
     $_SESSION['secondary-roles'] = $artistData['secondary_roles'];
     $_SESSION['availability'] = $artistData['availability'] ?? '0|0|0|0|0|0|0';
-    $_SESSION['phone_country_code'] = $artistData['phone_country_code'] ?? 1;
-    $_SESSION['phone_number'] = $artistData['phone_number'] ?? null;
+    $_SESSION['phone_country_code'] = decryptImportantData($artistData['phone_country_code'] ?? 1);
+    $_SESSION['phone_number'] = decryptImportantData($artistData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $artistData['receive_texts'] ?? 0;
     $_SESSION['impersonating'] = true;
     
@@ -149,8 +166,8 @@ function ImpersonateClient($clientData){
     $_SESSION['point_of_contact'] = $clientData['point_of_contact'];
     $_SESSION['lock_overrides'] = $clientData['lock_overrides'];
     $_SESSION['availability'] = $clientData['availability'] ?? '0|0|0|0|0|0|0';
-    $_SESSION['phone_country_code'] = $clientData['phone_country_code'] ?? '+1';
-    $_SESSION['phone_number'] = $clientData['phone_number'] ?? null;
+    $_SESSION['phone_country_code'] = decryptImportantData($clientData['phone_country_code'] ?? '+1');
+    $_SESSION['phone_number'] = decryptImportantData($clientData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $clientData['receive_texts'] ?? 0;
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
