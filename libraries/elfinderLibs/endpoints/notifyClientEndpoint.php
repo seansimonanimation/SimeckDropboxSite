@@ -11,15 +11,7 @@ require_once __DIR__ . '/../../session.php';
 require_once __ROOT__ . '/libraries/floatingIslandLib.php';
 require_once __ROOT__ . '/libraries/db.php';
 require_once __ROOT__ . '/libraries/logging.php';
-require_once __ROOT__ . '/download.php';
 require_once __ROOT__ . '/vendor/autoload.php';
-
-// Load dbconfig for Twilio constants (same pattern as download.php)
-if (file_exists('/var/www/dbconfig.php')) {
-    include_once '/var/www/dbconfig.php';
-} elseif (file_exists(__ROOT__ . '/dbconfig.php')) {
-    include_once __ROOT__ . '/dbconfig.php';
-}
 
 use Twilio\Rest\Client;
 
@@ -30,7 +22,6 @@ $sendFilepath = trim($_POST['filepath'] ?? '');
 if (!empty($sendFilepath) && !empty($sendMessage)) {
     header('Content-Type: application/json');
 
-    // Auth check
     if (empty($_SESSION['username']) || $_SESSION['tempRole'] !== 'artist') {
         http_response_code(401);
         echo json_encode(['success' => false, 'error' => 'Not authenticated as artist.']);
@@ -38,16 +29,14 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
     }
 
     $senderName = $_SESSION['firstname'] ?? $_SESSION['username'];
-
-    // Resolve absolute path
     $absPath = __ROOT__ . $sendFilepath;
+
     if (!file_exists($absPath)) {
         http_response_code(404);
         echo json_encode(['success' => false, 'error' => 'File not found on server.']);
         exit;
     }
 
-    // Extract project folder from path
     if (!preg_match('#clientProjects/([^/]+)#', $sendFilepath, $matches)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'error' => 'File is not inside a client project.']);
@@ -55,8 +44,16 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
     }
     $projectFolder = $matches[1];
 
-    // Look up project leader (client username)
-    $pdo = DBConnect();
+    // --- DB queries (before download.php to avoid dbconfig ordering issues) ---
+    try {
+        $pdo = DBConnect();
+    } catch (Exception $e) {
+        error_log('notifyClientEndpoint: DBConnect failed: ' . $e->getMessage());
+        http_response_code(502);
+        echo json_encode(['success' => false, 'error' => 'Database connection failed.']);
+        exit;
+    }
+
     $stmt = $pdo->prepare("SELECT leader, project_name FROM projects WHERE active_path LIKE ?");
     $stmt->execute(['%/clientProjects/' . $projectFolder]);
     $project = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -68,39 +65,27 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
     }
 
     $clientUsername = $project['leader'];
-    $projectName    = $project['project_name'];
+    $projectName = $project['project_name'];
 
-    // Look up client's phone number
     $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM clients WHERE username = ? AND active = 1");
     $stmt->execute([$clientUsername]);
     $client = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$client) {
-        http_response_code(404);
-        echo json_encode(['success' => false, 'error' => 'Client not found.']);
-        exit;
-    }
-
-    if (empty($client['phone_number']) || (int)$client['receive_texts'] !== 1) {
+    if (!$client || empty($client['phone_number']) || (int)$client['receive_texts'] !== 1) {
         http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'error'   => 'Client has no phone number or has opted out of texts.'
-        ]);
+        echo json_encode(['success' => false, 'error' => 'Client has no phone or has opted out.']);
         exit;
     }
 
-    // Format phone number
-    $countryCode = $client['phone_country_code'] ?? '1';
-    $phoneNumber = $client['phone_number'];
-    $to = '+' . $countryCode . $phoneNumber;
+    $to = '+' . ($client['phone_country_code'] ?? '1') . $client['phone_number'];
 
-    // Generate signed download link (thumbnail mode)
+    // --- Now load download.php (which includes dbconfig.php) ---
+    require_once __ROOT__ . '/download.php';
+
     $downloadToken = GenerateElfinderDownloadToken($absPath);
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
     $fileLink = $baseUrl . '/download.php?download=' . urlencode($downloadToken) . '&thumb=1';
-
-    // Build SMS body
+    
     $fileName = basename($absPath);
     $smsBody = "New file from {$senderName}: {$sendMessage} - {$fileLink}";
 
@@ -111,12 +96,12 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
             'body' => $smsBody,
         ]);
     } catch (Exception $e) {
+        error_log('notifyClientEndpoint: Twilio send failed: ' . $e->getMessage());
         http_response_code(502);
-        echo json_encode(['success' => false, 'error' => 'Failed to send SMS: ' . $e->getMessage()]);
+        echo json_encode(['success' => false, 'error' => 'SMS send failed.']);
         exit;
     }
 
-    // Log the action
     LogSimeckAction(
         'Client notification sent',
         "{$senderName} sent notification about '{$fileName}' to client '{$clientUsername}' (project: {$projectName})",
@@ -128,6 +113,8 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
 }
 
 // ─── Mode 2: Render floating island (no message sent yet) ──────────────
+require_once __ROOT__ . '/download.php';
+
 $filepath = $_POST['filepath'] ?? $_GET['filepath'] ?? '';
 if (empty($filepath)) {
     echo SpawnFloatingIsland('<p>No file selected.</p>', 'Notify Client');
@@ -140,14 +127,12 @@ if (!file_exists($absPath)) {
     exit;
 }
 
-// Generate thumbnail preview token
 $thumbToken = GenerateElfinderDownloadToken($absPath);
 $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
 $thumbUrl = $baseUrl . '/download.php?download=' . urlencode($thumbToken) . '&thumb=1';
 
 $fileName = htmlspecialchars(basename($absPath), ENT_QUOTES, 'UTF-8');
 $safeFilepath = htmlspecialchars($filepath, ENT_QUOTES, 'UTF-8');
-
 $uid = 'fi-notify-' . md5(uniqid('', true));
 
 $bodyHtml = <<<HTML
@@ -157,36 +142,27 @@ $bodyHtml = <<<HTML
          onerror="this.style.display='none'">
 </div>
 <p style="margin:0 0 4px;font-weight:600;color:var(--color-heading);">File: {$fileName}</p>
-
-<label style="display:block;margin:12px 0 4px;font-weight:600;color:var(--color-heading);">
-    Message to Client:
-</label>
+<label style="display:block;margin:12px 0 4px;font-weight:600;color:var(--color-heading);">Message to Client:</label>
 <textarea id="{$uid}-message"
     style="width:100%;height:80px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"
     placeholder="Type a message for the client…"></textarea>
-
 <input type="hidden" id="{$uid}-filepath" value="{$safeFilepath}">
-
 <button id="{$uid}-send" style="margin-top:12px;">Send Notification</button>
 <div id="{$uid}-status" style="margin-top:10px;"></div>
 HTML;
 
-// The JS posts back to THIS same file
 $js = <<<JS
 <script>
 (function() {
     var btn = document.getElementById('{$uid}-send');
     if (!btn) return;
-
     btn.addEventListener('click', function() {
         var message = document.getElementById('{$uid}-message').value.trim();
         if (!message) { alert('Please enter a message.'); return; }
-
         var filepath = document.getElementById('{$uid}-filepath').value;
         var statusDiv = document.getElementById('{$uid}-status');
         statusDiv.innerHTML = '<p style="color:var(--color-text-muted);">Sending…</p>';
         btn.disabled = true;
-
         fetch('libraries/elfinderLibs/endpoints/notifyClientEndpoint.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
