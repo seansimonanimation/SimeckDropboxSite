@@ -98,9 +98,11 @@ foreach ($hashes as $hash) {
     }
     
     // Generate the signed token and build URL
-    $token = GenerateElfinderDownloadToken($decodedPath);
+    $mode = ($_SESSION['tempRole'] === 'client') ? 'clientPreview' : 'internal';
+    $token = GenerateElfinderDownloadToken($decodedPath, $mode);
     $downloadUrls[] = $baseUrl . '/download.php?download=' . urlencode($token);
 }
+
 
 echo json_encode([
     'success' => count($downloadUrls) > 0,

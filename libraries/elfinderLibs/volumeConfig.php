@@ -195,8 +195,9 @@ function getClientFileBrowserOptions(){
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
             'accessControl' => 'access',
             'dotFiles' => false,
-                'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+            'tmbPath' => __ROOT__ . '/files/.tmb',
+            'tmbURL' => '/files/.tmb/',
+            'clientMode' => true,
         );
     }
 

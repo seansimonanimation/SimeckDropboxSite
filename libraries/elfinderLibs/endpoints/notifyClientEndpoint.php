@@ -94,19 +94,23 @@ if (!empty($sendFilepath) && !empty($sendMessage)) {
     // --- Now load download.php (which includes dbconfig.php) ---
     require_once __ROOT__ . '/download.php';
 
-    $downloadToken = GenerateElfinderDownloadToken($absPath);
+    $watermarkToken = GenerateElfinderDownloadToken($absPath, 'clientPreview');
+    $deliverableToken = GenerateElfinderDownloadToken($absPath, 'deliverable');
     $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
-    $fileLink = $baseUrl . '/download.php?download=' . urlencode($downloadToken) . '&thumb=1';
-    
+    $watermarkUrl = $baseUrl . '/download.php?download=' . urlencode($watermarkToken);
+    $deliverableUrl = $baseUrl . '/download.php?download=' . urlencode($deliverableToken);
+
     $fileName = basename($absPath);
-    $smsBody = "New file from {$senderName}: {$sendMessage} - {$fileLink}";
+    $smsBody = "New file from {$senderName}: {$sendMessage} - {$deliverableUrl}";
 
     try {
         $twilio = new Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
         $twilioMessage = $twilio->messages->create($to, [
             'from' => TWILIO_FROM_NUMBER,
             'body' => $smsBody,
+            'mediaUrl' => [$watermarkUrl],
         ]);
+
     } catch (Exception $e) {
         error_log('notifyClientEndpoint: Twilio send failed: ' . $e->getMessage());
         http_response_code(502);
@@ -139,9 +143,9 @@ if (!file_exists($absPath)) {
     exit;
 }
 
-$thumbToken = GenerateElfinderDownloadToken($absPath);
+$thumbToken = GenerateElfinderDownloadToken($absPath, 'clientPreview');
 $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'];
-$thumbUrl = $baseUrl . '/download.php?download=' . urlencode($thumbToken) . '&thumb=1';
+$thumbUrl = $baseUrl . '/download.php?download=' . urlencode($thumbToken);
 
 $fileName = htmlspecialchars(basename($absPath), ENT_QUOTES, 'UTF-8');
 $safeFilepath = htmlspecialchars($filepath, ENT_QUOTES, 'UTF-8');

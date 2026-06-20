@@ -118,7 +118,7 @@ function updatePreviewPane(fm) {
     // 3. Preview image/icon
     html += '<div class="preview-visual' + (isImage ? '' : ' preview-visual--icon') + '">';
     if (isImage) {
-        html += '  <img src="' + fm.escape(fileUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '">';
+        html += '  <img src="' + fm.escape(fileUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '" data-needs-watermark="1">';
     } else if (f.mime && f.mime.indexOf('video') === 0) {
         html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(fileUrl) + '"></video>';
     } else if (isTextFile) {
@@ -178,7 +178,11 @@ function updatePreviewPane(fm) {
     html += '</div>';
     
     $content.html(html);
-    
+    // Apply watermarked URL for clients
+    if (isImage) {
+        applyWatermarkedUrl(fm, f.hash, '.preview-image[data-needs-watermark="1"]');
+    }
+
     // Load comments
     loadPreviewComments(fileUrl, commentLocked);
     
@@ -278,6 +282,8 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
                 e.stopPropagation();
             });
         }
+    });
+}
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
@@ -291,6 +297,27 @@ function copyDirectLink(fm, file) {
             fm.notify({ type: 'error', msg: response.error || 'Failed to generate link.' });
         }
     }, 'json');
+}
+/**
+ * Replace an image's src with a watermarked download URL for clients.
+ * Non-clients are unaffected.
+ */
+function applyWatermarkedUrl(fm, hash, imgSelector, callback) {
+    var role = window.simeckSession.tempRole || '';
+    if (role !== 'client') {
+        if (callback) callback();
+        return;
+    }
+    $.post('/libraries/elfinderLibs/endpoints/getElfinderDownloadLinksEndpoint.php', {
+        hashes: [hash]
+    }, function(response) {
+        if (response.success && response.urls.length > 0) {
+            $(imgSelector).attr('src', response.urls[0]);
+        }
+        if (callback) callback();
+    }, 'json').fail(function() {
+        if (callback) callback();
+    });
 }
 
 function copyFolderLink(fm, file) {
@@ -345,7 +372,8 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         var modelContainerId = 'model-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
         contentHtml = '<div id="' + modelContainerId + '" style="width:100%;height:100%;position:relative;background:#1a1a1a;overflow:hidden;"></div>';
     } else if (isImage) {
-        contentHtml = '<img src="' + fm.escape(fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
+        var islandImgId = 'pi-img-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
+        contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;" data-needs-watermark="1">';
     } else if (file.mime && file.mime.indexOf('video') === 0) {
         contentHtml = '<video controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000;">';
         contentHtml += '  <source src="' + fm.escape(fileUrl) + '" type="' + fm.escape(file.mime) + '">';
@@ -427,6 +455,11 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
     islandHtml += '</div>';
     
     $('body').append(islandHtml);
+    // Apply watermarked URL for clients in floating island
+    if (isImage) {
+        applyWatermarkedUrl(fm, file.hash, '#' + islandImgId);
+    }
+
     // ─── If it's a 3D model, initialize the viewer ───────────────────
     if (is3DModel) {
         var container = document.getElementById(modelContainerId);
