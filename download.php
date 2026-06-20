@@ -26,8 +26,9 @@ if (file_exists('/var/www/dbconfig.php')) {
     include_once '/var/www/dbconfig.php';
 } elseif (file_exists(__ROOT__ . '/dbconfig.php')) {
     include_once __ROOT__ . '/dbconfig.php';
+} elseif (file_exists(__ROOT__ . '/../dbconfig.php')) {
+    include_once __ROOT__ . '/../dbconfig.php';
 }
-
 if (isset($_GET['download'])) {
     InitiateDownload($_GET['download']);
 }
@@ -270,19 +271,23 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
                 $imgH = imagesy($srcImage);
                 $logoW = imagesx($logoImg);
                 $logoH = imagesy($logoImg);
-                
-                // Create transparent overlay canvas
+
+                // Scale logo to 60% of image width, maintaining aspect ratio
+                $scaleLogo = min(0.6 * $imgW / $logoW, 0.6 * $imgH / $logoH, 1);
+                $newLogoW = (int)round($logoW * $scaleLogo);
+                $newLogoH = (int)round($logoH * $scaleLogo);
+
                 $overlay = imagecreatetruecolor($imgW, $imgH);
                 imagefill($overlay, 0, 0, imagecolorallocatealpha($overlay, 0, 0, 0, 127));
                 imagesavealpha($overlay, true);
-                
-                // Center the logo on the overlay
-                $destX = max(0, (int)(($imgW - $logoW) / 2));
-                $destY = max(0, (int)(($imgH - $logoH) / 2));
-                imagecopy($overlay, $logoImg, $destX, $destY, 0, 0, $logoW, $logoH);
+
+                $destX = (int)(($imgW - $newLogoW) / 2);
+                $destY = (int)(($imgH - $newLogoH) / 2);
+                imagecopyresampled($overlay, $logoImg, $destX, $destY, 0, 0, $newLogoW, $newLogoH, $logoW, $logoH);
+
                 
                 // Merge overlay onto source at 20% opacity
-                imagecopymerge($srcImage, $overlay, 0, 0, 0, 0, $imgW, $imgH, 20);
+                imagecopymerge($srcImage, $overlay, 0, 0, 0, 0, $imgW, $imgH, 15);
                 
                 imagedestroy($overlay);
                 imagedestroy($logoImg);
