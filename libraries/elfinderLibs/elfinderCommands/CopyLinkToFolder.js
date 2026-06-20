@@ -8,7 +8,7 @@
  * For multiple files from different parent folders, generates separate links.
  *
  * @commandID CopyLinkToFolder
- * @nicename Copy Link to This Folder
+ * @nicename Copy Permalinks///Folder
  * @role artist
  * @loc cwd, files
  * @order 5

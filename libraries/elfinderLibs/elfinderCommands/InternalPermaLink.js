@@ -5,7 +5,7 @@
  * full resolution, no watermark. Copies the URL to clipboard.
  *
  * @commandID InternalPermalink
- * @nicename Copy Internal Permalink
+ * @nicename Copy Permalinks///Internal
  * @role artist
  * @availableToHigherRoles true
  * @loc files

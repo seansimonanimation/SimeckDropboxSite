@@ -5,7 +5,7 @@
  * thumbnail of the selected file. Copies the URL to clipboard.
  *
  * @commandID ThumbnailShortlinkToClipboard
- * @nicename Copy Thumbnail Shortlink
+ * @nicename Copy Shortlinks///Thumbnail
  * @role artist
  * @availableToHigherRoles true
  * @loc files

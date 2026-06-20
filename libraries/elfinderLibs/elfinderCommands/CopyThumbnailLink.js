@@ -5,7 +5,7 @@
  * then copies it to the clipboard.
  *
  * @commandID copyThumbnailLink
- * @nicename Copy Thumbnail Permalink
+ * @nicename Copy Permalinks///Thumbnail
  * @role admin
  * @loc files
  * @order 7

@@ -5,7 +5,7 @@
  * resolution, no watermark. Copies the URL to clipboard.
  *
  * @commandID InternalShortlinkToClipboard
- * @nicename Copy Internal Shortlink
+ * @nicename Copy Shortlinks///Internal
  * @role artist
  * @availableToHigherRoles true
  * @loc files

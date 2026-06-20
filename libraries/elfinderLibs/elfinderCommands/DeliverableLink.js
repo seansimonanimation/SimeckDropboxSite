@@ -9,11 +9,11 @@
  * The server enforces the deliverable flag regardless.
  *
  * @commandID DeliverableLink
- * @nicename Copy Deliverable Permalink
+ * @nicename Copy Permalinks///Deliverable
  * @role client
  * @availableToHigherRoles true
  * @loc files
- * @order 8
+ * @order 9
  * @contextMenuDividers none
  */
 //

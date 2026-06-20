@@ -5,7 +5,7 @@
  * preview of the selected file. Copies the URL to clipboard.
  *
  * @commandID CopyWatermarkedShortLink
- * @nicename Copy Watermarked Shortlink
+ * @nicename Copy Shortlinks///Watermarked
  * @role client
  * @availableToHigherRoles true
  * @loc files

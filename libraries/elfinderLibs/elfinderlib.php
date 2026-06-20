@@ -195,6 +195,7 @@ function OutputElfinderCommandsMeta() {
         $content = file_get_contents($file->getPathname());
         
         preg_match('/@commandID\s+(\w+)/', $content, $cmdId);
+        preg_match('/@nicename\s+(.+)/', $content, $niceName);
         preg_match('/@role\s+(\w+)/', $content, $role);
         preg_match('/@loc\s+(.+)/', $content, $loc);
         preg_match('/@order\s+(\d+)/', $content, $order);
@@ -209,6 +210,7 @@ function OutputElfinderCommandsMeta() {
         
         $metaArray[] = array(
             'commandID'               => trim($cmdId[1]),
+            'nicename'                => trim($niceName[1] ?? ''),
             'role'                    => trim($role[1] ?? 'client'),
             'loc'                     => $locArray,
             'order'                   => (int)($order[1] ?? 99),
