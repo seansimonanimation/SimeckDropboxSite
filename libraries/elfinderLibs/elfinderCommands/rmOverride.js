@@ -1,7 +1,8 @@
 /**
  * @commandID rm
  * @nicename Delete
- * @role client
+ * @role artist
+ * @availableToHigherRoles true
  * @loc files
  */
 //

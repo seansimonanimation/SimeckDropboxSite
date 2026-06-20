@@ -746,7 +746,10 @@ commands : ['*', ...CommandsList()],
 	 * @default null
 	 * @return void
 	 */
-	bootCallback : null,
+	bootCallback : function(fm) {
+    populateDeliverableCache(fm);
+},
+
 	
 	/**
 	 * Callback for "getfile" commands.
@@ -1394,12 +1397,18 @@ contextmenu : {
 // ===== DYNAMIC COMMAND HELPERS =====
 
 function CanUseCommand(cmd, role) {
-    if (cmd.role === 'client')     return true;
-    if (cmd.role === 'clientOnly') return role === 'client';
+    if (cmd.role === 'client') {
+        if (role === 'client') return true;
+        if (cmd.availableToHigherRoles && (role === 'artist' || role === 'admin')) return true;
+        return false;
+    }
+    if (cmd.role === 'clientOnly') return role === 'client'; //legacy role.
     if (cmd.role === 'artist')     return role === 'artist' || role === 'admin';
     if (cmd.role === 'admin')      return role === 'admin';
     return false;
 }
+
+
 
 function CommandsForMenu(menuName) {
     var role = (window.simeckSession && window.simeckSession.tempRole) || 'client';

@@ -113,3 +113,48 @@ function getSimeckLockFilePath(fm, hash) {
     relPath = normalizeSimeckFilePath(relPath);
     return '/files/Projects/' + relPath;
 }
+
+// ── PoC Requirement Check ─────────────────────────────────────────
+function hasPoCRequirementForHash(hash) {
+    var session = window.simeckSession;
+    if (!session || !session.projectLeaders) return false;
+
+    var path = decodeElfinderHash(hash);
+    if (!path) return false;
+
+    var match = path.match(/clientProjects\/([^\/]+)/);
+    if (!match) return false;
+
+    return session.projectLeaders[match[1]] ? true : false;
+}
+
+// ── Deliverable File Check ────────────────────────────────────────
+function isDeliverableFile(hash, fm) {
+    if (!fm.cache || !fm.cache.lockedPaths) return false;
+
+    var relPath = fm.path(hash) || '';
+    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
+    var fileUrl = '/files/Projects/' + relPath;
+
+    if (fm.cache.lockedPaths[fileUrl]) {
+        return fm.cache.lockedPaths[fileUrl].deliverable ? true : false;
+    }
+    return false;
+}
+
+// ── Deliverable Cache Populator ───────────────────────────────────
+function populateDeliverableCache(fm) {
+    $.post('libraries/elfinderLibs/endpoints/GetLockedfilesInProjectEndpoint.php', {}, function(response) {
+        if (!response.success || !response.lockedFiles) return;
+        if (!fm.cache) fm.cache = {};
+        fm.cache.lockedPaths = {};
+        response.lockedFiles.forEach(function(lock) {
+            var normalizedPath = normalizeSimeckFilePath(lock.filepath);
+            fm.cache.lockedPaths[normalizedPath] = {
+                assetlock: lock.assetlock,
+                commentlock: lock.commentlock,
+                deliverable: lock.deliverable ? true : false
+            };
+        });
+    }, 'json');
+}

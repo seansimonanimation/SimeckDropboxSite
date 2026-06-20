@@ -52,6 +52,20 @@ function InitiateDownload($encodedData) {
     $parts = explode('|', $decoded);
     
     // ── V2 Detection: 2 parts = "elFinder|<encrypted_blob>" ─────────
+    // ── Shortlink Detection: decoded string is purely numeric ───────
+    if (count($parts) === 1 && ctype_digit($decoded)) {
+        require_once __ROOT__ . '/libraries/shortlinklib.php';
+        $result = ResolveShortlink($encodedData);
+        if (!$result['valid']) {
+            echo "This download has expired.";
+            return;
+        }
+        // Re-dispatch with the stored V2 token
+        InitiateDownload($result['download_token']);
+        return;
+    }
+    
+    // ── V2 Detection: 2 parts = "elFinder|<encrypted_blob>" ─────────
     if (count($parts) === 2 && $parts[0] === 'elFinder') {
         $encryptedBlob = $parts[1];
         $plaintext = decryptImportantData($encryptedBlob);

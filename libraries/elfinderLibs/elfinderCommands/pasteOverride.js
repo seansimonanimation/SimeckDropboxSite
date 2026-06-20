@@ -7,7 +7,8 @@
  *    so comments and locks travel with moved files/directories.
  * @commandID paste
  * @nicename Paste
- * @role client
+ * @role artist
+ * @availableToHigherRoles true
  * @loc files
  */
 (function() {
