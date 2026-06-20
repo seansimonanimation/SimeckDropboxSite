@@ -34,12 +34,14 @@ function populateLockCache(fm) {
             var normalizedPath = normalizeSimeckFilePath(lock.filepath);
             fm.cache.lockedPaths[normalizedPath] = {
                 assetlock: lock.assetlock,
-                commentlock: lock.commentlock
+                commentlock: lock.commentlock,
+                deliverable: lock.deliverable == 1
             };
         });
         refreshLockOverrides(fm);
     }, 'json');
 }
+
 
 function normalizeSimeckFilePath(path) {
     if (!path) return '';
@@ -125,19 +127,19 @@ function hasPoCRequirementForHash(hash) {
     var match = path.match(/clientProjects\/([^\/]+)/);
     if (!match) return false;
 
-    return session.projectLeaders[match[1]] ? true : false;
+    return session.projectLeaders[match[1]];
 }
 
 // ── Deliverable File Check ────────────────────────────────────────
 function isDeliverableFile(hash, fm) {
     if (!fm.cache || !fm.cache.lockedPaths) return false;
 
-    var relPath = fm.path(hash) || '';
+    var relPath = decodeElfinderHash(hash);
     relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
     var fileUrl = '/files/Projects/' + relPath;
 
     if (fm.cache.lockedPaths[fileUrl]) {
-        return fm.cache.lockedPaths[fileUrl].deliverable ? true : false;
+        return fm.cache.lockedPaths[fileUrl].deliverable;
     }
     return false;
 }
@@ -153,7 +155,7 @@ function populateDeliverableCache(fm) {
             fm.cache.lockedPaths[normalizedPath] = {
                 assetlock: lock.assetlock,
                 commentlock: lock.commentlock,
-                deliverable: lock.deliverable ? true : false
+                deliverable: lock.deliverable == 1
             };
         });
     }, 'json');

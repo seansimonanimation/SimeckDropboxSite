@@ -28,13 +28,16 @@ elFinder.prototype.commands.MakeFileDeliverable = function() {
         }).fail(function() { fm.notify({ type: 'error', msg: 'Server request failed.' }); dfrd.reject(); });
         return dfrd.promise();
     };
+
 this.getstate = function() {
     var fm = this.fm, sel = fm.selectedFiles();
     if (sel.length !== 1) return -1;
-    if (fm.role === 'admin') return 0;
+    if (isDeliverableFile(sel[0].hash, fm)) return -1;
+    
     var decodedPath = decodeElfinderHash(sel[0].hash);
     var projectFolder = decodedPath && decodedPath.match(/^clientProjects\/([^\/]+)/);
     if (!projectFolder) return -1;
+    if (fm.role === 'admin') return 0;
     var session = window.simeckSession;
     var isLeader = session.projectLeaders && session.projectLeaders[projectFolder[1]];
     return isLeader ? 0 : -1;
