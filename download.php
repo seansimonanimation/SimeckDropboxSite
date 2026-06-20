@@ -1,22 +1,25 @@
 <?php
 /**
- * download.php
+ * download.php - Unified download handler with V1/V2 token support
  * 
- * Unified download handler. Supports two token formats:
- *   1. Legacy DB documents:  "username|uploadID" (base64-encoded)
- *   2. elFinder filepath:    "elFinder|filepath|hmac_signature" (base64-encoded)
+ * Token format detection:
+ *   V2 (encrypted): base64_decode -> 2 pipe parts (elFinder|<encrypted>)
+ *   V1 (legacy):    base64_decode -> 3 pipe parts (elFinder|filepath|hmac)
+ *   Legacy DB:      base64_decode -> 3 pipe parts (username|docID|hmac)
  * 
- * The HMAC signature is computed over the filepath using DOWNLOAD_SECRET.
+ * V2 modes:
+ *   internal      - Full resolution, no watermark (artists/admins)
+ *   clientPreview - 800px max, watermarked (client elFinder previews)
+ *   thumbnail     - elFinder .tmb cached thumbnail
+ *   deliverable   - Full resolution, no watermark (client "download full" links)
  * 
- * Legacy flow: Looks up artistdocuments/clientdocuments table by uploadID, verifies ownership.
- * elFinder flow: Decodes hash, verifies HMAC + volume access, serves file directly.
- * 
- * Thumbnail mode: Add ?thumb=1 to serve the cached thumbnail from /files/.tmb/
- * instead of the original file. Only works for elFinder filepath tokens.
+ * Watermark: /globalSiteAssets/simeck-logo.png at 20% opacity
+ * Cached in: /files/.watermarked/ (JPEG, auto-invalidates on file change)
  */
 
 include_once __DIR__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
+require_once __ROOT__ . '/libraries/tokenlib.php';
 
 // Look for the secret in the Docker config location; fall back to a local config
 if (file_exists('/var/www/dbconfig.php')) {
@@ -29,41 +32,14 @@ if (isset($_GET['download'])) {
     InitiateDownload($_GET['download']);
 }
 
-// ─── Token Generation ──────────────────────────────────────────────
-
-/**
- * Generate a signed download token for an elFinder filepath.
- * 
- * @param string $filepath Real server filesystem path to the file
- * @return string          Base64-encoded token (safe for URL query params)
- */
-function GenerateElfinderDownloadToken($filepath) {
-    $secret = defined('DOWNLOAD_SECRET') ? DOWNLOAD_SECRET : 'fallback_dev_secret_change_me';
-    $signature = hash_hmac('sha256', $filepath, $secret);
-    $tokenData = 'elFinder|' . $filepath . '|' . $signature;
-    return base64_encode($tokenData);
-}
-
-/**
- * Legacy: Generate download token for a DB-recorded document.
- * Preserved for backward compat with artistManagement, clientManagement, timeclock.
- * 
- * @param string $username The document owner's username
- * @param string $docID    The uploadID from the DB table
- * @return string          Base64-encoded token (safe for URL query params)
- */
-function Generateb64EncodedDownloadLink($username, $docID){
-    $secret = defined('DOWNLOAD_SECRET') ? DOWNLOAD_SECRET : 'fallback_dev_secret_change_me';
-    $signature = hash_hmac('sha256', $docID, $secret);
-    $tokenData = $username . '|' . $docID . '|' . $signature;
-    return base64_encode($tokenData);
-}
+// ─── Token Generation (see libraries/tokenlib.php) ──────────────────
+//   GenerateElfinderDownloadToken()  → V2 elFinder token
+//   Generateb64EncodedDownloadLink() → V1 legacy DB document token
 
 // ─── Token Dispatch ────────────────────────────────────────────────
 
 /**
- * Main dispatch: decides based on the embedded username whether it's a
- * legacy DB download or an elFinder filepath download.
+ * Main dispatch: detects token version (V1 vs V2) and routes accordingly.
  */
 function InitiateDownload($encodedData) {
     $decoded = base64_decode($encodedData, true);
@@ -74,43 +50,60 @@ function InitiateDownload($encodedData) {
 
     $parts = explode('|', $decoded);
     
-    // Token must have 3 parts:  username | filepath/docID | signature
-    if (count($parts) < 3) {
-        echo "Invalid download token format.";
-        return;
-    }
-
-    $username = $parts[0];
-    $identifier = $parts[1];  // docID or filepath
-    $providedSig = $parts[2];
-    
-    $secret = defined('DOWNLOAD_SECRET') ? DOWNLOAD_SECRET : 'fallback_dev_secret_change_me';
-    $expectedSig = hash_hmac('sha256', $identifier, $secret);
-    
-    if (!hash_equals($expectedSig, $providedSig)) {
-        echo "Invalid or tampered download token.";
-        return;
-    }
-
-    if ($username === 'elFinder') {
-        // ─── elFinder filepath download (or thumbnail) ────────────
-        ServeElfinderFile($identifier);
-    } else {
-        // ─── Legacy DB document download ───────────────────────────
-        $b64Legacy = base64_encode($username . '|' . $identifier);
-        if (DownloadPermissionCheck($b64Legacy)) {
-            ServeFileForDownload($username, $identifier);
-        } else {
-            echo "You do not have permission to download this file.";
+    // ── V2 Detection: 2 parts = "elFinder|<encrypted_blob>" ─────────
+    if (count($parts) === 2 && $parts[0] === 'elFinder') {
+        $encryptedBlob = $parts[1];
+        $plaintext = decryptImportantData($encryptedBlob);
+        if ($plaintext === false) {
+            echo "Invalid or tampered download token.";
+            return;
         }
+        $inner = explode('|', $plaintext);
+        if (count($inner) < 3) {
+            echo "Invalid download token format.";
+            return;
+        }
+        $author   = $inner[0];
+        $mode     = $inner[1];
+        $filepath = implode('|', array_slice($inner, 2));
+        ServeElfinderFile($filepath, $mode, $author);
+        return;
     }
+    
+    // ── V1 Detection: 3 parts ───────────────────────────────────────
+    if (count($parts) === 3) {
+        $first       = $parts[0];
+        $identifier  = $parts[1];
+        $providedSig = $parts[2];
+        
+        $secret = defined('DOWNLOAD_SECRET') ? DOWNLOAD_SECRET : 'fallback_dev_secret_change_me';
+        $expectedSig = hash_hmac('sha256', $identifier, $secret);
+        
+        if (!hash_equals($expectedSig, $providedSig)) {
+            echo "Invalid or tampered download token.";
+            return;
+        }
+        
+        if ($first === 'elFinder') {
+            // V1 elFinder filepath (backward compat -> 'internal' mode)
+            ServeElfinderFile($identifier, 'internal', 'legacy');
+        } else {
+            // Legacy DB document download
+            $b64Legacy = base64_encode($first . '|' . $identifier);
+            if (DownloadPermissionCheck($b64Legacy)) {
+                ServeFileForDownload($first, $identifier);
+            } else {
+                echo "You do not have permission to download this file.";
+            }
+        }
+        return;
+    }
+    
+    echo "Invalid download token format.";
 }
 
 // ─── Permission Checks ─────────────────────────────────────────────
 
-/**
- * Permission check for legacy DB downloads (unchanged from original).
- */
 function DownloadPermissionCheck($encodedData){
     $decodedData = base64_decode($encodedData);
     list($username, $filename) = explode('|', $decodedData);
@@ -121,9 +114,6 @@ function DownloadPermissionCheck($encodedData){
     }
 }
 
-/**
- * Permission check for legacy artist/client document access (unchanged).
- */
 function UserHasPermissionForArtistFile($username, $artistID){
     if ($_SESSION['role'] == 'admin') {
         return true;
@@ -134,15 +124,10 @@ function UserHasPermissionForArtistFile($username, $artistID){
     return false;
 }
 
-/**
- * Permission check for elFinder filepath downloads.
- * Verifies the file is within one of the accessible volume roots.
- */
 function UserHasAccessToElfinderPath($filepath) {
     $realFilepath = realpath($filepath);
     if ($realFilepath === false) return false;
     
-    // Normalize to forward slashes for comparison
     $realFilepath = str_replace('\\', '/', $realFilepath);
     $root = str_replace('\\', '/', __ROOT__);
     
@@ -151,7 +136,6 @@ function UserHasAccessToElfinderPath($filepath) {
         $root . '/files/Projects',
         $root . '/files/Resources',
         $root . '/files/Corporate',
-        // Client-specific paths will be checked separately via DB
     ];
     
     foreach ($allowedRoots as $volumeRoot) {
@@ -160,20 +144,15 @@ function UserHasAccessToElfinderPath($filepath) {
         }
     }
     
-    // Also check if this is a client project path by querying active_path
-    // (This catches clientUpload folders inside project dirs)
     return false;
 }
 
 // ─── File Serving ──────────────────────────────────────────────────
 
 /**
- * Serve a file directly from the filesystem (elFinder download path).
- * 
- * If ?thumb=1 (or ?thumbnail=1) is present, serves the cached thumbnail
- * from /files/.tmb/ instead of the original file.
+ * Route to the appropriate serving function based on mode.
  */
-function ServeElfinderFile($filepath) {
+function ServeElfinderFile($filepath, $mode = 'internal', $author = 'unknown') {
     if (!UserHasAccessToElfinderPath($filepath)) {
         echo "You do not have permission to access this file.";
         return;
@@ -185,34 +164,156 @@ function ServeElfinderFile($filepath) {
         return;
     }
 
-    // ── Thumbnail mode ──────────────────────────────────────────
-    $thumbMode = isset($_GET['thumb']) || isset($_GET['thumbnail']);
+    switch ($mode) {
+        case 'thumbnail':
+            ServeThumbnail($realPath);
+            break;
+        case 'clientPreview':
+            ServeWatermarkedImage($realPath, 800, $author);
+            break;
+        case 'internal':
+        case 'deliverable':
+        default:
+            ServeFullFile($realPath);
+            break;
+    }
+}
+
+/**
+ * Serve the elFinder cached thumbnail from /files/.tmb/
+ */
+function ServeThumbnail($realPath) {
+    $tmbName = md5($realPath) . filemtime($realPath) . '.png';
+    $tmbPath = __ROOT__ . '/files/.tmb/' . $tmbName;
     
-    if ($thumbMode) {
-        // Compute thumbnail name matching SimeckVolumeDriver::tmbname()
-        // Format: md5(realPath) . filemtime . '.png'
-        $tmbName = md5($realPath) . filemtime($realPath) . '.png';
-        $tmbPath = __ROOT__ . '/files/.tmb/' . $tmbName;
+    if (!file_exists($tmbPath)) {
+        http_response_code(404);
+        echo "Thumbnail not available.";
+        return;
+    }
+    
+    header('Content-Description: Thumbnail');
+    header('Content-Type: image/png');
+    header('Content-Disposition: inline; filename="' . $tmbName . '"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($tmbPath));
+    readfile($tmbPath);
+    exit;
+}
+
+/**
+ * Serve a watermarked version of an image.
+ * Resizes to max 800px on the longest side, overlays the Simeck logo at 20% opacity.
+ * Results are cached in /files/.watermarked/ as JPEG.
+ * Falls back to ServeFullFile() on any failure.
+ */
+function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknown') {
+    $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+    $imageTypes = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'];
+    
+    if (!in_array($ext, $imageTypes)) {
+        ServeFullFile($realPath);
+        return;
+    }
+    
+    // Ensure cache directory
+    $cacheDir = __ROOT__ . '/files/.watermarked/';
+    if (!is_dir($cacheDir)) {
+        if (!mkdir($cacheDir, 0777, true) && !is_dir($cacheDir)) {
+            ServeFullFile($realPath);
+            return;
+        }
+    }
+    
+    $cacheKey = md5($realPath . filemtime($realPath)) . '.jpg';
+    $cachePath = $cacheDir . $cacheKey;
+    
+    if (!file_exists($cachePath)) {
+        // Load source image via GD
+        $srcImage = null;
+        switch ($ext) {
+            case 'png':   $srcImage = @imagecreatefrompng($realPath); break;
+            case 'jpg':
+            case 'jpeg':  $srcImage = @imagecreatefromjpeg($realPath); break;
+            case 'gif':   $srcImage = @imagecreatefromgif($realPath); break;
+            case 'webp':  $srcImage = @imagecreatefromwebp($realPath); break;
+            case 'bmp':   $srcImage = @imagecreatefrombmp($realPath); break;
+        }
         
-        if (!file_exists($tmbPath)) {
-            http_response_code(404);
-            echo "Thumbnail not available.";
+        if (!$srcImage) {
+            ServeFullFile($realPath);
             return;
         }
         
-        header('Content-Description: Thumbnail');
-        header('Content-Type: image/png');
-        header('Content-Disposition: inline; filename="' . $tmbName . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($tmbPath));
-        readfile($tmbPath);
-        exit;
+        $origW = imagesx($srcImage);
+        $origH = imagesy($srcImage);
+        
+        // Resize to max 800px on the longest side
+        if ($origW > $maxDimension || $origH > $maxDimension) {
+            $ratio = min($maxDimension / $origW, $maxDimension / $origH);
+            $newW = (int)round($origW * $ratio);
+            $newH = (int)round($origH * $ratio);
+            $resized = imagecreatetruecolor($newW, $newH);
+            imagecopyresampled($resized, $srcImage, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+            imagedestroy($srcImage);
+            $srcImage = $resized;
+        }
+        
+        // Apply watermark logo at 20% opacity
+        $logoPath = __ROOT__ . '/globalSiteAssets/simeck-logo.png';
+        if (file_exists($logoPath)) {
+            $logoImg = @imagecreatefrompng($logoPath);
+            if ($logoImg) {
+                $imgW = imagesx($srcImage);
+                $imgH = imagesy($srcImage);
+                $logoW = imagesx($logoImg);
+                $logoH = imagesy($logoImg);
+                
+                // Create transparent overlay canvas
+                $overlay = imagecreatetruecolor($imgW, $imgH);
+                imagefill($overlay, 0, 0, imagecolorallocatealpha($overlay, 0, 0, 0, 127));
+                imagesavealpha($overlay, true);
+                
+                // Center the logo on the overlay
+                $destX = max(0, (int)(($imgW - $logoW) / 2));
+                $destY = max(0, (int)(($imgH - $logoH) / 2));
+                imagecopy($overlay, $logoImg, $destX, $destY, 0, 0, $logoW, $logoH);
+                
+                // Merge overlay onto source at 20% opacity
+                imagecopymerge($srcImage, $overlay, 0, 0, 0, 0, $imgW, $imgH, 20);
+                
+                imagedestroy($overlay);
+                imagedestroy($logoImg);
+            }
+        }
+        
+        // Save as JPEG (quality 85)
+        $saved = imagejpeg($srcImage, $cachePath, 85);
+        imagedestroy($srcImage);
+        
+        if (!$saved) {
+            ServeFullFile($realPath);
+            return;
+        }
     }
+    
+    header('Content-Description: Watermarked Preview');
+    header('Content-Type: image/jpeg');
+    header('Content-Disposition: inline; filename="' . basename($realPath) . '"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($cachePath));
+    readfile($cachePath);
+    exit;
+}
 
-    // ── Normal (original file) mode ─────────────────────────────
-    // Detect MIME type from the file extension
+/**
+ * Serve the full original file.
+ */
+function ServeFullFile($realPath) {
     $mimeTypes = [
         'png'  => 'image/png',
         'jpg'  => 'image/jpeg',
@@ -229,7 +330,6 @@ function ServeElfinderFile($filepath) {
     $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
     $contentType = $mimeTypes[$ext] ?? 'application/octet-stream';
     
-    // Images and videos get inline disposition (for Discord embeds), everything else gets attachment
     $inlineTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/svg+xml', 'video/mp4', 'video/webm'];
     $disposition = in_array($contentType, $inlineTypes) ? 'inline' : 'attachment';
 
@@ -244,9 +344,8 @@ function ServeElfinderFile($filepath) {
     exit;
 }
 
-
 /**
- * Look up and serve a file by DB record (legacy artistdocuments/clientdocuments flow).
+ * Look up and serve a file by DB record (legacy artistdocuments/clientdocuments).
  */
 function ServeFileForDownload($username, $docID){
     $pdo = DBConnect();

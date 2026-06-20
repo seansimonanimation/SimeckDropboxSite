@@ -79,7 +79,13 @@ function execute_login(){
         <center><input type="username" id="usernameBox" name="username" required></center>
         <label for="password">Password</label>
         <center><input type="password" id="passwordBox" name="password" required></center>
-        <br /><center><button type="submit" class = "loginButton" method="POST" >Log in</button></center>
+        <br /><center><button type="submit" class = "loginButton" method="POST" >Log in</button><br />
+        <?php
+        if(isset($_GET['error'])){
+            echo "Username and password error.";
+        }
+        ?>
+    </center>
     </form>
 </body>
 </html>

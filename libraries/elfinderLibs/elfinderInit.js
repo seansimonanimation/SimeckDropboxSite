@@ -278,6 +278,8 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
                 e.stopPropagation();
             });
         }
+    });
+}
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
