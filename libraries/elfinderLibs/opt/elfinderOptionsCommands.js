@@ -137,7 +137,14 @@ function RegisterSubmenuParents() {
                     this.init = function() { this.title = label; };
                     this.variants = [];
                     this.contextmenuOpts = { submenu: true };
-                    this.exec = function() { return $.Deferred().resolve(); };
+                    this.exec = function(hashes, opts) {
+                        var fm = this.fm;
+                        if (typeof opts === 'string') {
+                            return fm.exec(opts, hashes);
+                        }
+                        return $.Deferred().resolve();
+                    };
+
                     this.getstate = function() { return 0; };
                     for (var k = 0; k < kids.length; k++) {
                         this.variants.push([kids[k].commandID, kids[k].label]);
