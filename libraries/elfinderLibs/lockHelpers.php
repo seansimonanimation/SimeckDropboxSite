@@ -95,6 +95,10 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
                 if ($role === 'admin' || $role === 'artist') {
                     // allow — fall through to dotfile check
                 } elseif ($role === 'client') {
+                    // Prevent override if file is a deliverable
+                    if (IsFileDeliverable($normalized)) {
+                        return false;
+                    }
                     $overrides = GetClientLockOverrides($_SESSION['username']);
                     if ($overrides > 0) {
                         ConsumeClientLockOverride($_SESSION['username']);
@@ -102,6 +106,7 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
                     } else {
                         return false;
                     }
+
                 } else {
                     return false;
                 }
@@ -130,4 +135,11 @@ function GetLockedFilesForDirectory($directory) {
     );
     $stmt->execute([$directory, $directory . '%/%']);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function IsFileDeliverable($filepath) {
+    $stmt = $GLOBALS['db']->prepare(
+        'SELECT deliverable FROM lockedfiles WHERE filepath = ? AND deliverable = 1'
+    );
+    $stmt->execute([$filepath]);
+    return (bool)$stmt->fetchColumn();
 }

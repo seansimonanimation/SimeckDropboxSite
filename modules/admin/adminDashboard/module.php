@@ -44,8 +44,7 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
         <div class="module-card module-card--span-2"><center><h1>Total number of comments</h1>
         <h1><?php echo GetTotalCommentCount(); ?> </h1>
         </div>
-        <div class="module-card module-card--placeholder"></div>
-        <div class="module-card module-card--placeholder"></div>
+        <div class="module-card module-card--span-2"><center><h1>Download link analyzer</h1>
         
         <!-- Row 3: 1 card, spanning all 4 columns -->
         <div class="module-card module-card--span-4"><h1>Changelog</h1>

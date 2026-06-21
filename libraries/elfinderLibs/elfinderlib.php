@@ -195,10 +195,13 @@ function OutputElfinderCommandsMeta() {
         $content = file_get_contents($file->getPathname());
         
         preg_match('/@commandID\s+(\w+)/', $content, $cmdId);
+        preg_match('/@nicename\s+(.+)/', $content, $niceName);
         preg_match('/@role\s+(\w+)/', $content, $role);
         preg_match('/@loc\s+(.+)/', $content, $loc);
         preg_match('/@order\s+(\d+)/', $content, $order);
         preg_match('/@contextMenuDividers\s+(\w+)/', $content, $divider);
+        preg_match('/@availableToHigherRoles\s+(true|false)/', $content, $avail);
+
         
         if (empty($cmdId)) continue;
         
@@ -206,12 +209,15 @@ function OutputElfinderCommandsMeta() {
         $locArray = preg_split('/[\s,]+/', $locStr);
         
         $metaArray[] = array(
-            'commandID' => trim($cmdId[1]),
-            'role' => trim($role[1] ?? 'client'),
-            'loc' => $locArray,
-            'order' => (int)($order[1] ?? 99),
-            'divider' => trim($divider[1] ?? 'none')
+            'commandID'               => trim($cmdId[1]),
+            'nicename'                => trim($niceName[1] ?? ''),
+            'role'                    => trim($role[1] ?? 'client'),
+            'loc'                     => $locArray,
+            'order'                   => (int)($order[1] ?? 99),
+            'divider'                 => trim($divider[1] ?? 'none'),
+            'availableToHigherRoles'  => isset($avail[1]) && $avail[1] === 'true'
         );
+
     }
     
     echo '<script>window.elfinderCommandsMeta = ' . json_encode($metaArray, JSON_PRETTY_PRINT) . ';</script>' . "\n";
