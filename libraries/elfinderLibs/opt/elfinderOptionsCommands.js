@@ -145,7 +145,21 @@ function RegisterSubmenuParents() {
                         return $.Deferred().resolve();
                     };
 
-                    this.getstate = function() { return 0; };
+                    this.getstate = function() {
+                        var fm = this.fm;
+                        if (!fm) return -1;
+                        for (var k = 0; k < kids.length; k++) {
+                            var cmdName = kids[k].commandID;
+                            var cmd = fm.getCommand(cmdName);           // ← was fm.commands[cmdName]
+                            if (cmd && typeof cmd.getstate === 'function') {
+                                try {
+                                    if (cmd.getstate() === 0) return 0;
+                                } catch(e) {}
+                            }
+                        }
+                        return -1;
+                    };
+
                     for (var k = 0; k < kids.length; k++) {
                         this.variants.push([kids[k].commandID, kids[k].label]);
                     }

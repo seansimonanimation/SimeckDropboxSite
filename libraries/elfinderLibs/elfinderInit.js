@@ -287,7 +287,7 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
-    $.post('/libraries/elfinderLibs/endpoints/getElfinderDownloadLinksEndpoint.php', {
+    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [file.hash]
     }, function(response) {
         if (response.success && response.urls.length > 0) {
@@ -308,7 +308,7 @@ function applyWatermarkedUrl(fm, hash, imgSelector, callback) {
         if (callback) callback();
         return;
     }
-    $.post('/libraries/elfinderLibs/endpoints/getElfinderDownloadLinksEndpoint.php', {
+    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [hash]
     }, function(response) {
         if (response.success && response.urls.length > 0) {
