@@ -43,29 +43,20 @@ if (isset($_GET['download'])) {
  * Main dispatch: detects token version (V1 vs V2) and routes accordingly.
  */
 function InitiateDownload($encodedData) {
+    if (!str_contains($encodedData, '|')) {
+        require_once __ROOT__ . '/libraries/shortlinklib.php';
+        $result = ResolveShortlink($encodedData);
+        if ($result['valid']) {
+            InitiateDownload($result['download_token']);
+            return;
+        }
+    }
     $decoded = base64_decode($encodedData, true);
     if ($decoded === false || empty($decoded)) {
         echo "Invalid download token.";
         return;
     }
-
     $parts = explode('|', $decoded);
-    
-    // ── V2 Detection: 2 parts = "elFinder|<encrypted_blob>" ─────────
-    // ── Shortlink Detection: decoded string is purely numeric ───────
-    if (count($parts) === 1 && ctype_digit($decoded)) {
-        require_once __ROOT__ . '/libraries/shortlinklib.php';
-        $result = ResolveShortlink($encodedData);
-        if (!$result['valid']) {
-            echo "This download has expired.";
-            return;
-        }
-        // Re-dispatch with the stored V2 token
-        InitiateDownload($result['download_token']);
-        return;
-    }
-    
-    // ── V2 Detection: 2 parts = "elFinder|<encrypted_blob>" ─────────
     if (count($parts) === 2 && $parts[0] === 'elFinder') {
         $encryptedBlob = $parts[1];
         $plaintext = decryptImportantData($encryptedBlob);
@@ -84,26 +75,19 @@ function InitiateDownload($encodedData) {
         ServeElfinderFile($filepath, $mode, $author);
         return;
     }
-    
-    // ── V1 Detection: 3 parts ───────────────────────────────────────
     if (count($parts) === 3) {
         $first       = $parts[0];
         $identifier  = $parts[1];
         $providedSig = $parts[2];
-        
         $secret = defined('DOWNLOAD_SECRET') ? DOWNLOAD_SECRET : 'fallback_dev_secret_change_me';
         $expectedSig = hash_hmac('sha256', $identifier, $secret);
-        
         if (!hash_equals($expectedSig, $providedSig)) {
             echo "Invalid or tampered download token.";
             return;
         }
-        
         if ($first === 'elFinder') {
-            // V1 elFinder filepath (backward compat -> 'internal' mode)
             ServeElfinderFile($identifier, 'internal', 'legacy');
         } else {
-            // Legacy DB document download
             $b64Legacy = base64_encode($first . '|' . $identifier);
             if (DownloadPermissionCheck($b64Legacy)) {
                 ServeFileForDownload($first, $identifier);
@@ -113,9 +97,10 @@ function InitiateDownload($encodedData) {
         }
         return;
     }
-    
     echo "Invalid download token format.";
 }
+
+
 
 // ─── Permission Checks ─────────────────────────────────────────────
 

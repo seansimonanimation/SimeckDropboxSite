@@ -96,3 +96,49 @@ function decryptImportantData($data) {
 
     return $plaintext;
 }
+function encryptShortlinkId($id) {
+    if (!defined('DB_ENCRYPTION_KEY') || strlen(DB_ENCRYPTION_KEY) !== 64) {
+        error_log('encryptlib.php: DB_ENCRYPTION_KEY not defined or not 64 hex chars');
+        return false;
+    }
+    $key = hex2bin(DB_ENCRYPTION_KEY);
+    if ($key === false) {
+        error_log('encryptlib.php: DB_ENCRYPTION_KEY is not valid hex');
+        return false;
+    }
+    $block = str_pad((string)$id, 16, "\0", STR_PAD_RIGHT);
+    $ciphertext = @openssl_encrypt(
+        $block, 'aes-256-ecb', $key,
+        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING
+    );
+    if ($ciphertext === false) {
+        error_log('encryptlib.php: openssl_encrypt (ECB) failed: ' . openssl_error_string());
+        return false;
+    }
+    return rtrim(strtr(base64_encode($ciphertext), '+/', '-_'), '=');
+}
+
+function decryptShortlinkId($token) {
+    if (!defined('DB_ENCRYPTION_KEY') || strlen(DB_ENCRYPTION_KEY) !== 64) {
+        return false;
+    }
+    $key = hex2bin(DB_ENCRYPTION_KEY);
+    if ($key === false) {
+        return false;
+    }
+    $b64 = strtr($token, '-_', '+/');
+    $pad = strlen($b64) % 4;
+    if ($pad > 0) { $b64 .= str_repeat('=', 4 - $pad); }
+    $decoded = base64_decode($b64, true);
+    if ($decoded === false || strlen($decoded) !== 16) {
+        return false;
+    }
+    $plaintext = @openssl_decrypt(
+        $decoded, 'aes-256-ecb', $key,
+        OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING
+    );
+    if ($plaintext === false) { return false; }
+    $trimmed = rtrim($plaintext, "\0");
+    if ($trimmed === '' || !ctype_digit($trimmed)) { return false; }
+    return (int)$trimmed;
+}
