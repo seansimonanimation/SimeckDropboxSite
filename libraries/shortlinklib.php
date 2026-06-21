@@ -18,60 +18,39 @@
 
 function CreateShortlink($downloadToken, $expiryDateTime) {
     $pdo = DBConnect();
-
-    $stmt = $pdo->prepare(
-        "INSERT INTO shortlinks (download_token, expiry) VALUES (?, ?)"
-    );
+    $stmt = $pdo->prepare("INSERT INTO shortlinks (download_token, expiry) VALUES (?, ?)");
     $stmt->execute([$downloadToken, $expiryDateTime]);
-
     $newId = $pdo->lastInsertId();
-    if ($newId === false || $newId === '0') {
-        return false;
-    }
-
-    return base64_encode((string)$newId);
+    if ($newId === false || $newId === '0') { return false; }
+    return encryptShortlinkId((int)$newId);
 }
 
-
 function ResolveShortlink($encodedId) {
-    $decoded = base64_decode($encodedId, true);
-    if ($decoded === false || $decoded === '' || !ctype_digit($decoded)) {
+    $id = decryptShortlinkId($encodedId);
+    if ($id === false) {
+        $decoded = base64_decode($encodedId, true);
+        if ($decoded !== false && $decoded !== '' && ctype_digit($decoded)) {
+            $id = (int)$decoded;
+        }
+    }
+    if ($id === false || $id <= 0) {
         return ['valid' => false, 'reason' => 'not_found'];
     }
-
-    $id = (int) $decoded;
-    if ($id <= 0) {
-        return ['valid' => false, 'reason' => 'not_found'];
-    }
-
     $pdo = DBConnect();
-
-    $stmt = $pdo->prepare(
-        "SELECT download_token, expiry FROM shortlinks WHERE id = ?"
-    );
+    $stmt = $pdo->prepare("SELECT download_token, expiry FROM shortlinks WHERE id = ?");
     $stmt->execute([$id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$row) {
-        return ['valid' => false, 'reason' => 'not_found'];
-    }
-
+    if (!$row) { return ['valid' => false, 'reason' => 'not_found']; }
     $expiryTimestamp = strtotime($row['expiry']);
     if ($expiryTimestamp === false || $expiryTimestamp < time()) {
         return ['valid' => false, 'reason' => 'expired'];
     }
-
     try {
-        $countStmt = $pdo->prepare(
-            "UPDATE shortlinks SET download_count = download_count + 1 WHERE id = ?"
-        );
+        $countStmt = $pdo->prepare("UPDATE shortlinks SET download_count = download_count + 1 WHERE id = ?");
         $countStmt->execute([$id]);
     } catch (Exception $e) {
         error_log('shortlinklib.php: Failed to increment download_count for id ' . $id . ': ' . $e->getMessage());
     }
-
-    return [
-        'valid'          => true,
-        'download_token' => $row['download_token'],
-    ];
+    return ['valid' => true, 'download_token' => $row['download_token']];
 }
+

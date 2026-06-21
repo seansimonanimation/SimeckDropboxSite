@@ -4,6 +4,7 @@
  *
  * Analyzes Simeck download tokens (V1 and V2) to extract author, mode,
  * and filepath information. Used by the admin dashboard link analyzer.
+ * Also resolves shortlinks that point to a stored download token.
  */
 
 if (!defined('__ROOT__')) {
@@ -12,12 +13,14 @@ if (!defined('__ROOT__')) {
 
 require_once __ROOT__ . '/libraries/encryptlib.php';
 require_once __ROOT__ . '/libraries/tokenlib.php';
+require_once __ROOT__ . '/libraries/shortlinklib.php';      // ← ADD THIS LINE
 
 /**
  * Decode and analyze a download token.
  *
- * Accepts either a raw base64 token string, or a full URL like
- * "download.php?download=TOKEN".
+ * Accepts either a raw base64 token string, a full URL like
+ * "download.php?download=TOKEN", or a shortlink token that resolves
+ * to one of the above.
  *
  * @param  string  $input  The token or URL to analyze
  * @return array            ['success' => bool, ...data...]
@@ -94,6 +97,15 @@ function AnalyzeDownloadToken($input)
                 'filename' => 'DB document #' . $identifier,
             ];
         }
+    }
+
+    // ── Shortlink fallback ───────────────────────────────────────────
+    // If the token isn't a V1 or V2 download token, it might be a
+    // shortlink (encrypted shortlinks DB id). Try resolving it.
+    $resolved = ResolveShortlink($input);
+    if ($resolved['valid'] && !empty($resolved['download_token'])) {
+        // Recursively analyze the real token the shortlink points to
+        return AnalyzeDownloadToken($resolved['download_token']);
     }
 
     return ['success' => false, 'error' => 'Unknown token format (' . count($parts) . ' parts).'];
