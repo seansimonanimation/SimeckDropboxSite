@@ -4,7 +4,7 @@
  * @role artist
  * @availableToHigherRoles true
  * @loc files
- * @order 5
+ * @order 9
  * @contextMenuDividers below
  */
 //
