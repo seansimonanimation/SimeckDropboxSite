@@ -133,11 +133,9 @@ function hasPoCRequirementForHash(hash) {
 // ── Deliverable File Check ────────────────────────────────────────
 function isDeliverableFile(hash, fm) {
     if (!fm.cache || !fm.cache.lockedPaths) return false;
-
-    var relPath = decodeElfinderHash(hash);
-    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
-    var fileUrl = '/files/Projects/' + relPath;
-
+    var fileUrl = fm.url(hash);
+    if (!fileUrl) return false;
+    fileUrl = normalizeSimeckFilePath(fileUrl);
     if (fm.cache.lockedPaths[fileUrl]) {
         return fm.cache.lockedPaths[fileUrl].deliverable;
     }
