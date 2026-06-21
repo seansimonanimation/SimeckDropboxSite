@@ -81,6 +81,48 @@ if(isset($_GET['action']) && $_GET['action'] === 'set_timezone' && isset($_GET['
     header("Location: index.php");
     exit;
 }
+// ════════════════════════════════════════════════════════
+// AJAX: Generate a preview floating island for a file
+// ════════════════════════════════════════════════════════
+if (isset($_GET['action']) && $_GET['action'] === 'get_preview_island' && isset($_GET['filepath'])) {
+    header('Content-Type: application/json');
+    include_once __ROOT__ . '/libraries/downloadTokenAnalyzerLib.php';
+    $filepath = $_GET['filepath'];
+    if (!file_exists($filepath)) {
+        echo json_encode(['success' => false, 'error' => 'File not found.']);
+        exit;
+    }
+    $html = GetFilePreviewIsland($filepath);
+    echo json_encode(['success' => true, 'html' => $html]);
+    exit;
+}
+// ════════════════════════════════════════════════════════
+// AJAX: Analyze a download token
+// ════════════════════════════════════════════════════════
+if (isset($_GET['action']) && $_GET['action'] === 'analyze_download_token') {
+    header('Content-Type: application/json');
+    
+    // Load encryption key (needed to decrypt V2 tokens)
+    if (file_exists('/var/www/dbconfig.php')) {
+        include_once '/var/www/dbconfig.php';
+    } elseif (file_exists(__ROOT__ . '/dbconfig.php')) {
+        include_once __ROOT__ . '/dbconfig.php';
+    } elseif (file_exists(__ROOT__ . '/../dbconfig.php')) {
+        include_once __ROOT__ . '/../dbconfig.php';
+    }
+    
+    include_once __ROOT__ . '/libraries/downloadTokenAnalyzerLib.php';
+    $token = $_GET['token'] ?? '';
+    $result = AnalyzeDownloadToken($token);
+    if ($result['success']) {
+        $result['author_name'] = LookupAuthorDisplayName($result['author']);
+        $result['thumbnail_url'] = GetFileThumbnailUrl($result['filepath']);
+        $result['preview_token'] = GetFilePreviewUrl($result['filepath']);
+    }
+    echo json_encode($result);
+    exit;
+}
+
 
 // ════════════════════════════════════════════════════════
 // AJAX: Artist search for availability checker
