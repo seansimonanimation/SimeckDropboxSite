@@ -1,16 +1,18 @@
 // ===== DYNAMIC COMMAND HELPERS =====
 
 function CanUseCommand(cmd, role) {
-    if (cmd.role === 'client') {
-        if (role === 'client') return true;
-        if (cmd.availableToHigherRoles && (role === 'artist' || role === 'admin')) return true;
-        return false;
+    if (role === 'admin')      return true;
+    if(role === 'artist'){
+        if(cmd.role === 'artist') return true;
+        if(cmd.role === 'client' && cmd.availableToHigherRoles) return true;
     }
-    if (cmd.role === 'clientOnly') return role === 'client';
-    if (cmd.role === 'artist')     return role === 'artist' || role === 'admin';
-    if (cmd.role === 'admin')      return role === 'admin';
+    if(role === 'client'){
+        if(cmd.role === 'clientOnly') return true;
+        if(cmd.role === 'client') return true;
+    }
     return false;
 }
+
 
 function CommandsForMenu(menuName) {
     var role = (window.simeckSession && window.simeckSession.tempRole) || 'client';
@@ -134,9 +136,11 @@ function RegisterSubmenuParents() {
                 elFinder.prototype.commands[pid] = function() {
                     this.contextmenu = true;
                     this.title = label;
-                    this.init = function() { this.title = label; };
-                    this.variants = [];
                     this.contextmenuOpts = { submenu: true };
+                    this.variants = [];
+
+                    this.init = function() { this.title = label; };
+
                     this.exec = function(hashes, opts) {
                         var fm = this.fm;
                         if (typeof opts === 'string') {
@@ -148,25 +152,25 @@ function RegisterSubmenuParents() {
                     this.getstate = function() {
                         var fm = this.fm;
                         if (!fm) return -1;
+                        this.variants = [];
                         for (var k = 0; k < kids.length; k++) {
                             var cmdName = kids[k].commandID;
-                            var cmd = fm.getCommand(cmdName);           // ← was fm.commands[cmdName]
+                            var cmd = fm.getCommand(cmdName);
                             if (cmd && typeof cmd.getstate === 'function') {
                                 try {
-                                    if (cmd.getstate() === 0) return 0;
+                                    if (cmd.getstate() === 0) {
+                                        this.variants.push([cmdName, kids[k].label]);
+                                    }
                                 } catch(e) {}
                             }
                         }
-                        return -1;
+                        return this.variants.length > 0 ? 0 : -1;
                     };
-
-                    for (var k = 0; k < kids.length; k++) {
-                        this.variants.push([kids[k].commandID, kids[k].label]);
-                    }
                 };
             })(parentCmdId, groupLabel, children);
         }
     }
 }
+
 
 setTimeout(RegisterSubmenuParents, 0);

@@ -49,6 +49,9 @@ define('EF_ROOT', 'libraries/elfinder');
 <!-- elfinder ui -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
 
+<script src="/libraries/linklib.js"></script>
+<script src="/libraries/clipboardLib.js"></script>
+
 <!-- elfinder stock commands -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
 <!-- elFinder override commands and new commands go here -->

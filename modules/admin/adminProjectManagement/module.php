@@ -29,22 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_project'])) {
     }
 }
 
-// Handle AJAX project lead update
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_lead') {
-    $pid = trim($_POST['pid'] ?? '');
-    $lead = trim($_POST['lead'] ?? '');
-
-    header('Content-Type: application/json');
-    if ($pid !== '') {
-        UpdateProjectLead($pid, $lead ?: null);
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'error' => 'Missing pid']);
-    }
-    exit;
-}
-
-
 ?>
 <script>
 function archiveProject(pid, action) {
@@ -102,7 +86,7 @@ document.addEventListener('change', function(e) {
     const pid = dropdown.dataset.pid;
     const newLead = dropdown.value;
 
-    fetch('/modules/admin/adminProjectManagement/module.php', {
+    fetch('/modules/admin/adminProjectManagement/endpoint.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'action=update_lead&pid=' + encodeURIComponent(pid) + '&lead=' + encodeURIComponent(newLead)
