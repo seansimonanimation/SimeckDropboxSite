@@ -50,7 +50,7 @@ define('EF_ROOT', 'libraries/elfinder');
 <?php echo loadElfinderJs(EF_ROOT . '/js/ui'); ?>
 
 <script src="/libraries/linklib.js"></script>
-<script src="/libraries/clipboardLib.js"></script>
+<script src="/libraries/clipboardlib.js"></script>
 
 <!-- elfinder stock commands -->
 <?php echo loadElfinderJs(EF_ROOT . '/js/commands'); ?>
