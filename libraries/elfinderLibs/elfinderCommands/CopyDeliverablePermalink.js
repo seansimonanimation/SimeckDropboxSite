@@ -16,22 +16,13 @@ elFinder.prototype.commands.CopyDeliverablePermalink = function() {
         SimeckClipboardCommands.CopyDeliverablePermalink(this.fm, hashes[0]);
         return $.Deferred().resolve().promise();
     };
-this.getstate = function() {
-    var fm = this.fm;
-    if (!fm) return -1;
-    this.variants = [];  // rebuild each time
-    for (var k = 0; k < kids.length; k++) {
-        var cmdName = kids[k].commandID;
-        var cmd = fm.getCommand(cmdName);
-        if (cmd && typeof cmd.getstate === 'function') {
-            try {
-                if (cmd.getstate() === 0) {
-                    this.variants.push([cmdName, kids[k].label]);
-                }
-            } catch(e) {}
-        }
-    }
-    return this.variants.length > 0 ? 0 : -1;
-};
-
+    this.getstate = function() {
+        var fm = this.fm, session = window.simeckSession, sel = fm.selectedFiles();
+        if (sel.length !== 1) return -1;
+        if (session.tempRole === 'admin') return 0;
+        if (!isDeliverableFile(sel[0].hash, fm)) return -1;
+        if(session.tempRole === 'artist'){if (!hasPoCRequirementForHash(sel[0].hash)) return -1;}
+        if (session.tempRole === 'client') return 0;
+        return 0;
+    };
 };
