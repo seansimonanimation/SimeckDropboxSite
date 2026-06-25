@@ -7,6 +7,3 @@
 [submodule "libraries/flatpickr"]
 	path = libraries/flatpickr
 	url = https://github.com/flatpickr/flatpickr.git
-[submodule "libraries/pdfjs"]
-	path = libraries/pdfjs
-	url = https://github.com/mozilla/pdf.js.git
