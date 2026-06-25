@@ -7,3 +7,15 @@
 [submodule "libraries/flatpickr"]
 	path = libraries/flatpickr
 	url = https://github.com/flatpickr/flatpickr.git
+[submodule "libraries/dompdf/dompdf"]
+	path = libraries/dompdf/dompdf
+	url = https://github.com/dompdf/dompdf.git
+[submodule "libraries/dompdf/php-font-lib"]
+	path = libraries/dompdf/php-font-lib
+	url = https://github.com/PhenX/php-font-lib.git
+[submodule "libraries/dompdf/php-svg-lib"]
+	path = libraries/dompdf/php-svg-lib
+	url = https://github.com/PhenX/php-svg-lib.git
+[submodule "libraries/dompdf/php-css-parser"]
+	path = libraries/dompdf/php-css-parser
+	url = https://github.com/sabberworm/PHP-CSS-Parser.git
