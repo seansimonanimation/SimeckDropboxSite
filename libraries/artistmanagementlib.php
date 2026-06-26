@@ -74,7 +74,7 @@ function DisplayArtistAvailability($avString, $artistTimezone = 'UTC'){
 }
 
 function SearchArtistsByName($query){
-    $SQLString = "SELECT username, firstname, lastname, nickname, availability, availability_this_week, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
+    $SQLString = "SELECT username, firstname, lastname, nickname, secondary_roles, availability, availability_this_week, timezone FROM artists WHERE active = 1 AND (username LIKE ? OR firstname LIKE ? OR lastname LIKE ?)";
     $pdo = DBConnect();
     $likeTerm = '%' . $query . '%';
     $stmt = $pdo->prepare($SQLString);
@@ -91,20 +91,47 @@ function GenerateArtistCards() {
         $artists = GetAllArtists();
     }
     foreach ($artists as $artist) {
-        echo '<div class="module-card module-card--span-4">';
-        echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
-        echo '<thead><tr><th>Username</th><th>Legal Name</th><th>Active</th><th>Role</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
-        echo '<tr>';
-        echo '<td class="module-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
-        echo '<td class="module-tablecell">' . htmlspecialchars(GetArtistNicknameAndLegalName($artist)) . '</td>';
+        $userId = (int)$artist['userID'];
+        $u = htmlspecialchars($artist['username'], ENT_QUOTES);
+        $fn = htmlspecialchars($artist['firstname'], ENT_QUOTES);
+        $ln = htmlspecialchars($artist['lastname'], ENT_QUOTES);
+        $nn = htmlspecialchars($artist['nickname'] ?? '', ENT_QUOTES);
+        $role = htmlspecialchars($artist['role'], ENT_QUOTES);
 
-        echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
-        echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
-        echo '<td class="module-tablecell">' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
-        echo '<td class="module-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
-        // CHANGED: added class="reset-pw-button" and data attribute instead of location.href
-        echo '<td class="module-tablecell"><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
-        echo '<td class="module-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
+        echo '<div class="module-card module-card--span-4">';
+        echo '<table class="one-artist-table">';
+        echo '<thead><tr><th>Username</th><th>Legal Name</th><th>Active</th><th>Role</th><th>Secondary Roles</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
+        echo '<tr>';
+
+        // ── Username (inline editable) ──
+        echo '<td>'
+            . '<input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="username" value="' . $u . '">'
+            . '</td>';
+
+        // ── Legal Name: Given name, Surname, Nickname (stacked, inline editable) ──
+        echo '<td>'
+            . '<div class="inline-name-row">Given name <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="firstname" value="' . $fn . '"></div>'
+            . '<div class="inline-name-row">Surname   <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="lastname" value="' . $ln . '"></div>'
+            . '<div class="inline-name-row">Nickname  <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="nickname" value="' . $nn . '" placeholder="nickname"></div>'
+            . '</td>';
+
+        echo '<td>' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
+
+        // ── Role (inline dropdown) ──
+        $adminSel = ($role === 'admin') ? 'selected' : '';
+        $artistSel = ($role === 'artist') ? 'selected' : '';
+        echo '<td>'
+            . '<select class="inline-edit-select" data-user-id="' . $userId . '" data-field="role">'
+            . '<option value="artist" ' . $artistSel . '>artist</option>'
+            . '<option value="admin" ' . $adminSel . '>admin</option>'
+            . '</select>'
+            . '</td>';
+
+        echo '<td>' . FetchArtistSecondaryRoles($artist['username'], $artist['secondary_roles'] ?? '') . '</td>';
+        echo '<td>' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
+        echo '<td>' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
+        echo '<td><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
+        echo '<td><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
@@ -112,8 +139,9 @@ function GenerateArtistCards() {
         echo '</div>';
     }
 }
+
 function GetAllArtists(){
-    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists";
+    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, secondary_roles, project_assignments, availability, availability_this_week, timezone FROM artists";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -122,7 +150,7 @@ function GetAllArtists(){
 
 
 function GetAllActiveArtists(){
-    $SQLString = "SELECT username, firstname, lastname, nickname, availability, availability_this_week, timezone FROM artists WHERE active = 1";
+    $SQLString = "SELECT username, firstname, lastname, nickname, secondary_roles, availability, availability_this_week, timezone FROM artists WHERE active = 1";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute();
@@ -147,7 +175,6 @@ function GenerateArtistStatusButton($artistUsername, $isActive){
     if($artistUsername == $_SESSION["username"]){
         return "This is you!";
     }
-    // CHANGED: Use data attributes + href="#" instead of direct GET links
     $newStatus = $isActive ? 0 : 1;
     $icon = $isActive ? '✅' : '❌';
     return '<a href="#" class="toggle-artist-status" data-artist-id="' . $artistUsername . '" data-new-status="' . $newStatus . '"><h1>' . $icon . '</h1></a>';
@@ -166,7 +193,7 @@ function ToggleArtistStatus($artistUsername, $isActive){
     RefreshPortal();
 }
 function GetSearchedArtist($searchterm){
-    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, project_assignments, availability, availability_this_week, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
+    $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, secondary_roles, project_assignments, availability, availability_this_week, timezone FROM artists WHERE username LIKE ? OR firstname LIKE ? OR lastname LIKE ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
     $likeTerm = '%' . $searchterm . '%';
@@ -191,19 +218,14 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
     $systemFilePath = __ROOT__ . $file_path;
     $uploaded_by = $_SESSION['username'];
     $upload_time = date('Y-m-d H:i:s');
-    // This function would handle the file upload logic, including moving the uploaded file to a secure location and updating the database with the file information.
-    // For security reasons, you should implement proper validation and sanitization of the uploaded file, as well as error handling.
     
-    //Ensure that the user directory exists, and if not, create it.
     $dir = dirname($systemFilePath);
     if (!is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
     if (!move_uploaded_file($file['tmp_name'], $systemFilePath)) {
-    // Failed to move file — disk full? permissions?
     return false;
     }
-    //Insert the DB record now.
     $SQLString = "INSERT INTO artistdocuments (owner, filepath, uploaded_by, upload_time) VALUES (?, ?, ?, ?)";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -224,14 +246,12 @@ function DisplayArtistDocuments($artistName){
         echo '<div class="admin-Artist-management-artist-document">';
         $b64 = Generateb64EncodedDownloadLink($artistName, $doc['uploadID']);
         echo '<a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a>';
-        // CHANGED: use data attribute + href="#" instead of direct GET link
         echo '<a href="#" class="delete-artist-document" data-doc-id="' . $doc['uploadID'] . '">❌</a>';
         echo '</div>';
     }
 }
 
 function DeleteArtistDocument($docID){
-    // First, we need to get the file path so we can delete the file from the server.
     $SQLString = "SELECT filepath FROM artistdocuments WHERE uploadID = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -241,13 +261,132 @@ function DeleteArtistDocument($docID){
     if ($result) {
         $filePath = __ROOT__ . $result['filepath'];
         if (file_exists($filePath)) {
-            unlink($filePath); // Delete the file from the server
+            unlink($filePath);
         }
     }
-    // Now we can delete the record from the database.
     $SQLString = "DELETE FROM artistdocuments WHERE uploadID = ?";
     $stmt = $pdo->prepare($SQLString);
     $stmt->execute([$docID]);
+    RefreshPortal();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SECONDARY ROLE ASSIGNMENT FUNCTIONS
+// ════════════════════════════════════════════════════════════
+
+function FetchArtistSecondaryRoles($username, $secondaryRolesStr){
+    $roleArr = empty($secondaryRolesStr) ? [] : explode(",", $secondaryRolesStr);
+
+    $allRoles = GetAllDefinedSecondaryRoles();
+    $output = [];
+
+    // --- Dropdown to add a secondary role ---
+    $dropdown = '<select onchange="assignSecondaryRole(\'' . $username . '\', this.value)">';
+    $dropdown .= '<option value="">-- Add secondary role --</option>';
+    $availableCount = 0;
+    foreach ($allRoles as $role) {
+        if (!in_array($role['role_name'], $roleArr)) {
+            $dropdown .= '<option value="' . htmlspecialchars($role['role_name']) . '">' . htmlspecialchars($role['display_name']) . '</option>';
+            $availableCount++;
+        }
+    }
+    $dropdown .= '</select>';
+
+    if ($availableCount > 0) {
+        $output[] = $dropdown;
+    } else {
+        $output[] = 'All roles assigned';
+    }
+
+    // --- Existing secondary roles below ---
+    if (!empty($secondaryRolesStr)) {
+        foreach ($roleArr as $roleName) {
+            $roleName = trim($roleName);
+            if ($roleName === '') continue;
+            // Look up display name
+            $display = $roleName;
+            foreach ($allRoles as $r) {
+                if ($r['role_name'] === $roleName) {
+                    $display = $r['display_name'];
+                    break;
+                }
+            }
+            $output[] = htmlspecialchars($display)
+                . ' <a href="#" data-username="' . $username . '" data-rolename="' . htmlspecialchars($roleName) . '" onclick="removeSecondaryRole(\'' . $username . '\', \'' . htmlspecialchars(addslashes($roleName)) . '\'); return false;">❌</a>';
+        }
+    } else {
+        $output[] = 'No secondary roles assigned';
+    }
+
+    return implode("<br>", $output);
+}
+
+function AddSecondaryRoleToArtist($username, $roleName){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT secondary_roles FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $currentStr = $result['secondary_roles'];
+        $roleArr = empty($currentStr) ? [] : explode(",", $currentStr);
+        if (!in_array($roleName, $roleArr)) {
+            $roleArr[] = $roleName;
+        }
+        $newStr = implode(",", $roleArr);
+        $updateStmt = $pdo->prepare("UPDATE artists SET secondary_roles = ? WHERE username = ?");
+        $updateStmt->execute([$newStr, $username]);
+    }
+    RefreshPortal();
+}
+
+function RemoveSecondaryRoleFromArtist($username, $roleName){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT secondary_roles FROM artists WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $currentStr = $result['secondary_roles'];
+        $roleArr = empty($currentStr) ? [] : explode(",", $currentStr);
+        if (($key = array_search($roleName, $roleArr)) !== false) {
+            unset($roleArr[$key]);
+        }
+        $newStr = implode(",", $roleArr);
+        $updateStmt = $pdo->prepare("UPDATE artists SET secondary_roles = ? WHERE username = ?");
+        $updateStmt->execute([$newStr, $username]);
+    }
+    RefreshPortal();
+}
+
+// ════════════════════════════════════════════════════════════
+//  DEFINED SECONDARY ROLES — MASTER LIST (for Admin Settings)
+// ════════════════════════════════════════════════════════════
+
+function GetAllDefinedSecondaryRoles(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT id, role_name, display_name FROM secondary_roles ORDER BY display_name ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function AddDefinedSecondaryRole($roleName, $displayName){
+    $pdo = DBConnect();
+    // Check if already exists
+    $stmt = $pdo->prepare("SELECT id FROM secondary_roles WHERE role_name = ?");
+    $stmt->execute([$roleName]);
+    if ($stmt->fetch()) {
+        return false; // Already exists
+    }
+    $insert = $pdo->prepare("INSERT INTO secondary_roles (role_name, display_name) VALUES (?, ?)");
+    $insert->execute([$roleName, $displayName]);
+    return true;
+}
+
+function RemoveDefinedSecondaryRole($id){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("DELETE FROM secondary_roles WHERE id = ?");
+    $stmt->execute([$id]);
     RefreshPortal();
 }
 
@@ -296,7 +435,6 @@ function FetchArtistProjectAssignments($username, $projectAssignmentStr){
 
 
 function RemoveArtistFromProject($username, $pid){
-    // First we need to get the current project assignment string for the artist
     $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -306,11 +444,9 @@ function RemoveArtistFromProject($username, $pid){
     if ($result) {
         $projectAssignmentStr = $result['project_assignments'];
         $projectArr = explode(",", $projectAssignmentStr);
-        // Remove the pid from the array
         if (($key = array_search($pid, $projectArr)) !== false) {
             unset($projectArr[$key]);
         }
-        // Update the database with the new project assignment string
         $newProjectAssignmentStr = implode(",", $projectArr);
         $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
         $updateStmt = $pdo->prepare($updateSQL);
@@ -325,7 +461,6 @@ function RetrieveAllActiveProjects(){
 }
 
 function AddArtistToProject($username, $pid){
-    // First we need to get the current project assignment string for the artist
     $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -335,11 +470,9 @@ function AddArtistToProject($username, $pid){
     if ($result) {
         $projectAssignmentStr = $result['project_assignments'];
         $projectArr = explode(",", $projectAssignmentStr);
-        // Add the new pid to the array if it's not already there
         if (!in_array($pid, $projectArr)) {
             $projectArr[] = $pid;
         }
-        // Update the database with the new project assignment string
         $newProjectAssignmentStr = implode(",", $projectArr);
         $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
         $updateStmt = $pdo->prepare($updateSQL);
@@ -353,4 +486,22 @@ function CreateNewArtist($username, $firstname, $lastname){
     $stmt = $pdo->prepare("INSERT INTO artists (username, firstname, lastname) VALUES (?, ?, ?)");
     $stmt->execute([$username, $firstname, $lastname]);
     RefreshPortal();
+}
+
+// ════════════════════════════════════════════════════════════
+//  INLINE FIELD UPDATE — used by adminArtistManagement inline edit
+// ════════════════════════════════════════════════════════════
+
+function UpdateArtistField($userID, $field, $value){
+    $allowed = ['username', 'firstname', 'lastname', 'nickname', 'role'];
+    if (!in_array($field, $allowed)) {
+        return;
+    }
+    if ($field === 'role' && !in_array($value, ['artist', 'admin'])) {
+        return;
+    }
+    $pdo = DBConnect();
+    $sql = "UPDATE artists SET `$field` = ? WHERE userID = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$value, $userID]);
 }

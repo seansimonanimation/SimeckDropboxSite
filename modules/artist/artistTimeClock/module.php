@@ -21,6 +21,8 @@ RunArtistTimeclockIssets();
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="/libraries/timeclock/timeclocklib.js"></script>
+<script src="/libraries/timeclock/timeclockAjaxHandlers.js"></script>
+
 
 <div class="module">
     <div class="module-header">
@@ -36,13 +38,13 @@ RunArtistTimeclockIssets();
         <div class="module-card module-card--span-1">
             <?php echo DisplayArtistClockInOutButton($_SESSION['username']); ?>
         </div>
-        <div class="module-card module-card--span-2">
+        <div class="module-card module-card--span-3">
             <center>
                 <h1>Your Timeclock Entries</h1>
                 <?php GenerateArtistTimeclockTable($_SESSION['username']); ?>
             </center>
         </div>
-        <div class="module-card module-card--span-2">
+        <div class="module-card module-card--span-1">
             <center>
                 <h1>Your important documents</h1>
                 <p><?php ShowArtistFilesForTimeclock(); ?></p>

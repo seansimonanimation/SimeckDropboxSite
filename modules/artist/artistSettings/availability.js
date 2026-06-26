@@ -9,6 +9,10 @@
     let gridData = []; // array of 7 ints (bitmasks)
     let originalData = []; // original DB state for reset
 
+    // ── Drag state ──
+    let isDragging = false;
+    let paintActive = true; // true = painting ON, false = painting OFF
+
     // ── Parse the availability string into gridData ──
     function parseAvailability(str){
         return str.split('|').map(Number);
@@ -17,6 +21,24 @@
     // ── Serialize gridData back to pipe string ──
     function serializeAvailability(data){
         return data.join('|');
+    }
+
+    // ── Toggle a single cell (visual + bitmask) ──
+    function toggleCell(cell, day, slot, turnOn){
+        const bit = 1n << BigInt(slot);
+        let mask = BigInt(gridData[day]);
+        if(turnOn){
+            mask |= bit;
+            cell.classList.add('active');
+            cell.style.background = 'var(--av-active, #4CAF50)';
+            cell.style.borderColor = 'var(--av-active, #4CAF50)';
+        } else {
+            mask &= ~bit;
+            cell.classList.remove('active');
+            cell.style.background = 'var(--color-bg-raised, transparent)';
+            cell.style.borderColor = 'var(--color-border, #ccc)';
+        }
+        gridData[day] = Number(mask);
     }
 
     // ── Build the grid UI ──
@@ -29,6 +51,9 @@
         originalData = initialData.slice(); // preserve original for reset
 
         gridData = initialData.slice(); // copy
+
+        // Prevent text selection during drag
+        container.style.userSelect = 'none';
 
         // Outer wrapper to keep everything aligned
         const wrapper = document.createElement('div');
@@ -120,38 +145,28 @@
                     cell.style.borderColor = 'var(--av-active, #4CAF50)';
                 }
 
-                // Hover
-                cell.addEventListener('mouseenter', function(){
-                    if(!this.classList.contains('active')){
-                        this.style.background = 'var(--color-bg-hover, rgba(255,255,255,0.1))';
-                    }
-                });
-                cell.addEventListener('mouseleave', function(){
-                    if(!this.classList.contains('active')){
-                        this.style.background = 'var(--color-bg-raised, transparent)';
-                    }
-                });
+                // ── Click-and-drag handlers ──
 
-                // Click toggle
-                cell.addEventListener('click', function(){
+                // mousedown: start drag, determine paint direction, toggle this cell
+                cell.addEventListener('mousedown', function(e){
+                    e.preventDefault();
                     const day = parseInt(this.dataset.day);
                     const slot = parseInt(this.dataset.slot);
+
+                    // Determine paint direction: turn ON if currently OFF, turn OFF if currently ON
                     const bit = 1n << BigInt(slot);
-                    let mask = BigInt(gridData[day]);
-                    if(mask & bit){
-                        // Turn off
-                        mask &= ~bit;
-                        this.classList.remove('active');
-                        this.style.background = 'var(--color-bg-raised, transparent)';
-                        this.style.borderColor = 'var(--color-border, #ccc)';
-                    } else {
-                        // Turn on
-                        mask |= bit;
-                        this.classList.add('active');
-                        this.style.background = 'var(--av-active, #4CAF50)';
-                        this.style.borderColor = 'var(--av-active, #4CAF50)';
-                    }
-                    gridData[day] = Number(mask);
+                    paintActive = !(BigInt(gridData[day]) & bit);
+
+                    isDragging = true;
+                    toggleCell(this, day, slot, paintActive);
+                });
+
+                // mouseenter during drag: apply paint to entered cells
+                cell.addEventListener('mouseenter', function(){
+                    if(!isDragging) return;
+                    const day = parseInt(this.dataset.day);
+                    const slot = parseInt(this.dataset.slot);
+                    toggleCell(this, day, slot, paintActive);
                 });
 
                 row.appendChild(cell);
@@ -206,6 +221,11 @@
         }
 
         container.appendChild(wrapper);
+
+        // ── Document-level mouseup: end drag ──
+        document.addEventListener('mouseup', function(){
+            isDragging = false;
+        });
     }
 
     // ── Apply / Save ──

@@ -1,6 +1,6 @@
 <?php 
 /**
- * @module Butters
+ * @module artistButters
  * @name Butters
  * @role artist
  * @secondary-role butters

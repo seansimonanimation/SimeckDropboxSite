@@ -3,12 +3,17 @@
 /* @author Simeck Entertainment */
 
 body.theme-touch-grass {
+
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/touchGrass.mp4';
+  --theme-bg-video-opacity:   1;
+
   --color-primary:        #2D8A4E;
   --color-primary-dark:   #1E6B3A;
   --color-primary-light:  #4CAF64;
   --color-primary-xlight: #E8F5E9;
 
   --color-bg:             #0D1F12;
+  --color-bg-video:       #0D1F1266;
   --color-bg-mid:         #142E1A;
   --color-bg-raised:      #1A3822;
   --color-surface:        #21452C;

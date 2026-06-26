@@ -94,7 +94,7 @@ function CloseTimeclockShift($shiftID){
 }
 
 function UpdateTimeclockShiftField($shiftId, $field, $value){
-    $allowedFields = ['time_in', 'time_out'];
+    $allowedFields = ['time_in', 'time_out', 'shift_comments'];
     if(!in_array($field, $allowedFields)){
         return false;
     }

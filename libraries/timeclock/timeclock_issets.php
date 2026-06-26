@@ -35,7 +35,16 @@ function RunArtistTimeclockIssets() {
             ArtistClockOut($_SESSION['username']);
         }
     }
+    if (isset($_GET['update_shift_field'])) {
+        $shiftId = (int)($_GET['shift_id'] ?? 0);
+        $field   = $_GET['field'] ?? '';
+        $value   = $_GET['value'] ?? '';
+        if ($shiftId && $field) {
+            UpdateTimeclockShiftField($shiftId, $field, $value);
+        }
+    }
     if (isset($_GET['download_file'])) {
         InitiateDownload($_GET['download']);
     }
 }
+

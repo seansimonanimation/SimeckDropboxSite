@@ -53,6 +53,21 @@ if(isset($_GET['action']) && $_GET['action'] === 'set_theme' && isset($_GET['the
     header("Location: index.php");
     exit;
 }
+if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonating()){
+    $current = (int)($_SESSION['bgvid_visibility'] ?? 0);
+    $newVal = $current ? 0 : 1;
+    $_SESSION['bgvid_visibility'] = $newVal;
+    $pdo = DBConnect();
+    $username = $_SESSION['username'];
+    if($_SESSION['role'] === 'client'){
+        $stmt = $pdo->prepare("UPDATE clients SET bgvid_visibility = ? WHERE username = ?");
+    } else {
+        $stmt = $pdo->prepare("UPDATE artists SET bgvid_visibility = ? WHERE username = ?");
+    }
+    $stmt->execute([$newVal, $username]);
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];
