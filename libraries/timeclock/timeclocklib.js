@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    if ($.fn && $.fn.DataTable && $.fn.DataTable.isDataTable('#ShiftList')) return;
     var table = $('#ShiftList').DataTable({
         "paging": false,
         "info": false,

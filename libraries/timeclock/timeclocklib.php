@@ -9,7 +9,7 @@ function GenerateTimeclockTable(){
     $tz = $_SESSION['timezone'] ?? 'America/Phoenix';
     $entryArray = GetTimeclockEntries();
     echo '<table id="ShiftList" class="display atc-tablecell" style="width:100%; border-collapse: collapse;">';
-    echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Delete</th></tr></thead>';
+    echo '<thead><tr><th>Shift ID</th><th>User</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Notes</th><th>Delete</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
         $displayIn = PhoenixToLocal($entry['time_in'], $tz, 'F j, Y g:i A');
@@ -24,7 +24,9 @@ function GenerateTimeclockTable(){
         echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineShiftLengthOrSummonButton($entry['time_in'], $entry['time_out'], $entry['shift_id']) . '</td>';
+        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2" style="width:100%; resize:vertical;">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
         echo '<td><a href="index.php?delete_shift_id=' . htmlspecialchars($entry['shift_id']) . '">❌</a></td>';
+
         echo '</tr>';
     }
     echo '</tbody></table>';
@@ -36,7 +38,7 @@ function GenerateArtistTimeclockTable($artistID){
     $tz = $_SESSION['timezone'] ?? 'America/Phoenix';
     $entryArray = GetTimeclockEntries(null, null, $artistID);
     echo '<table id="ShiftList" class="display" style="width:100%; border-collapse: collapse;">';
-    echo '<thead><tr><th>Shift ID</th><th>Time In</th><th>Time Out</th><th>Shift Length</th></tr></thead>';
+    echo '<thead><tr><th>Shift ID</th><th>Time In</th><th>Time Out</th><th>Shift Length</th><th>Notes</th></tr></thead>';
     echo '<tbody>';
     foreach($entryArray as $entry){
         $displayIn = PhoenixToLocal($entry['time_in'], $tz, 'F j, Y g:i A');
@@ -50,6 +52,7 @@ function GenerateArtistTimeclockTable($artistID){
         echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineArtistShiftLength($entry['time_in'], $entry['time_out']) . '</td>';
+        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2" style="width:100%; resize:vertical;">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
         echo '</tr>';
     }
     echo '</tbody></table>';

@@ -130,7 +130,7 @@ function initTimeclockPageListeners() {
     });
 
     // DataTable init (only if jQuery + DataTable available)
-    if (typeof $ !== 'undefined' && $.fn && $.fn.DataTable && document.getElementById('ShiftList')) {
+    if (typeof $ !== 'undefined' && $.fn && $.fn.DataTable && document.getElementById('ShiftList') && !$.fn.DataTable.isDataTable('#ShiftList')) {
         $('#ShiftList').DataTable({
             "paging": false,
             "info": false,
@@ -141,6 +141,32 @@ function initTimeclockPageListeners() {
             $('#ShiftList').DataTable().search(this.value).draw();
         });
     }
+    initShiftComments();
+}
+// ── Save shift comment on blur/change ──
+async function saveShiftComment(shiftId, value) {
+    await ajaxGet('?update_shift_field=1'
+        + '&shift_id=' + encodeURIComponent(shiftId)
+        + '&field=shift_comments'
+        + '&value=' + encodeURIComponent(value));
+    // No refreshContent needed — comment updates don't need a page redraw
+}
+
+// ── Bind comment textarea auto-save ──
+function initShiftComments() {
+    document.querySelectorAll('.shift-comment').forEach(textarea => {
+        // Clone to remove existing listeners
+        const newEl = textarea.cloneNode(true);
+        textarea.parentNode.replaceChild(newEl, textarea);
+
+        let saveTimer = null;
+        newEl.addEventListener('input', function() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                saveShiftComment(this.dataset.shiftId, this.value);
+            }, 800); // 800ms debounce after typing stops
+        });
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initTimeclockPageListeners);
