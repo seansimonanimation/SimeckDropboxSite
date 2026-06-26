@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS `artists` (
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
 INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `nickname`, `password`, `userID`, `active`, `role`, `secondary_roles`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`, `log_rows_per_page`, `phone_country_code`, `phone_number`, `receive_texts`, `bgvid_visibility`) VALUES
-	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'marketing,butters', 'C01,C03,C05,P01', 'touch-grass', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, '1', '4806950059', 0, 1),
+	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', 'butters,marketing', 'C01,C03,C05,P01', 'touch-grass', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, '1', '4806950059', 0, 1),
 	('artist', 'Artist', 'User', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 2, 1, 'artist', '', ',P00,C05,C03', 'dark-boo', 'UTC', '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1),
-	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 3, 1, 'artist', 'butters', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1);
+	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 3, 1, 'artist', '', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1);
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `clientdocuments` (
   KEY `uploadID` (`uploadID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.clientdocuments: ~0 rows (approximately)
+-- Dumping data for table simeckdb.clientdocuments: ~1 rows (approximately)
 INSERT IGNORE INTO `clientdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
 
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `daysoff` (
   KEY `id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.daysoff: ~1 rows (approximately)
+-- Dumping data for table simeckdb.daysoff: ~0 rows (approximately)
 
 -- Dumping structure for table simeckdb.filecomments
 CREATE TABLE IF NOT EXISTS `filecomments` (
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   KEY `lockid` (`lockid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.lockedfiles: ~9 rows (approximately)
+-- Dumping data for table simeckdb.lockedfiles: ~10 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`, `deliverable`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1, 0),
 	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1, 1),
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~168 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~249 rows (approximately)
 INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL),
 	('admin', '2026-06-03 12:16:33', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
@@ -443,7 +443,10 @@ INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `ext
 	('admin', '2026-06-26 12:21:27', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'spite-castle\'.', 'System', NULL),
 	('admin', '2026-06-26 12:21:29', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'touch-grass\'.', 'System', NULL),
 	('admin', '2026-06-26 12:25:32', 'Availability updated', '127.0.0.1', 'Artist updated their availability.', 'System', NULL),
-	('admin', '2026-06-26 12:25:43', 'Availability updated', '127.0.0.1', 'Artist updated their availability.', 'System', NULL);
+	('admin', '2026-06-26 12:25:43', 'Availability updated', '127.0.0.1', 'Artist updated their availability.', 'System', NULL),
+	('admin', '2026-06-26 12:47:34', 'Updated timeclock shift', '127.0.0.1', 'Shift #10 had its shift_comments updated to This one needs help!.', 'System', NULL),
+	('admin', '2026-06-26 12:48:53', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
+	('client', '2026-06-26 12:49:06', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin');
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -466,6 +469,20 @@ INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `
 	('P01', 'C City', 1, '/files/Projects/internal/P01_C City', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.', 'admin', 1345373),
 	('C02', 'Client Project 02', 1, '/files/Projects/clientProjects/C02_Client_Project_02', '/files/Projects/clientProjects/archive/C02_Client_Project_02.zip', 0, 'client', 'derp!', 'client', 1296892);
 
+-- Dumping structure for table simeckdb.secondary_roles
+CREATE TABLE IF NOT EXISTS `secondary_roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `role_name` varchar(50) DEFAULT NULL,
+  `display_name` varchar(100) DEFAULT NULL,
+  KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table simeckdb.secondary_roles: ~2 rows (approximately)
+INSERT IGNORE INTO `secondary_roles` (`id`, `role_name`, `display_name`) VALUES
+	(1, 'butters', 'Butters'),
+	(2, 'marketing', 'Marketing'),
+	(3, 'spiffyGumdrops', 'Spiffy Gumdrops');
+
 -- Dumping structure for table simeckdb.shortlinks
 CREATE TABLE IF NOT EXISTS `shortlinks` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -475,7 +492,7 @@ CREATE TABLE IF NOT EXISTS `shortlinks` (
   KEY `id` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.shortlinks: ~16 rows (approximately)
+-- Dumping data for table simeckdb.shortlinks: ~17 rows (approximately)
 INSERT IGNORE INTO `shortlinks` (`id`, `download_token`, `expiry`, `download_count`) VALUES
 	(1, 'ZWxGaW5kZXJ8M1NzLzY2ZGJ5U2F1dGZoTVVpSjYwVWVsZndtS3N5VEwvYkJzbG9qd3NuNXhWZGVLdHI5bEdnWEt1U1UwQW92UjBvbm5sM3NxRHNNZHhJd3FwUkVpcm5xcFBTdmlKTlgvMklzZ0VPWUpzNjY2Ym16TzBEclFUVWU0cVJiUkk1dktvenRQdWV5UU9LbmpyVitMWTFsMDkwbENiQmlObDJzbWtvUTdyYmNqVzFmNXoyNmllMzlsbHNVU21UY1EvYnhrVS9SMUQwUm1HL1hDRTRTRzFSNDRkZz09', '2026-06-27 17:59:21', 1),
 	(2, 'ZWxGaW5kZXJ8dTVYaUpVZVRvZVd5dHljRlVDaGhYbS9qSXFjTGNqSitsYUN0cHRUVDM4OHJ2SzBHSUVqSGRWa0t3OUtVUkE1N0VQbHkxbHpmbFo1U3F6bzRpclpkNUtCK3VEYVEwS3hYZlFWMGxYQTkyYUcrMXNiUDRLSkRUQTR6VE12T2R5WjdoOXJtY2U3eXYyRmQ5REoxeHg5K1BvS002TG5lOWpLeVA4ZU85TUw5MVJ5QUwwQ0xmb3JoU1pleCtPVXhsUC9DTWlFYU5hQWZIODJvcUE9PQ==', '2026-06-27 17:59:38', 1),
@@ -514,7 +531,7 @@ INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`,
 	('admin', 5, '2026-05-11 19:10:06', '2026-05-12 13:48:03', ''),
 	('admin', 8, '2026-05-12 14:36:21', '2026-05-12 14:44:00', ''),
 	('admin', 9, '2026-05-26 13:59:36', '2026-05-26 13:59:39', ''),
-	('admin', 10, '2026-05-28 12:30:41', '2026-05-28 00:39:00', ''),
+	('admin', 10, '2026-05-28 12:30:41', '2026-05-28 00:39:00', 'This one needs help!'),
 	('admin', 11, '2026-05-28 12:39:50', '2026-05-28 12:39:56', ''),
 	('admin', 12, '2026-05-28 12:39:57', '2026-05-28 12:47:36', ''),
 	('admin', 13, '2026-05-28 12:47:44', '2026-05-28 12:49:33', ''),

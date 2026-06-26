@@ -1,7 +1,4 @@
 <?php
-//The module responsible for dashboard content on the admin portal. 
-// yep
-
 /**
  * @module adminArtistManagement
  * @name ArtistManagement
@@ -37,8 +34,20 @@ if(isset($_GET['removeArtistFromProject'])){
     RemoveArtistFromProject($params[0], $params[1]);
 }
 
+// ════════════════════════════════════════════════════════════
+//  SECONDARY ROLE HANDLERS
+// ════════════════════════════════════════════════════════════
+if(isset($_GET['addSecondaryRoleToArtist'])){
+    $params = explode(",", $_GET['addSecondaryRoleToArtist']);
+    AddSecondaryRoleToArtist($params[0], $params[1]);
+}
+
+if(isset($_GET['removeSecondaryRoleFromArtist'])){
+    $params = explode(",", $_GET['removeSecondaryRoleFromArtist']);
+    RemoveSecondaryRoleFromArtist($params[0], $params[1]);
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
-    // Resolve artist_id → artist username
     $pdo = DBConnect();
     $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM artists WHERE username = ?");
     $stmt->execute([$_POST['artist_id']]);
@@ -78,7 +87,7 @@ async function refreshContent() {
 }
 
 // ==========================================================
-// Project assignment (already works — stays in place)
+// Project assignment
 // ==========================================================
 async function assignProject(username, pid) {
     if (!pid) return;
@@ -88,6 +97,20 @@ async function assignProject(username, pid) {
 
 async function removeProject(username, pid) {
     await ajaxGet('?removeArtistFromProject=' + username + ',' + pid);
+    await refreshContent();
+}
+
+// ==========================================================
+// Secondary Role assignment
+// ==========================================================
+async function assignSecondaryRole(username, roleName) {
+    if (!roleName) return;
+    await ajaxGet('?addSecondaryRoleToArtist=' + username + ',' + roleName);
+    await refreshContent();
+}
+
+async function removeSecondaryRole(username, roleName) {
+    await ajaxGet('?removeSecondaryRoleFromArtist=' + username + ',' + roleName);
     await refreshContent();
 }
 
@@ -171,14 +194,12 @@ function initPageListeners() {
     // --- File selected → upload via AJAX ---
     const fileInput = document.getElementById('fileUploadInput');
     if (fileInput) {
-        // Remove old listener to avoid duplicates
         const newInput = fileInput.cloneNode(true);
         fileInput.parentNode.replaceChild(newInput, fileInput);
         newInput.addEventListener('change', function() {
             if (this.files.length > 0) {
                 uploadDocument(this.dataset.artistId, this.files[0]);
             }
-            // Reset so re-selecting the same file triggers change again
             this.value = '';
         });
     }
@@ -224,7 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="module-card module-card--span-2"> Stats </div>
         <div class="module-card module-card--span-1"> <h1>Create new Artist</h1>
-            <!-- CHANGED: added id="createArtistForm" so JS can intercept submit -->
             <form method="GET" class="module-create-form" action="" id="createArtistForm">
                 <input class="module-input" type="hidden" name="CreateArtist" placeholder="Enter Artist name" />
                 <input class="module-input" type="text" name="username" placeholder="Username" required/><br />
