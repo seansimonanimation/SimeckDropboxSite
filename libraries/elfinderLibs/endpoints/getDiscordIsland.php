@@ -11,11 +11,6 @@ require_once __ROOT__ . '/libraries/floatingIslandLib.php';
 
 // Accept files as JSON either from POST body or GET parameter
 $filesJson = $_POST['files'] ?? $_GET['files'] ?? '';
-$files = json_decode($filesJson, true);
 
-if (empty($files) || !is_array($files)) {
-    echo LoadSendToDiscordIsland([]);
-    exit;
-}
 $folderHash = $_POST['folderHash'] ?? '';
-echo LoadSendToDiscordIsland($files, $folderHash);
+echo LoadSendToDiscordIsland(json_decode($filesJson, true), $folderHash);
