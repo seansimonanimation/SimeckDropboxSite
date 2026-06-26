@@ -313,7 +313,7 @@ function verifyCurrentPW($currentPW, $artistData){
             </div>
             <div class="module-card__content">
                 <p style="font-size:0.85rem;color:var(--color-text-muted,#888);margin:0 0 12px 0;">
-                    Click any half-hour block to toggle your availability. Click <strong>Apply</strong> when done.
+                    Click and drag over half-hour blocks to toggle your availability. Click <strong>Apply</strong> when done.
                 </p>
 
                 <form id="av-form" method="post" action="">
