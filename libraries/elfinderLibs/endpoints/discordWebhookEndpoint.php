@@ -143,9 +143,8 @@ foreach ($batches as $idx => $batch) {
 
     // Build the embed message
     $messageContentCount = count($batch);
-    $content = "📁 " . $messageContentCount . " 📁 file" . ($messageContentCount === 1 ? ' was' : 's were') . " uploaded to the channel by {$senderName}{$partLabel}";
     $fileList = array_map(function($fe) { return '• `' . $fe['name'] . '`'; }, $batch);
-    $content .= "\n" . implode("\n", $fileList);
+    $content = implode(", ", $fileList) . ($messageContentCount === 1 ? ' was' : ' were all') . " uploaded to the channel by {$senderName}{$partLabel}";
     $note = trim($_POST['note'] ?? '');
     if ($note !== '') {
         $content .= "\n\n> *{$note}*\n";
