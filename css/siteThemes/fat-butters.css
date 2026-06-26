@@ -3,12 +3,16 @@
 /* @author Simeck Entertainment */
 
 body.theme-fat-butters {
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/fatButters.mp4';
+  --theme-bg-video-opacity:   1;
+
   --color-primary:        #F59E0B;
   --color-primary-dark:   #D97706;
   --color-primary-light:  #FBBF24;
   --color-primary-xlight: #FEF3C7;
 
   --color-bg:             #1C1917;
+  --color-bg-video:       #1C191788; 
   --color-bg-mid:         #292524;
   --color-bg-raised:      #3C3530;
   --color-surface:        #44403C;

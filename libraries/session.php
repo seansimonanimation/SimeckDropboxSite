@@ -41,6 +41,7 @@ function PutArtistDataInSession($artistData){
     $_SESSION['phone_country_code'] = decryptImportantData($artistData['phone_country_code'] ?? 1);
     $_SESSION['phone_number'] = decryptImportantData($artistData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $artistData['receive_texts'] ?? 0;
+    $_SESSION['bgvid_visibility'] = $artistData['bgvid_visibility'] ?? 1;
     $_SESSION['tempRole'] = $artistData['role']; // Store the original role in a temporary variable so admins can view as artist role.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
@@ -60,6 +61,7 @@ function PutClientDataInSession($clientData){
     $_SESSION['phone_country_code'] = decryptImportantData($clientData['phone_country_code'] ?? '+1');
     $_SESSION['phone_number'] = decryptImportantData($clientData['phone_number'] ?? null);
     $_SESSION['receive_texts'] = $clientData['receive_texts'] ?? 0;
+    $_SESSION['bgvid_visibility'] = $clientData['bgvid_visibility'] ?? 1;
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }

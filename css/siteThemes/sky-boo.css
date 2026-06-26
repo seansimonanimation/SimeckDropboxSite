@@ -3,12 +3,17 @@
 /* @author Simeck Entertainment */
 
 body.theme-sky-boo {
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/skyBoo.mp4';
+  --theme-bg-video-opacity:   1;
+
+
   --color-primary:        #7EC8E3;
   --color-primary-dark:   #5BA3C0;
   --color-primary-light:  #A8DAEF;
   --color-primary-xlight: #48acca;
 
   --color-bg:             #3d7e94;
+  --color-bg-video:       #3d7e9466;
   --color-bg-mid:         #60a6b5;
   --color-bg-raised:      #b4f0f8;
   --color-surface:        #cefeff;

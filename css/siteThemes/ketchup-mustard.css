@@ -3,12 +3,17 @@
 /* @author Simeck Entertainment */
 
 body.theme-ketchup-mustard {
+
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/ketchupMustard.mp4';
+  --theme-bg-video-opacity:   1;
+
   --color-primary:        #EF4444;
   --color-primary-dark:   #DC2626;
   --color-primary-light:  #F87171;
   --color-primary-xlight: #FEE2E2;
 
   --color-bg:             #1F1B1B;
+  --color-bg-video:       #1F1B1B66; 
   --color-bg-mid:         #2C2626;
   --color-bg-raised:      #3D3333;
   --color-surface:        #4A3D3D;

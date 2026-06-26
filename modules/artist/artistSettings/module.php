@@ -165,8 +165,8 @@ function verifyCurrentPW($currentPW, $artistData){
         <?php if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy') { echo ArtistSettingsSuccessDisplay('You are logged in with the default password. Please change your password.'); }?>
 
         <?php
-        $themes = DiscoverThemes();
-        $currentTheme = $_SESSION['theme'] ?? 'dark-boo';
+            $themes = DiscoverThemes();
+            $currentTheme = $_SESSION['theme'] ?? 'dark-boo';
         ?>
         <div class="module-card module-card--span-1">
             <div class="module-card__header">
@@ -187,6 +187,13 @@ function verifyCurrentPW($currentPW, $artistData){
                     <input type="hidden" name="action" value="set_theme">
                     <noscript><button type="submit" class="btn--sm">Apply</button></noscript>
                 </form>
+                        <div class="bgvid-toggle-row">
+                <span>Background Video</span>
+                <a href="index.php?action=toggle_bgvid" class="bgvid-toggle-link">
+                    <?php echo !empty($_SESSION['bgvid_visibility']) ? '✅' : '❌'; ?>
+                </a>
+                </div>
+
             </div>
         </div>
         <div class="module-card module-card--span-1">

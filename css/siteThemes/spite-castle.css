@@ -3,12 +3,16 @@
 /* @author Simeck Entertainment */
 
 body.theme-spite-castle {
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/spiteCastle.mp4';
+  --theme-bg-video-opacity:   1;
+
   --color-primary:        #8B5CF6;
   --color-primary-dark:   #7C3AED;
   --color-primary-light:  #A78BFA;
   --color-primary-xlight: #EDE9FE;
 
   --color-bg:             #0D0B1E;
+  --color-bg-video:      #0D0B1E66;
   --color-bg-mid:         #1A1533;
   --color-bg-raised:      #231E40;
   --color-surface:        #2D2650;

@@ -3,12 +3,16 @@
 /* @author Simeck Entertainment */
 
 body.theme-dark-boo {
+  --theme-bg-video-src:       'globalSiteAssets/bgVideos/darkBoo.mp4';
+  --theme-bg-video-opacity:   1;
+
   --color-primary:        #1E5AC4;
   --color-primary-dark:   #154496;
   --color-primary-light:  #3B7AE0;
   --color-primary-xlight: #E6EEFC;
 
   --color-bg:             #0F1729;
+  --color-bg-video:       #0F172966;
   --color-bg-mid:         #172440;
   --color-bg-raised:      #1C2C4D;
   --color-surface:        #23365C;

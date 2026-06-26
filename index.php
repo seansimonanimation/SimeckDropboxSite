@@ -52,9 +52,17 @@ function adminSwitchViewButtonActivation(){
 ?>
    <title>Simeck Entertainment <?php echo GetTempRole(); ?> Portal<br /></title>
 </head>
-<body class="portal-layout <?php echo GetThemeClass(); ?> <?php echo htmlspecialchars($_SESSION['ActiveModule'] ?? ''); ?>">
+<body class="portal-layout <?php echo GetThemeClass(); ?> <?php echo htmlspecialchars($_SESSION['ActiveModule'] ?? ''); ?><?php if (!empty($_SESSION['bgvid_visibility'])): ?> bgvid-active<?php endif; ?>">
+
+<?php if (!empty($_SESSION['bgvid_visibility'])): ?>
+<div class="theme-bg-video" aria-hidden="true">
+  <video autoplay muted loop playsinline></video>
+</div>
+<?php endif; ?>
+
 
    <aside id="sidebar" role="navigation">
+
       <div class="sidebar-header"><?php echo $_SESSION['tempRole']; ?> portal
    <br /> <?php echo adminSwitchViewButtonActivation(); ?></div>
    <nav>
@@ -135,7 +143,28 @@ function adminSwitchViewButtonActivation(){
     maxZ++;
     island.style.zIndex = maxZ;
   });
-})();
+  })();
+
+  /* ── Theme background video ────────────────────────────── */
+  (function() {
+    var style = getComputedStyle(document.body);
+    var src  = style.getPropertyValue('--theme-bg-video-src').trim();
+    var opacity = style.getPropertyValue('--theme-bg-video-opacity').trim();
+    if (src) {
+      src = src.replace(/^['"]|['"]$/g, '');
+      if (src) {
+        var vid = document.querySelector('.theme-bg-video video');
+        if (vid) {
+          if (opacity) vid.style.setProperty('opacity', opacity);
+          var source = document.createElement('source');
+          source.src   = src;
+          source.type  = 'video/mp4';
+          vid.appendChild(source);
+          vid.load();
+        }
+      }
+    }
+  })();
 </script>
    </body>
 </html>
