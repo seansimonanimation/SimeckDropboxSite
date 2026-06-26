@@ -15,6 +15,11 @@ if(isset($_GET['CreateArtist'])){
     CreateNewArtist($_GET['username'], $_GET['firstname'], $_GET['lastname']);
 }
 
+// ── Inline field update handler ──
+if(isset($_GET['action']) && $_GET['action'] === 'update_artist_field'){
+    UpdateArtistField($_GET['user_id'], $_GET['field'], $_GET['value']);
+}
+
 if(isset($_GET['addArtistToProject'])){
     $params = explode(",", $_GET['addArtistToProject']);
     AddArtistToProject($params[0], $params[1]);
@@ -155,6 +160,16 @@ async function uploadDocument(artistId, file) {
 }
 
 // ==========================================================
+// Inline field update — saves on blur / change
+// ==========================================================
+async function updateArtistField(userID, field, value) {
+    await ajaxGet('?action=update_artist_field&user_id=' + userID
+        + '&field=' + encodeURIComponent(field)
+        + '&value=' + encodeURIComponent(value));
+    await refreshContent();
+}
+
+// ==========================================================
 // Binds all event listeners (called on load AND after refresh)
 // ==========================================================
 function initPageListeners() {
@@ -218,6 +233,23 @@ function initPageListeners() {
             await refreshContent();
         });
     }
+
+    // --- Inline edit: text inputs (save on blur if changed) ---
+    document.querySelectorAll('.inline-edit-field').forEach(input => {
+        const origValue = input.value;
+        input.addEventListener('blur', function() {
+            if (this.value !== origValue) {
+                updateArtistField(this.dataset.userId, this.dataset.field, this.value);
+            }
+        });
+    });
+
+    // --- Inline edit: selects (save on change) ---
+    document.querySelectorAll('.inline-edit-select').forEach(sel => {
+        sel.addEventListener('change', function() {
+            updateArtistField(this.dataset.userId, this.dataset.field, this.value);
+        });
+    });
 }
 
 // ==========================================================

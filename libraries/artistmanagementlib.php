@@ -91,20 +91,47 @@ function GenerateArtistCards() {
         $artists = GetAllArtists();
     }
     foreach ($artists as $artist) {
+        $userId = (int)$artist['userID'];
+        $u = htmlspecialchars($artist['username'], ENT_QUOTES);
+        $fn = htmlspecialchars($artist['firstname'], ENT_QUOTES);
+        $ln = htmlspecialchars($artist['lastname'], ENT_QUOTES);
+        $nn = htmlspecialchars($artist['nickname'] ?? '', ENT_QUOTES);
+        $role = htmlspecialchars($artist['role'], ENT_QUOTES);
+
         echo '<div class="module-card module-card--span-4">';
-        echo '<table id="oneArtistTable" class="display module-tablecell" style="width:100%; border-collapse: collapse;">';
+        echo '<table class="one-artist-table">';
         echo '<thead><tr><th>Username</th><th>Legal Name</th><th>Active</th><th>Role</th><th>Secondary Roles</th><th>Availability</th><th>Project Assignments</th><th>Reset PW</th><th>Upload Document</th></tr></thead><tbody>';
         echo '<tr>';
-        echo '<td class="module-tablecell">' . htmlspecialchars($artist['username']) . '</td>';
-        echo '<td class="module-tablecell">' . htmlspecialchars(GetArtistNicknameAndLegalName($artist)) . '</td>';
 
-        echo '<td class="module-tablecell">' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
-        echo '<td class="module-tablecell">' . htmlspecialchars($artist['role']) . '</td>';
-        echo '<td class="module-tablecell">' . FetchArtistSecondaryRoles($artist['username'], $artist['secondary_roles'] ?? '') . '</td>';
-        echo '<td class="module-tablecell">' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
-        echo '<td class="module-tablecell">' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
-        echo '<td class="module-tablecell"><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
-        echo '<td class="module-tablecell"><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
+        // ── Username (inline editable) ──
+        echo '<td>'
+            . '<input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="username" value="' . $u . '">'
+            . '</td>';
+
+        // ── Legal Name: Given name, Surname, Nickname (stacked, inline editable) ──
+        echo '<td>'
+            . '<div class="inline-name-row">Given name <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="firstname" value="' . $fn . '"></div>'
+            . '<div class="inline-name-row">Surname   <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="lastname" value="' . $ln . '"></div>'
+            . '<div class="inline-name-row">Nickname  <input class="inline-edit-field" type="text" data-user-id="' . $userId . '" data-field="nickname" value="' . $nn . '" placeholder="nickname"></div>'
+            . '</td>';
+
+        echo '<td>' . GenerateArtistStatusButton($artist['username'], $artist['active']) . '</td>';
+
+        // ── Role (inline dropdown) ──
+        $adminSel = ($role === 'admin') ? 'selected' : '';
+        $artistSel = ($role === 'artist') ? 'selected' : '';
+        echo '<td>'
+            . '<select class="inline-edit-select" data-user-id="' . $userId . '" data-field="role">'
+            . '<option value="artist" ' . $artistSel . '>artist</option>'
+            . '<option value="admin" ' . $adminSel . '>admin</option>'
+            . '</select>'
+            . '</td>';
+
+        echo '<td>' . FetchArtistSecondaryRoles($artist['username'], $artist['secondary_roles'] ?? '') . '</td>';
+        echo '<td>' . DisplayArtistAvailability($artist['availability'] ?? '0|0|0|0|0|0|0', $artist['timezone'] ?? 'UTC') . '</td>';
+        echo '<td>' . FetchArtistProjectAssignments($artist['username'], $artist['project_assignments']) . '</td>';
+        echo '<td><button class="edit-artist-button reset-pw-button" data-artist-id="' . $artist['username'] . '">Reset PW</button></td>';
+        echo '<td><button class="upload-file-button" data-artist-id="' . $artist['username'] . '">Upload Document</button></td>';
         echo '</tr>';
         echo '</tbody></table>';
         echo $artist['firstname'] . '\'s files:<br />';
@@ -112,6 +139,7 @@ function GenerateArtistCards() {
         echo '</div>';
     }
 }
+
 function GetAllArtists(){
     $SQLString = "SELECT username, firstname, lastname, nickname, userID, role, active, secondary_roles, project_assignments, availability, availability_this_week, timezone FROM artists";
     $pdo = DBConnect();
@@ -458,4 +486,22 @@ function CreateNewArtist($username, $firstname, $lastname){
     $stmt = $pdo->prepare("INSERT INTO artists (username, firstname, lastname) VALUES (?, ?, ?)");
     $stmt->execute([$username, $firstname, $lastname]);
     RefreshPortal();
+}
+
+// ════════════════════════════════════════════════════════════
+//  INLINE FIELD UPDATE — used by adminArtistManagement inline edit
+// ════════════════════════════════════════════════════════════
+
+function UpdateArtistField($userID, $field, $value){
+    $allowed = ['username', 'firstname', 'lastname', 'nickname', 'role'];
+    if (!in_array($field, $allowed)) {
+        return;
+    }
+    if ($field === 'role' && !in_array($value, ['artist', 'admin'])) {
+        return;
+    }
+    $pdo = DBConnect();
+    $sql = "UPDATE artists SET `$field` = ? WHERE userID = ?";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$value, $userID]);
 }
