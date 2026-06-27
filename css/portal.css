@@ -972,3 +972,143 @@ body.portal-layout > main#content {
   scrollbar-width: thin;
   scrollbar-color: var(--color-primary-dark) var(--color-bg-mid);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Hamburger Toggle Button ────────────────────────────────────────── */
+.mobile-nav-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1001;
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  background: var(--color-bg-mid, #1a1a2e);
+  border: 1px solid var(--color-border, rgba(255,255,255,0.1));
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--color-text, #e0e0e0);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-toggle:hover {
+  background: var(--color-surface-hover, #2a2a3e);
+}
+.mobile-nav-toggle:active {
+  transform: scale(0.92);
+}
+
+/* ─── Mobile Nav Backdrop ───────────────────────────────────────────── */
+.mobile-nav-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.mobile-nav-backdrop.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* ─── Breakpoint: ≤768px (phones & small tablets) ───────────────────── */
+@media (max-width: 768px) {
+
+  /* Show the hamburger */
+  .mobile-nav-toggle {
+    display: flex;
+  }
+
+  /* Hide topbar entirely — no room */
+  #topbar {
+    display: none !important;
+  }
+
+  /* Rebuild body grid: single column, sidebar out of flow */
+  body.portal-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "content";
+  }
+
+  /* Sidebar becomes a fixed overlay that slides in from the top */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    grid-area: unset;                  /* remove from grid */
+    transform: translateY(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  /* When toggled open */
+  #sidebar.mobile-nav-open {
+    transform: translateY(0);
+  }
+
+  /* Sidebar header: keep compact */
+  #sidebar .sidebar-header {
+    height: auto;
+    padding: 14px 20px;
+    font-size: 0.65rem;
+  }
+
+  /* Nav links: larger touch targets */
+  #sidebar nav a {
+    padding: 14px 20px;
+    font-size: 1rem;
+    gap: 14px;
+  }
+  #sidebar nav a .nav-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Sidebar footer: padding for touch */
+  #sidebar .sidebar-footer {
+    padding: 8px 20px 16px;
+  }
+
+  /* Main content takes full width */
+  body.portal-layout > main#content {
+    grid-area: content;
+    height: 100vh;
+  }
+
+  /* Content padding reduction */
+  #topbar, .module { /* module padding handled in moduleStyle.css */ }
+  :root {
+    --content-padding: 16px;
+  }
+}
+
+/* ─── Extra small: ≤480px ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  body.portal-layout > main#content {
+    height: 100dvh;   /* use dynamic viewport height on iOS Safari */
+  }
+  #sidebar .sidebar-header {
+    padding: 10px 16px;
+  }
+  #sidebar nav a {
+    padding: 12px 16px;
+  }
+}

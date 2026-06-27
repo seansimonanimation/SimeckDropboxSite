@@ -108,16 +108,132 @@ body:not(.bgvid-active) .module {
   color: #0f4cfa;
 }
 
-@media (max-width: 640px) {
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Module Grid, Cards, Tables, Forms
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .module-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
   .module {
-    padding: 16px;
+    padding: 12px;
   }
 
   .module-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .module-title {
+    font-size: 1.4rem;
+  }
+
+  .module-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* All card spans collapse to single column */
+  .module-card--span-2,
+  .module-card--span-3,
+  .module-card--span-4,
+  .module-card--full {
+    grid-column: 1 / -1;
+  }
+
+  .module-card {
+    padding: 16px;
+  }
+
+  /* Remove hover transforms on touch devices (prevents sticky-hover) */
+  .module-card:hover {
+    transform: none;
+    box-shadow: 0 12px 30px var(--shadow-sm);
+  }
+
+  .module-card__header {
+    margin-bottom: 12px;
+  }
+
+  .module-card__title {
+    font-size: 1rem;
+  }
+
+  .module-card__content {
+    font-size: 0.9rem;
+  }
+
+  /* Tables: horizontal scroll on small screens */
+  .module-tablecell {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .module-tablecell table {
+    min-width: 500px;  /* force scroll rather than squish */
+  }
+
+  /* Form inputs: full width, larger touch targets */
+  .module-form-group input,
+  .module-form-group textarea,
+  .client-editable,
+  .inline-edit-field,
+  .inline-edit-select,
+  .proj-card__dropdown {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  /* Toggle: taller for touch */
+  .module-toggle {
+    height: 48px;
+  }
+
+  /* Buttons inside cards: full-width on mobile */
+  .module-card .btn--sm,
+  .module-card .btn--xs {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 14px;
+  }
+
+  /* Project card data row: stack to 2 columns */
+  .proj-card__data-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Client edit table labels: don't force width */
+  .client-label {
+    width: auto;
+    min-width: 80px;
+    white-space: normal;
+  }
+
+  .client-edit-table td {
+    padding: 8px 6px;
+  }
+
+  /* Artist management inline fields */
+  .inline-name-row {
+    flex-wrap: wrap;
+  }
+  .inline-name-row .inline-edit-field {
+    min-width: 80px;
+  }
+
+  /* Availability grid */
+  #av-grid-container {
+    overflow-x: auto;
   }
 }
+
 
 .admin-Artist-management-artist-document {
   display: inline-block;

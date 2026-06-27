@@ -51,8 +51,14 @@ function adminSwitchViewButtonActivation(){
       }
 ?>
    <title>Simeck Entertainment <?php echo GetTempRole(); ?> Portal<br /></title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 </head>
 <body class="portal-layout <?php echo GetThemeClass(); ?> <?php echo htmlspecialchars($_SESSION['ActiveModule'] ?? ''); ?><?php if (!empty($_SESSION['bgvid_visibility'])): ?> bgvid-active<?php endif; ?>">
+
+<!-- Mobile navigation toggle -->
+<button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Open navigation menu">☰</button>
+<div id="mobile-nav-backdrop" class="mobile-nav-backdrop"></div>
 
 <?php if (!empty($_SESSION['bgvid_visibility'])): ?>
 <div class="theme-bg-video" aria-hidden="true">
@@ -166,5 +172,44 @@ function adminSwitchViewButtonActivation(){
     }
   })();
 </script>
+
+<script>
+  /* ── Mobile navigation: slide-from-top sidebar ────────────────────── */
+  (function() {
+    var toggle = document.getElementById('mobile-nav-toggle');
+    var sidebar = document.getElementById('sidebar');
+    var backdrop = document.getElementById('mobile-nav-backdrop');
+    if (!toggle || !sidebar || !backdrop) return;
+
+    function openNav() {
+      sidebar.classList.add('mobile-nav-open');
+      backdrop.classList.add('visible');
+      toggle.setAttribute('aria-label', 'Close navigation menu');
+      toggle.innerHTML = '✕';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeNav() {
+      sidebar.classList.remove('mobile-nav-open');
+      backdrop.classList.remove('visible');
+      toggle.setAttribute('aria-label', 'Open navigation menu');
+      toggle.innerHTML = '☰';
+      document.body.style.overflow = '';
+    }
+    toggle.addEventListener('click', function() {
+      if (sidebar.classList.contains('mobile-nav-open')) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    });
+    backdrop.addEventListener('click', closeNav);
+    // Auto-close when a navigation link is clicked
+    var navLinks = sidebar.querySelectorAll('nav a');
+    for (var i = 0; i < navLinks.length; i++) {
+      navLinks[i].addEventListener('click', closeNav);
+    }
+  })();
+</script>
+
    </body>
 </html>
