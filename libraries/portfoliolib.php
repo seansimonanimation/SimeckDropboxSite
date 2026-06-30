@@ -216,12 +216,32 @@ function GenerateVideoThumbnail($filepath): bool {
         return false;
     }
     $thumbPath = $filepath . '.thumb.jpg';
+    
+    // Use elFinder's ffmpeg path if available
+    $ffmpeg = defined('ELFINDER_FFMPEG_PATH') ? ELFINDER_FFMPEG_PATH : 'ffmpeg';
+    
+    // Check if ffmpeg is available (same check elFinder uses)
+    $testCmd = $ffmpeg . ' -version 2>&1';
+    exec($testCmd, $testOutput, $testReturn);
+    if ($testReturn !== 0) {
+        return false; // ffmpeg not available
+    }
+    
+    // Use elFinder's default capture time (6 seconds)
     $escaped = escapeshellarg($filepath);
     $escapedThumb = escapeshellarg($thumbPath);
-    $cmd = "ffmpeg -i {$escaped} -ss 00:00:01 -vframes 1 -y {$escapedThumb} 2>/dev/null";
+    $cmd = "{$ffmpeg} -i {$escaped} -ss 00:00:06 -vframes 1 -y {$escapedThumb} 2>&1";
     exec($cmd, $output, $returnCode);
+    
+    if ($returnCode !== 0 || !file_exists($thumbPath)) {
+        // Fallback: try at 1 second
+        $cmd = "{$ffmpeg} -i {$escaped} -ss 00:00:01 -vframes 1 -y {$escapedThumb} 2>&1";
+        exec($cmd, $output, $returnCode);
+    }
+    
     return $returnCode === 0 && file_exists($thumbPath);
 }
+
 
 /**
  * Save text content to a .txt file in the portfolio directory.

@@ -236,6 +236,10 @@
         applyGalleryOrder();
         document.getElementById('portfolio-gallery-island').style.display = 'none';
     });
+    // Fit to Screen button
+    document.getElementById('portfolio-zoom-fit-btn')?.addEventListener('click', () => {
+        zoomToFit();
+    });
 
     // Zoom indicator click = fit to screen
     document.getElementById('portfolio-zoom-indicator')?.addEventListener('click', () => {
@@ -331,70 +335,98 @@
 
         list.innerHTML = '';
 
-        // Sort pieces by galleryOrder
-        const sorted = Array.from(state.pieces.values()).sort((a, b) => a.galleryOrder - b.galleryOrder);
+        const allPieces = Array.from(state.pieces.values());
+        // Sort: included (galleryOrder > 0) by order, then excluded (galleryOrder === 0) at bottom
+        const sorted = allPieces.sort((a, b) => {
+            if ((a.galleryOrder || 0) === 0 && (b.galleryOrder || 0) === 0) return 0;
+            if ((a.galleryOrder || 0) === 0) return 1;
+            if ((b.galleryOrder || 0) === 0) return -1;
+            return (a.galleryOrder || 1) - (b.galleryOrder || 1);
+        });
 
         for (let i = 0; i < sorted.length; i++) {
             const piece = sorted[i];
+            const isExcluded = !piece.galleryOrder || piece.galleryOrder === 0;
             const row = document.createElement('div');
-            row.className = 'portfolio-gallery-row';
-            row.draggable = !state.readOnly;
+            row.className = 'portfolio-gallery-row' + (isExcluded ? ' portfolio-gallery-excluded' : '');
+            row.draggable = !isExcluded && !state.readOnly;
             row.dataset.pieceId = piece.id;
 
             const dragHandle = document.createElement('span');
             dragHandle.className = 'portfolio-gallery-drag-handle';
-            dragHandle.textContent = '\u2261';
+            dragHandle.textContent = isExcluded ? '\u25CB' : '\u2261'; // circle vs hamburger
             row.appendChild(dragHandle);
 
             const thumb = document.createElement('span');
             thumb.className = 'portfolio-gallery-thumb';
             let label = piece.filename || piece.type;
             if (piece.type === 'text') label = '"' + (piece.textContent?.substring(0, 30) || 'text') + '"';
-            thumb.textContent = label.substring(0, 40);
+            thumb.textContent = label.substring(0, 40) + (isExcluded ? ' (Excluded)' : '');
             row.appendChild(thumb);
 
-            const order = document.createElement('span');
-            order.className = 'portfolio-gallery-order';
-            order.textContent = i + 1;
-            row.appendChild(order);
-
-            // Drag events
-            row.addEventListener('dragstart', (e) => {
-                e.dataTransfer.setData('text/plain', piece.id);
-                row.classList.add('portfolio-gallery-dragging');
-            });
-
-            row.addEventListener('dragend', () => {
-                row.classList.remove('portfolio-gallery-dragging');
-            });
-
-            row.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                row.classList.add('portfolio-gallery-dragover');
-            });
-
-            row.addEventListener('dragleave', () => {
-                row.classList.remove('portfolio-gallery-dragover');
-            });
-
-            row.addEventListener('drop', (e) => {
-                e.preventDefault();
-                row.classList.remove('portfolio-gallery-dragover');
-                const draggedId = e.dataTransfer.getData('text/plain');
-                const targetId = piece.id;
-                if (draggedId === targetId) return;
-
-                // Swap gallery orders
-                const draggedPiece = state.pieces.get(draggedId);
-                const targetPiece = state.pieces.get(targetId);
-                if (draggedPiece && targetPiece) {
-                    const tempOrder = draggedPiece.galleryOrder;
-                    draggedPiece.galleryOrder = targetPiece.galleryOrder;
-                    targetPiece.galleryOrder = tempOrder;
-                    showGalleryOrder(); // Re-render
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'portfolio-gallery-toggle-btn';
+            if (isExcluded) {
+                toggleBtn.textContent = 'Include';
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Assign next available gallery order
+                    const maxOrder = Math.max(0, ...Array.from(state.pieces.values()).map(p => p.galleryOrder || 0));
+                    piece.galleryOrder = maxOrder + 1;
                     state.markDirty();
-                }
-            });
+                    showGalleryOrder(); // Re-render
+                });
+            } else {
+                toggleBtn.textContent = 'Remove';
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    piece.galleryOrder = 0;
+                    state.markDirty();
+                    showGalleryOrder(); // Re-render
+                });
+            }
+            row.appendChild(toggleBtn);
+
+            // Drag events (only for included pieces)
+            if (!isExcluded && !state.readOnly) {
+                row.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', piece.id);
+                    row.classList.add('portfolio-gallery-dragging');
+                });
+
+                row.addEventListener('dragend', () => {
+                    row.classList.remove('portfolio-gallery-dragging');
+                });
+
+                row.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    row.classList.add('portfolio-gallery-dragover');
+                });
+
+                row.addEventListener('dragleave', () => {
+                    row.classList.remove('portfolio-gallery-dragover');
+                });
+
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    row.classList.remove('portfolio-gallery-dragover');
+                    const draggedId = e.dataTransfer.getData('text/plain');
+                    const targetId = piece.id;
+                    if (draggedId === targetId) return;
+
+                    const draggedPiece = state.pieces.get(draggedId);
+                    if (draggedPiece) {
+                        // Only swap if target is also included
+                        if (piece.galleryOrder > 0) {
+                            const tempOrder = draggedPiece.galleryOrder;
+                            draggedPiece.galleryOrder = piece.galleryOrder;
+                            piece.galleryOrder = tempOrder;
+                            showGalleryOrder();
+                            state.markDirty();
+                        }
+                    }
+                });
+            }
 
             list.appendChild(row);
         }
@@ -402,14 +434,31 @@
         island.style.display = 'flex';
     }
 
+
     function applyGalleryOrder() {
-        // Update gallery order numbers to be sequential
-        const sorted = Array.from(state.pieces.values()).sort((a, b) => a.galleryOrder - b.galleryOrder);
+        const sorted = Array.from(state.pieces.values())
+            .filter(p => p.galleryOrder > 0)
+            .sort((a, b) => a.galleryOrder - b.galleryOrder);
         for (let i = 0; i < sorted.length; i++) {
             sorted[i].galleryOrder = i + 1;
         }
         state.markDirty();
     }
+
+    // Zoom in/out buttons
+    document.getElementById('portfolio-zoom-in-btn')?.addEventListener('click', () => {
+        const newZoom = Math.min(5, state.zoom + 0.1);
+        state.zoom = newZoom;
+        PortfolioRenderer.applyViewTransform(canvas, state.zoom, state.panX, state.panY);
+        PortfolioRenderer.updateZoomIndicator(state.zoom);
+    });
+
+    document.getElementById('portfolio-zoom-out-btn')?.addEventListener('click', () => {
+        const newZoom = Math.max(0.1, state.zoom - 0.1);
+        state.zoom = newZoom;
+        PortfolioRenderer.applyViewTransform(canvas, state.zoom, state.panX, state.panY);
+        PortfolioRenderer.updateZoomIndicator(state.zoom);
+    });
 
     // ── Zoom to Fit ──
     function zoomToFit() {
@@ -422,13 +471,22 @@
             return;
         }
 
-        // Calculate bounding box of all pieces
+        // Calculate bounding box of all pieces using actual DOM dimensions
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         for (const piece of state.pieces.values()) {
+            const el = canvas.querySelector(`[data-piece-id="${piece.id}"]`);
+            let w = 200, h = 200;
+            if (el) {
+                w = el.offsetWidth || 200;
+                h = el.offsetHeight || 200;
+            } else if (piece.type === 'text') {
+                w = (piece.baseWidth || 200) * piece.scaleX;
+                h = (piece.baseHeight || 48) * piece.scaleY;
+            }
             minX = Math.min(minX, piece.x);
             minY = Math.min(minY, piece.y);
-            maxX = Math.max(maxX, piece.x + 200 * piece.scaleX); // Approximate width
-            maxY = Math.max(maxY, piece.y + 200 * piece.scaleY);
+            maxX = Math.max(maxX, piece.x + w);
+            maxY = Math.max(maxY, piece.y + h);
         }
 
         const contentWidth = maxX - minX + 100;
@@ -437,9 +495,8 @@
         const wrapperRect = canvasWrapper.getBoundingClientRect();
         const zoomX = wrapperRect.width / contentWidth;
         const zoomY = wrapperRect.height / contentHeight;
-        state.zoom = Math.min(zoomX, zoomY, 2); // Cap at 2x
+        state.zoom = Math.min(zoomX, zoomY, 2);
 
-        // Center the content
         const centerX = (minX + maxX) / 2;
         const centerY = (minY + maxY) / 2;
         state.panX = (wrapperRect.width / 2) - (centerX * state.zoom);
@@ -448,6 +505,7 @@
         PortfolioRenderer.applyViewTransform(canvas, state.zoom, state.panX, state.panY);
         PortfolioRenderer.updateZoomIndicator(state.zoom);
     }
+
 
     // ── Apply theme background ──
     function applyThemeBackground() {

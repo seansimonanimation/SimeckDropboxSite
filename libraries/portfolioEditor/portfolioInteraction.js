@@ -299,6 +299,7 @@ startRotate(e) {
         const dx = (e.clientX - rs.startX) / this.state.zoom;
         const dy = (e.clientY - rs.startY) / this.state.zoom;
         const piece = rs.piece;
+        const shift = e.shiftKey;
 
         let newSx = rs.origScaleX;
         let newSy = rs.origScaleY;
@@ -307,30 +308,54 @@ startRotate(e) {
             case 'se':
                 newSx = Math.max(0.05, rs.origScaleX + dx / 100);
                 newSy = Math.max(0.05, rs.origScaleY + dy / 100);
+                if (shift) {
+                    const avg = (newSx + newSy) / 2;
+                    newSx = avg;
+                    newSy = avg;
+                }
                 break;
             case 'sw':
                 newSx = Math.max(0.05, rs.origScaleX - dx / 100);
                 newSy = Math.max(0.05, rs.origScaleY + dy / 100);
+                if (shift) {
+                    const avg = (newSx + newSy) / 2;
+                    newSx = avg;
+                    newSy = avg;
+                }
                 break;
             case 'ne':
                 newSx = Math.max(0.05, rs.origScaleX + dx / 100);
                 newSy = Math.max(0.05, rs.origScaleY - dy / 100);
+                if (shift) {
+                    const avg = (newSx + newSy) / 2;
+                    newSx = avg;
+                    newSy = avg;
+                }
                 break;
             case 'nw':
                 newSx = Math.max(0.05, rs.origScaleX - dx / 100);
                 newSy = Math.max(0.05, rs.origScaleY - dy / 100);
+                if (shift) {
+                    const avg = (newSx + newSy) / 2;
+                    newSx = avg;
+                    newSy = avg;
+                }
                 break;
             case 'e':
                 newSx = Math.max(0.05, rs.origScaleX + dx / 100);
+                if (shift) newSy = newSx / (rs.origScaleX / rs.origScaleY || 1);
                 break;
             case 'w':
                 newSx = Math.max(0.05, rs.origScaleX - dx / 100);
+                if (shift) newSy = newSx / (rs.origScaleX / rs.origScaleY || 1);
                 break;
             case 'n':
                 newSy = Math.max(0.05, rs.origScaleY - dy / 100);
+                if (shift) newSx = newSy * (rs.origScaleX / rs.origScaleY || 1);
                 break;
             case 's':
                 newSy = Math.max(0.05, rs.origScaleY + dy / 100);
+                if (shift) newSx = newSy * (rs.origScaleX / rs.origScaleY || 1);
                 break;
         }
 
@@ -345,6 +370,7 @@ startRotate(e) {
         this.updateChannelBox();
         this.state.markDirty();
     },
+
 
     /**
      * Execute rotation.

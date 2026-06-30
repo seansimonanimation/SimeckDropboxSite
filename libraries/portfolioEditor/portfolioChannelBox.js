@@ -58,7 +58,7 @@ const PortfolioChannelBox = {
                             case 'rot': piece.rot = val; break;
                             case 'scalex': piece.scaleX = Math.max(0.01, val); break;
                             case 'scaley': piece.scaleY = Math.max(0.01, val); break;
-                            case 'gallery-order': piece.galleryOrder = Math.max(1, Math.round(val)); break;
+                            case 'gallery-order': piece.galleryOrder = Math.max(0, Math.round(val)); break;
                         }
                     }
                 }
@@ -246,7 +246,7 @@ const PortfolioChannelBox = {
         setVal('channel-scalex', Math.round(piece.scaleX * 100) / 100);
         setVal('channel-scaley', Math.round(piece.scaleY * 100) / 100);
         setVal('channel-caption', piece.caption || '');
-        setVal('channel-gallery-order', piece.galleryOrder || 1);
+        setVal('channel-gallery-order', piece.galleryOrder || 0);
         setVal('channel-fontsize', piece.fontSize || 14);
     }
 };

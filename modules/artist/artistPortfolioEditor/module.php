@@ -46,6 +46,7 @@ $files = ListPortfolioFiles($username);
                 <?php endif; ?>
             </div>
             <div class="portfolio-toolbar-right">
+                <button class="portfolio-btn" id="portfolio-zoom-fit-btn" title="Fit all pieces to screen">Fit to Screen</button>
                 <button class="portfolio-btn" id="portfolio-gallery-order-btn" title="Arrange gallery order">Arrange Gallery Order</button>
                 <?php if (!$readOnly): ?>
                 <label class="portfolio-publish-toggle" title="Publish portfolio to main site">
@@ -65,6 +66,12 @@ $files = ListPortfolioFiles($username);
             <div class="portfolio-canvas-wrapper" id="portfolio-canvas-wrapper">
                 <div class="portfolio-canvas" id="portfolio-canvas">
                     <!-- Pieces rendered here by JS -->
+                </div>
+                    <div class="portfolio-zoom-controls" id="portfolio-zoom-controls">
+                    <button class="portfolio-zoom-btn" id="portfolio-zoom-out-btn" title="Zoom Out">−</button>
+                    <span class="portfolio-zoom-level" id="portfolio-zoom-text">100%</span>
+                    <button class="portfolio-zoom-btn" id="portfolio-zoom-in-btn" title="Zoom In">+</button>
+                    <button class="portfolio-zoom-btn" id="portfolio-zoom-fit-btn" title="Fit to Screen">⊡</button>
                 </div>
                 <div class="portfolio-canvas-zoom-indicator" id="portfolio-zoom-indicator">
                     <span id="portfolio-zoom-text">100%</span>

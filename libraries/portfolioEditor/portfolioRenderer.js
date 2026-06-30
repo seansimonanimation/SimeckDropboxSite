@@ -36,6 +36,11 @@ const PortfolioRenderer = {
             img.alt = piece.filename;
             img.onerror = function() {
                 this.style.display = 'none';
+                // Show a fallback icon
+                const fallback = document.createElement('div');
+                fallback.className = 'portfolio-piece-video-fallback';
+                fallback.innerHTML = '&#9654;<br><small>' + piece.filename + '</small>';
+                inner.appendChild(fallback);
             };
             inner.appendChild(img);
             const playOverlay = document.createElement('div');
