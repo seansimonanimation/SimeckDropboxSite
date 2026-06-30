@@ -122,6 +122,14 @@ body:not(.bgvid-active) .module {
   .module {
     padding: 12px;
   }
+  #av-grid-container .av-cell {
+    width: 18px !important;
+    height: 26px !important;
+  }
+  #av-grid-container > div {
+    overflow-x: auto;
+    max-width: 100%;
+  }
 
   .module-header {
     flex-direction: column;
@@ -645,4 +653,42 @@ body:not(.bgvid-active) .module {
   flex: 1;
   min-width: 100px;
   max-width: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SETTINGS MODULE — Mobile overrides (inline styles now removed from PHP)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 600px) {
+
+  /* Selects and inputs should be full width on mobile */
+  .module-card .module-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Time-off date/time inputs */
+  #timeoff_date_start,
+  #timeoff_date_end,
+  #timeoff_start_time,
+  #timeoff_end_time {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Availability grid: ensure card allows horizontal scroll */
+  div.module-card:has(#av-grid-container) {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Admin Settings: secondary roles table scroll */
+  .module-card table {
+    min-width: 300px;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

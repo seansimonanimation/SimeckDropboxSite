@@ -175,3 +175,24 @@
 .ui-widget-overlay {
   background: rgba(0, 0, 0, 0.6);
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE — Comments dialog
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .ui-dialog[aria-describedby="elfinder-seeComments-dialog"] {
+    width: 100vw !important;
+    height: 100vh !important;
+    left: 0 !important;
+    top: 0 !important;
+    border-radius: 0;
+  }
+
+  .ui-dialog[aria-describedby="elfinder-seeComments-dialog"] .ui-dialog-content {
+    height: calc(100vh - 100px) !important;
+  }
+
+  .seeComments-comments-list {
+    max-height: none;
+  }
+}
