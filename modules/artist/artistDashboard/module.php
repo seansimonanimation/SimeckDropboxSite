@@ -53,7 +53,7 @@ if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEO
             <h2>Team Member Availability Checker</h2>
             <div style="margin-bottom:12px;">
                 <label for="av-artist-select">Select an artist:</label>
-                <select id="av-artist-select" class="module-input" style="width:100%;max-width:400px;">
+                <select id="av-artist-select" class="module-input" style="width:100%;">
                     <option value="">-- My Availability --</option>
                     <?php foreach($artistList as $a): ?>
                         <option value="<?php echo htmlspecialchars($a['username']); ?>">
@@ -85,7 +85,7 @@ if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEO
             <div id="calc-artist-section">
                 <div style="margin-bottom:12px;">
                     <label for="dtc-artist-select">Select Artist:</label>
-                    <select id="dtc-artist-select" class="module-input" style="width:100%;max-width:400px;">
+                    <select id="dtc-artist-select" class="module-input" style="width:100%;">
                         <option value="">-- Select Artist --</option>
                         <?php foreach($artistList as $a): ?>
                             <option value="<?php echo htmlspecialchars($a['username']); ?>">
@@ -99,7 +99,7 @@ if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEO
             <div id="calc-tz-section" style="display:none;">
                 <div style="margin-bottom:12px;">
                     <label for="dtc-timezone-select">Select Timezone:</label>
-                    <select id="dtc-timezone-select" class="module-input" style="width:100%;max-width:400px;">
+                    <select id="dtc-timezone-select" class="module-input" style="width:100%;">
                         <option value="">-- Select Timezone --</option>
                         <?php
                             $tzs = DateTimeZone::listIdentifiers();
@@ -116,11 +116,11 @@ if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEO
 
             <div style="margin-bottom:12px;">
                 <label for="dtc-date">Date:</label>
-                <input type="date" id="dtc-date" class="module-input" style="width:100%;max-width:400px;">
+                <input type="date" id="dtc-date" class="module-input" style="width:100%;">
             </div>
             <div style="margin-bottom:12px;">
                 <label for="dtc-time">Time:</label>
-                <input type="time" id="dtc-time" class="module-input" style="width:100%;max-width:400px;">
+                <input type="time" id="dtc-time" class="module-input" style="width:100%;">
             </div>
             <div id="dtc-result" style="margin-top:12px;padding:12px;border-radius:6px;border:1px solid #ccc;min-height:20px;">
                 Select an artist or timezone and enter a date &amp; time to convert.

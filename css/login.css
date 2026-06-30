@@ -230,3 +230,56 @@ body {
          25%      { transform: translateX(-5px); }
          75%      { transform: translateX(5px); }
       }
+      
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — Login Page
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  body {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 24px 20px 24px;
+    border-radius: 16px;
+  }
+
+  .card-header h1 {
+    font-size: 1.3rem;
+  }
+
+  input[type="username"],
+  select,
+  input[type="password"] {
+    width: 100%;              /* full width instead of 80% */
+    font-size: 16px;          /* prevent iOS zoom on focus */
+    padding: 12px 18px;
+  }
+
+  .loginButton {
+    font-size: 1rem;
+    padding: 14px;
+  }
+
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .bg-logo {
+    width: 90vw;
+  }
+
+  .site-header {
+    margin-bottom: 20px;
+  }
+
+  .logo-mark {
+    width: 44px;
+    height: 44px;
+  }
+
+  .site-title {
+    font-size: 0.95rem;
+  }
+}
