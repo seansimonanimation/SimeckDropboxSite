@@ -240,3 +240,146 @@ if(isset($_GET['action']) && $_GET['action'] === 'convert_datetime' && isset($_G
     exit;
 }
 
+// ════════════════════════════════════════════════════════
+// PORTFOLIO EDITOR — Action Handlers
+// ════════════════════════════════════════════════════════
+
+if (isset($_GET['action']) && strpos($_GET['action'], 'portfolio_') === 0) {
+    include_once __ROOT__ . '/libraries/portfoliolib.php';
+}
+
+// ── portfolio_load ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_load' && isset($_GET['artist'])) {
+    header('Content-Type: application/json');
+    
+    $targetArtist = preg_replace('/[^a-zA-Z0-9_\-]/', '', $_GET['artist']);
+    
+    // Permission check
+    $role = GetTempRole();
+    $isAdmin = ($role === 'admin');
+    $isOwner = ($_SESSION['username'] === $targetArtist);
+    
+    if (!$isAdmin && !$isOwner) {
+        echo json_encode(['success' => false, 'error' => 'Access denied']);
+        exit;
+    }
+    
+    // For admin/impersonating, load the target artist's portfolio
+    $portfolio = LoadPortfolio($targetArtist);
+    $pfpFile = FindPortfolioPfp($targetArtist);
+    $files = ListPortfolioFiles($targetArtist);
+    
+    echo json_encode([
+        'success' => true,
+        'portfolio' => $portfolio,
+        'pfp' => $pfpFile ? GetPortfolioWebPath($targetArtist) . '/' . $pfpFile : null,
+        'files' => $files
+    ]);
+    exit;
+}
+
+// ── portfolio_save ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_save') {
+    header('Content-Type: application/json');
+    
+    if (IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Cannot save while impersonating']);
+        exit;
+    }
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!$input) {
+        echo json_encode(['success' => false, 'error' => 'Invalid JSON']);
+        exit;
+    }
+    
+    $result = SavePortfolio($_SESSION['username'], $input);
+    echo json_encode($result);
+    exit;
+}
+
+// ── portfolio_upload ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_upload') {
+    header('Content-Type: application/json');
+    
+    if (IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Cannot upload while impersonating']);
+        exit;
+    }
+    
+    if (!isset($_FILES['file'])) {
+        echo json_encode(['success' => false, 'error' => 'No file uploaded']);
+        exit;
+    }
+    
+    $result = UploadPortfolioFile($_SESSION['username'], $_FILES['file']);
+    echo json_encode($result);
+    exit;
+}
+
+// ── portfolio_upload_pfp ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_upload_pfp') {
+    header('Content-Type: application/json');
+    
+    if (IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Cannot change profile picture while impersonating']);
+        exit;
+    }
+    
+    if (!isset($_FILES['file'])) {
+        echo json_encode(['success' => false, 'error' => 'No file uploaded']);
+        exit;
+    }
+    
+    $result = UploadPortfolioPfp($_SESSION['username'], $_FILES['file']);
+    if ($result['success']) {
+        $result['url'] = GetPortfolioWebPath($_SESSION['username']) . '/pfp.' . $result['ext'];
+    }
+    echo json_encode($result);
+    exit;
+}
+
+// ── portfolio_delete_file ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_delete_file') {
+    header('Content-Type: application/json');
+    
+    if (IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Cannot delete while impersonating']);
+        exit;
+    }
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $filename = $input['filename'] ?? $_POST['filename'] ?? '';
+    
+    if (empty($filename)) {
+        echo json_encode(['success' => false, 'error' => 'No filename specified']);
+        exit;
+    }
+    
+    $deleted = DeletePortfolioFile($_SESSION['username'], $filename);
+    echo json_encode(['success' => $deleted]);
+    exit;
+}
+
+// ── portfolio_save_text ──
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_save_text') {
+    header('Content-Type: application/json');
+    
+    if (IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Cannot edit while impersonating']);
+        exit;
+    }
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $filename = $input['filename'] ?? '';
+    $content = $input['content'] ?? '';
+    
+    if (empty($filename)) {
+        echo json_encode(['success' => false, 'error' => 'No filename specified']);
+        exit;
+    }
+    
+    $result = SavePortfolioTextFile($_SESSION['username'], $filename, $content);
+    echo json_encode($result);
+    exit;
+}
