@@ -7,10 +7,10 @@ const PortfolioRenderer = {
      * Create a DOM element for a portfolio piece.
      */
     createPieceElement(piece, state) {
-        const el = document.createElement('div');
-        el.className = 'portfolio-piece';
-        el.dataset.pieceId = piece.id;
-        el.style.zIndex = piece.z;
+        const element = document.createElement('div');
+        element.className = 'portfolio-piece';
+        element.dataset.pieceId = piece.id;
+        element.style.zIndex = piece.z;
 
         // Inner content based on type
         const inner = document.createElement('div');
@@ -20,13 +20,13 @@ const PortfolioRenderer = {
             inner.className += ' portfolio-piece-text';
             inner.textContent = piece.textContent || 'Double-click to edit';
             inner.style.fontSize = (piece.fontSize || 14) + 'px';
-            el.title = 'Double-click to edit text';
+            element.title = 'Double-click to edit text';
 
             // Set explicit dimensions (not using CSS scale for text)
             const bw = piece.baseWidth || 200;
             const bh = piece.baseHeight || 48;
-            el.style.width = Math.round(bw * piece.scaleX) + 'px';
-            el.style.height = Math.round(bh * piece.scaleY) + 'px';
+            element.style.width = Math.round(bw * piece.scaleX) + 'px';
+            element.style.height = Math.round(bh * piece.scaleY) + 'px';
         } else if (piece.type === 'video') {
             inner.className += ' portfolio-piece-video';
             const thumbUrl = state.portfolioDir + '/' + piece.filename + '.thumb.jpg';
@@ -68,31 +68,31 @@ const PortfolioRenderer = {
             inner.appendChild(img);
         }
 
-        el.appendChild(inner);
-        this.updatePieceTransform(el, piece);
-        return el;
+        element.appendChild(inner);
+        this.updatePieceTransform(element, piece);
+        return element;
     },
 
     /**
      * Update a piece element's CSS transform.
      */
-    updatePieceTransform(el, piece) {
-        el.style.zIndex = piece.z;
+    updatePieceTransform(element, piece) {
+        element.style.zIndex = piece.z;
         if (piece.type === 'text') {
             // Text pieces: no CSS scale — use explicit width/height instead
-            el.style.transform = `translate(${piece.x}px, ${piece.y}px) rotate(${piece.rot}deg)`;
+            element.style.transform = `translate(${piece.x}px, ${piece.y}px) rotate(${piece.rot}deg)`;
             const bw = piece.baseWidth || 200;
             const bh = piece.baseHeight || 48;
-            el.style.width = Math.round(bw * Math.abs(piece.scaleX)) + 'px';
-            el.style.height = Math.round(bh * Math.abs(piece.scaleY)) + 'px';
+            element.style.width = Math.round(bw * Math.abs(piece.scaleX)) + 'px';
+            element.style.height = Math.round(bh * Math.abs(piece.scaleY)) + 'px';
             // Update font size
-            const inner = el.querySelector('.portfolio-piece-text');
+            const inner = element.querySelector('.portfolio-piece-text');
             if (inner) {
                 inner.style.fontSize = (piece.fontSize || 14) + 'px';
             }
         } else {
             // All other piece types use CSS scale normally
-            el.style.transform = `translate(${piece.x}px, ${piece.y}px) rotate(${piece.rot}deg) scale(${piece.scaleX}, ${piece.scaleY})`;
+            element.style.transform = `translate(${piece.x}px, ${piece.y}px) rotate(${piece.rot}deg) scale(${piece.scaleX}, ${piece.scaleY})`;
         }
     },
 
@@ -100,7 +100,7 @@ const PortfolioRenderer = {
     /**
      * Create selection handles around a piece.
      */
-    createSelectionHandles(pieceEl) {
+    createSelectionHandles(pieceElement) {
         const container = document.createElement('div');
         container.className = 'portfolio-selection-handles';
 
@@ -128,14 +128,14 @@ const PortfolioRenderer = {
         rotHandle.dataset.handle = 'rotate';
         container.appendChild(rotHandle);
 
-        pieceEl.appendChild(container);
+        pieceElement.appendChild(container);
     },
 
     /**
      * Remove selection handles from a piece.
      */
-    removeSelectionHandles(pieceEl) {
-        const handles = pieceEl.querySelector('.portfolio-selection-handles');
+    removeSelectionHandles(pieceElement) {
+        const handles = pieceElement.querySelector('.portfolio-selection-handles');
         if (handles) {
             handles.remove();
         }

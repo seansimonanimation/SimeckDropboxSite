@@ -20,7 +20,7 @@ const PortfolioSerializer = {
                     rot: piece.rot || 0,
                     scaleX: piece.scaleX || 1.0,
                     scaleY: piece.scaleY || 1.0,
-                    galleryOrder: piece.galleryOrder || 1,
+                    galleryOrder: piece.galleryOrder === 0 ? 0 : piece.galleryOrder,
                     caption: piece.caption || '',
                     textContent: piece.textContent || null,
                     fontSize: piece.fontSize || 14,

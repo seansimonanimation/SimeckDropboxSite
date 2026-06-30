@@ -336,13 +336,19 @@
         list.innerHTML = '';
 
         const allPieces = Array.from(state.pieces.values());
-        // Sort: included (galleryOrder > 0) by order, then excluded (galleryOrder === 0) at bottom
-        const sorted = allPieces.sort((a, b) => {
-            if ((a.galleryOrder || 0) === 0 && (b.galleryOrder || 0) === 0) return 0;
-            if ((a.galleryOrder || 0) === 0) return 1;
-            if ((b.galleryOrder || 0) === 0) return -1;
-            return (a.galleryOrder || 1) - (b.galleryOrder || 1);
-        });
+        // Stable sort: included pieces first (by galleryOrder), excluded pieces last
+        const included = [];
+        const excluded = [];
+        for (const piece of allPieces) {
+            if (piece.galleryOrder && piece.galleryOrder > 0) {
+                included.push(piece);
+            } else {
+                excluded.push(piece);
+            }
+        }
+        included.sort((a, b) => a.galleryOrder - b.galleryOrder);
+        const sorted = [...included, ...excluded];
+
 
         for (let i = 0; i < sorted.length; i++) {
             const piece = sorted[i];

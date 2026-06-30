@@ -98,9 +98,16 @@ const PortfolioInteraction = {
         if (e.button === 1) return; // Middle mouse handled separately
         if (e.button !== 0) return; // Left click only
 
+        // Click on empty canvas = start panning (works even in read-only)
+        if (e.target === this.canvas || e.target.classList.contains('portfolio-canvas-wrapper')) {
+            this.deselectAll();
+            this.startPan(e);
+            return;
+        }
+
         if (this.state.readOnly) return;
 
-        // Space + drag = pan
+        // Space + drag = pan (handled in keydown)
         if (e.target.closest('.portfolio-handle-rotate')) {
             e.stopPropagation();
             this.startRotate(e);
@@ -119,7 +126,6 @@ const PortfolioInteraction = {
             const id = pieceEl.dataset.pieceId;
 
             if (e.shiftKey || e.ctrlKey) {
-                // Toggle multi-select
                 if (this.state.selectedIds.has(id)) {
                     this.state.selectedIds.delete(id);
                     pieceEl.classList.remove('portfolio-piece-selected');
@@ -130,7 +136,6 @@ const PortfolioInteraction = {
                     PortfolioRenderer.createSelectionHandles(pieceEl);
                 }
             } else {
-                // Single select
                 if (!this.state.selectedIds.has(id)) {
                     this.deselectAll();
                     this.state.selectedIds.add(id);
@@ -144,10 +149,6 @@ const PortfolioInteraction = {
             return;
         }
 
-        // Click on empty canvas = deselect
-        if (e.target === this.canvas || e.target.classList.contains('portfolio-canvas-wrapper')) {
-            this.deselectAll();
-        }
     },
 
     /**
@@ -606,6 +607,7 @@ doRotate(e) {
             const el = this.canvas.querySelector(`[data-piece-id="${id}"]`);
             if (el) el.style.zIndex = piece.z;
             this.state.markDirty();
+            this.updateChannelBox();
             this.pushUndoState();
         }
     },
@@ -619,6 +621,7 @@ doRotate(e) {
             const el = this.canvas.querySelector(`[data-piece-id="${id}"]`);
             if (el) el.style.zIndex = piece.z;
             this.state.markDirty();
+            this.updateChannelBox();
             this.pushUndoState();
         }
     },
@@ -631,6 +634,7 @@ doRotate(e) {
             const el = this.canvas.querySelector(`[data-piece-id="${id}"]`);
             if (el) el.style.zIndex = piece.z;
             this.state.markDirty();
+            this.updateChannelBox();
             this.pushUndoState();
         }
     },
@@ -643,6 +647,7 @@ doRotate(e) {
             const el = this.canvas.querySelector(`[data-piece-id="${id}"]`);
             if (el) el.style.zIndex = piece.z;
             this.state.markDirty();
+            this.updateChannelBox();
             this.pushUndoState();
         }
     },
