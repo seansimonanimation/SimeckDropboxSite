@@ -1,4 +1,4 @@
-6/26/26 - Version 0.11.0 - Moving backgrounds, themed scroll bars, Secondary roles, timeclock shift notes, began adding portfolio editor, added admin powers.
+6/26/26 - Version 0.11.0 - Moving backgrounds, themed scroll bars, Secondary roles, timeclock shift notes, began adding portfolio editor, added admin powers.<br />
 6/13/26 - Version 0.10.0 - Lock system improvements, added preview panel to file browser. Changed the file open behavior. Aesthetic improvements. <br />
 6/10/26 - Version 0.9.0 - Logging improvements, thumbnail fixes, bugfixes, nickname support. <br />
 6/9/26 - Version 0.8.0 - Download link and folder link sharing support. Password reset fix. <br />

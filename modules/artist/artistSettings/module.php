@@ -123,7 +123,6 @@ if(!IsImpersonating()){
         $result = SubmitDayOff($username, $dateStart, $dateEnd ?: null, $startTime, $endTime);
         if ($result === true) {
             $successMessage = 'Time off Notification submitted successfully.';
-            // If availability was adjusted, update the session
             if (isset($_POST['timeoff_same_week'])) {
                 // AdjustAvailabilityThisWeek already updated $_SESSION['availability']
             }
@@ -174,9 +173,9 @@ function verifyCurrentPW($currentPW, $artistData){
             </div>
             <div class="module-card__content">
                 <form method="get" action="index.php">
-                    <label for="theme-select" class="module-form-group" style="margin-bottom:12px;">
+                    <label class="module-form-group" style="margin-bottom:12px;">
                         <span style="margin-bottom:4px;">Choose your theme</span>
-                        <select name="theme" id="theme-select" class="module-input" style="width:auto;min-width:200px;" onchange="this.form.submit()">
+                        <select name="theme" id="theme-select" class="module-input" onchange="this.form.submit()">
                             <?php foreach($themes as $t): ?>
                                 <option value="<?php echo $t['id']; ?>" <?php echo ($t['id'] === $currentTheme) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($t['name']); ?>
@@ -202,9 +201,9 @@ function verifyCurrentPW($currentPW, $artistData){
             </div>
             <div class="module-card__content">
                 <form method="get" action="index.php">
-                    <label for="timezone-select" class="module-form-group" style="margin-bottom:12px;">
+                    <label class="module-form-group" style="margin-bottom:12px;">
                         <span style="margin-bottom:4px;">Your local timezone</span>
-                        <select name="timezone" id="timezone-select" class="module-input" style="width:auto;min-width:200px;" onchange="this.form.submit()">
+                        <select name="timezone" id="timezone-select" class="module-input" onchange="this.form.submit()">
                             <?php
                             $currentTz = $_SESSION['timezone'] ?? 'UTC';
                             $tzIds = DateTimeZone::listIdentifiers();
@@ -233,7 +232,7 @@ function verifyCurrentPW($currentPW, $artistData){
                 <form method="POST" action="">
                     <label class="module-form-group" style="margin-bottom:12px;">
                         <span style="margin-bottom:4px;">Set your nickname</span>
-                        <input class="module-input" type="text" name="nickname" value="<?php echo htmlspecialchars($currentNickname); ?>" placeholder="Enter nickname" style="width:auto;min-width:200px;" />
+                        <input class="module-input" type="text" name="nickname" value="<?php echo htmlspecialchars($currentNickname); ?>" placeholder="Enter nickname" />
                     </label>
                     <input type="hidden" name="change_nickname" value="1" />
                     <button type="submit" class="module-button" style="padding:6px 18px;">Save Nickname</button>
@@ -273,7 +272,7 @@ function verifyCurrentPW($currentPW, $artistData){
                 <form method="POST" action="">
                     <label class="module-form-group" style="margin-bottom:8px;">
                         <span style="margin-bottom:4px;">Country Code</span>
-                        <select name="phone_country_code" class="module-input" style="width:auto;min-width:200px;">
+                        <select name="phone_country_code" class="module-input">
                             <?php echo GetCountryCodeOptions($ccOption); ?>
                         </select>
                     </label>
@@ -281,9 +280,9 @@ function verifyCurrentPW($currentPW, $artistData){
                         <span style="margin-bottom:4px;">Phone Number</span>
                         <input class="module-input" type="text" name="phone_number"
                                value="<?php echo htmlspecialchars($phoneVal); ?>"
-                               placeholder="5551234567" style="width:auto;min-width:200px;" />
+                               placeholder="5551234567" />
                     </label>
-                    <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+                    <div style="margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                         <span>Receive notification texts:</span>
                         <a href="#" class="toggle-receive-texts"
                            data-receive="<?php echo $receive; ?>"
@@ -306,7 +305,7 @@ function verifyCurrentPW($currentPW, $artistData){
         <!-- ════════════════════════════════════════════════════════════════ -->
         <!--  AVAILABILITY GRID — Half Width                                -->
         <!-- ════════════════════════════════════════════════════════════════ -->
-        <div class="module-card module-card--span-3" style="overflow:visible;">
+        <div class="module-card module-card--span-3">
             <div class="module-card__header">
                 <h3 class="module-card__title">Weekly Availability</h3>
                 
@@ -322,7 +321,7 @@ function verifyCurrentPW($currentPW, $artistData){
 
                     <div id="av-grid-container"></div>
 
-                    <div style="margin-top:14px;display:flex;gap:12px;align-items:center;">
+                    <div style="margin-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
                         <button type="button" id="av-apply-btn" class="module-button" style="padding:8px 24px;font-weight:600;">Apply</button>
                         <span style="font-size:0.82rem;color:var(--color-text-muted,#888);">
                             Changes are not saved until you click Apply.
@@ -343,19 +342,19 @@ function verifyCurrentPW($currentPW, $artistData){
                     <input type="hidden" name="submit_timeoff" value="1" />
 
                     <!-- Date row -->
-                    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px;">
+                    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px;flex-wrap:wrap;">
                         <div>
                             <label for="timeoff_date_start" style="display:block;margin-bottom:2px;font-size:0.75rem;">Date</label>
-                            <input type="date" id="timeoff_date_start" name="timeoff_date_start" class="module-input" required style="width:auto;max-width:200px;font-size:0.82rem;" />
+                            <input type="date" id="timeoff_date_start" name="timeoff_date_start" class="module-input" required style="font-size:0.82rem;" />
                         </div>
                         <div id="timeoff_end_date_group" style="display:none;">
                             <label for="timeoff_date_end" style="display:block;margin-bottom:2px;font-size:0.75rem;">End</label>
-                            <input type="date" id="timeoff_date_end" name="timeoff_date_end" class="module-input" style="width:auto;max-width:200px;font-size:0.82rem;" />
+                            <input type="date" id="timeoff_date_end" name="timeoff_date_end" class="module-input" style="font-size:0.82rem;" />
                         </div>
                     </div>
 
                     <!-- Checkboxes row -->
-                    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:6px;font-size:0.82rem;">
+                    <div style="display:flex;gap:16px;justify-content:center;margin-bottom:6px;font-size:0.82rem;flex-wrap:wrap;">
                         <label style="display:flex;align-items:center;gap:3px;cursor:pointer;">
                             <input type="checkbox" id="timeoff_multi_day" name="timeoff_multi_day" value="1" style="margin:0;" />
                             Multi-day
@@ -367,14 +366,14 @@ function verifyCurrentPW($currentPW, $artistData){
                     </div>
 
                     <!-- Time fields row -->
-                    <div id="timeoff_time_fields" style="display:flex;gap:8px;justify-content:center;margin-bottom:8px;">
+                    <div id="timeoff_time_fields" style="display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;">
                         <div>
                             <label for="timeoff_start_time" style="display:block;margin-bottom:2px;font-size:0.75rem;">Start</label>
-                            <input type="time" id="timeoff_start_time" name="timeoff_start_time" class="module-input" style="width:auto;max-width:120px;font-size:0.82rem;" />
+                            <input type="time" id="timeoff_start_time" name="timeoff_start_time" class="module-input" style="font-size:0.82rem;" />
                         </div>
                         <div>
                             <label for="timeoff_end_time" style="display:block;margin-bottom:2px;font-size:0.75rem;">End</label>
-                            <input type="time" id="timeoff_end_time" name="timeoff_end_time" class="module-input" style="width:auto;max-width:120px;font-size:0.82rem;" />
+                            <input type="time" id="timeoff_end_time" name="timeoff_end_time" class="module-input" style="font-size:0.82rem;" />
                         </div>
                     </div>
 

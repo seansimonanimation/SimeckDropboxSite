@@ -66,7 +66,7 @@ if (isset($_GET['remove_secondary_role']) && isset($_GET['id'])) {
             if (empty($roles)): ?>
                 <p style="color:#888;">No secondary roles defined yet.</p>
             <?php else: ?>
-                <table style="width:100%; border-collapse: collapse;">
+                <table style="width:100%; border-collapse: collapse; overflow-x: auto; display: block;">
                     <thead>
                         <tr>
                             <th style="text-align:left; border-bottom:1px solid #444;">Role Name</th>
