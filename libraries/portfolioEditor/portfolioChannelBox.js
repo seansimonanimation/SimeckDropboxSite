@@ -13,7 +13,9 @@ const PortfolioChannelBox = {
         this.bindInputs();
         this.bindRemoveButton();
         this.bindScrubLabels();
+        this.bindCoverArt();
     },
+
 
     /**
      * Bind channel box inputs to update pieces in real time.
@@ -202,6 +204,93 @@ const PortfolioChannelBox = {
             }
         });
     },
+    /**
+     * Bind cover art set/remove buttons.
+     */
+    bindCoverArt() {
+        const setBtn = document.getElementById('portfolio-cover-set-btn');
+        const removeBtn = document.getElementById('portfolio-cover-remove-btn');
+        const coverInput = document.getElementById('portfolio-cover-file-input');
+        if (!setBtn || !removeBtn || !coverInput) return;
+
+        setBtn.addEventListener('click', () => {
+            coverInput.click();
+        });
+
+        coverInput.addEventListener('change', () => {
+            const file = coverInput.files[0];
+            if (!file) return;
+            if (this.state.selectedIds.size !== 1) return;
+
+            const id = this.state.selectedIds.values().next().value;
+            const piece = this.state.pieces.get(id);
+            if (!piece || piece.type !== 'audio' || !piece.filename) return;
+
+            const formData = new FormData();
+            formData.append('cover_image', file);
+            formData.append('audio_filename', piece.filename);
+
+            fetch('index.php?action=portfolio_embed_cover', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    // Refresh the piece element to show new cover
+                    const el = document.querySelector(`.portfolio-piece[data-piece-id="${id}"]`);
+                    if (el) {
+                        const newEl = PortfolioRenderer.createPieceElement(piece, this.state);
+                        el.parentNode.replaceChild(newEl, el);
+                        newEl.classList.add('portfolio-piece-selected');
+                        PortfolioRenderer.createSelectionHandles(newEl);
+                    }
+                    this.state.markDirty();
+                } else {
+                    alert('Failed to set cover art: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                alert('Error: ' + err.message);
+            });
+
+            coverInput.value = '';
+        });
+
+        removeBtn.addEventListener('click', () => {
+            if (this.state.selectedIds.size !== 1) return;
+
+            const id = this.state.selectedIds.values().next().value;
+            const piece = this.state.pieces.get(id);
+            if (!piece || piece.type !== 'audio' || !piece.filename) return;
+
+            if (!confirm('Remove cover art from this audio file?')) return;
+
+            fetch('index.php?action=portfolio_remove_cover', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: piece.filename })
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    const el = document.querySelector(`.portfolio-piece[data-piece-id="${id}"]`);
+                    if (el) {
+                        const newEl = PortfolioRenderer.createPieceElement(piece, this.state);
+                        el.parentNode.replaceChild(newEl, el);
+                        newEl.classList.add('portfolio-piece-selected');
+                        PortfolioRenderer.createSelectionHandles(newEl);
+                    }
+                    this.state.markDirty();
+                } else {
+                    alert('Failed to remove cover art: ' + (result.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                alert('Error: ' + err.message);
+            });
+        });
+    },
 
     /**
      * Update channel box inputs from the currently selected piece.
@@ -233,6 +322,13 @@ const PortfolioChannelBox = {
         if (fontsizeRow) {
             fontsizeRow.style.display = (piece.type === 'text') ? 'flex' : 'none';
         }
+
+        // Show/hide Cover Art row based on piece type
+        const coverartRow = document.getElementById('channel-coverart-row');
+        if (coverartRow) {
+            coverartRow.style.display = (piece.type === 'audio') ? 'flex' : 'none';
+        }
+
 
         const setVal = (id, val) => {
             const el = document.getElementById(id);

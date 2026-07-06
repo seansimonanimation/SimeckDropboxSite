@@ -111,7 +111,7 @@ function UploadPortfolioFile($username, $file): array {
     $base = $pathinfo['filename'];
 
     // Validate file type
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'pdf', 'txt'];
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'pdf', 'txt', 'mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'];
     if (!in_array($ext, $allowedTypes)) {
         // Try to detect by mime
         $mime = $file['type'] ?? '';
@@ -119,7 +119,10 @@ function UploadPortfolioFile($username, $file): array {
             'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif',
             'image/webp' => 'webp', 'image/svg+xml' => 'svg',
             'video/mp4' => 'mp4', 'video/webm' => 'webm',
-            'application/pdf' => 'pdf', 'text/plain' => 'txt'
+            'application/pdf' => 'pdf', 'text/plain' => 'txt',
+            'audio/mpeg' => 'mp3', 'audio/wav' => 'wav', 'audio/ogg' => 'ogg',
+            'audio/flac' => 'flac', 'audio/aac' => 'aac', 'audio/x-ms-wma' => 'wma'
+
         ];
         if (isset($mimeMap[$mime])) {
             $ext = $mimeMap[$mime];
@@ -144,6 +147,10 @@ function UploadPortfolioFile($username, $file): array {
     // Generate video thumbnail if applicable
     if (in_array($ext, ['mp4', 'webm'])) {
         GenerateVideoThumbnail($dest);
+    }
+    // Extract embedded cover art from audio files
+    if (in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
+        ExtractAudioCoverArt($dest);
     }
 
     return ['success' => true, 'filename' => $filename, 'error' => null];
@@ -190,6 +197,8 @@ function FindPortfolioPfp($username): ?string {
     return null;
 }
 
+
+
 /**
  * Delete a portfolio file from disk.
  */
@@ -202,6 +211,15 @@ function DeletePortfolioFile($username, $filename): bool {
         if ($filename === 'portfolio.json') {
             return false;
         }
+        // Clean up associated cover art if deleting an audio file
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        if (in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
+            $coverPath = $path . '.cover.jpg';
+            if (file_exists($coverPath)) {
+                unlink($coverPath);
+            }
+        }
+
         return unlink($path);
     }
     return false;
@@ -307,7 +325,7 @@ function ValidatePortfolioJson($json): array {
         if (!isset($piece['type'])) {
             return ['valid' => false, 'error' => "Piece at index {$i} missing type"];
         }
-        $validTypes = ['image', 'video', 'pdf', 'text'];
+        $validTypes = ['image', 'video', 'pdf', 'text', 'audio'];
         if (!in_array($piece['type'], $validTypes)) {
             return ['valid' => false, 'error' => "Piece at index {$i} has invalid type: {$piece['type']}"];
         }
@@ -315,6 +333,145 @@ function ValidatePortfolioJson($json): array {
 
     return ['valid' => true, 'error' => null];
 }
+// ════════════════════════════════════════════════════════
+// AUDIO COVER ART FUNCTIONS
+// ════════════════════════════════════════════════════════
+
+/**
+ * Extract cover art from an audio file using FFmpeg.
+ * Saves as filename.cover.jpg alongside the audio file.
+ * Returns the cover filename on success, null on failure/missing.
+ */
+function ExtractAudioCoverArt($filepath): ?string {
+    if (!file_exists($filepath)) {
+        return null;
+    }
+    
+    $ext = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
+    if (!in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
+        return null;
+    }
+    
+    $coverPath = $filepath . '.cover.jpg';
+    
+    // Use elFinder's ffmpeg path if available
+    $ffmpeg = defined('ELFINDER_FFMPEG_PATH') ? ELFINDER_FFMPEG_PATH : 'ffmpeg';
+    
+    // Check if ffmpeg is available
+    $testCmd = $ffmpeg . ' -version 2>&1';
+    exec($testCmd, $testOutput, $testReturn);
+    if ($testReturn !== 0) {
+        return null;
+    }
+    
+    // Extract cover art (single frame, first attached pic)
+    $escaped = escapeshellarg($filepath);
+    $escapedCover = escapeshellarg($coverPath);
+    $cmd = "{$ffmpeg} -i {$escaped} -an -vcodec copy -y {$escapedCover} 2>&1";
+    exec($cmd, $output, $returnCode);
+    
+    if ($returnCode === 0 && file_exists($coverPath) && filesize($coverPath) > 0) {
+        return basename($coverPath);
+    }
+    
+    // Clean up empty file if ffmpeg wrote a 0-byte file
+    if (file_exists($coverPath) && filesize($coverPath) === 0) {
+        unlink($coverPath);
+    }
+    
+    return null;
+}
+
+/**
+ * Embed an image as cover art into an audio file using FFmpeg.
+ * Returns ['success' => bool, 'error' => string|null, 'cover' => string|null].
+ */
+function EmbedAudioCoverArtIntoFile($audioFilepath, $imageFilepath): array {
+    if (!file_exists($audioFilepath)) {
+        return ['success' => false, 'error' => 'Audio file not found', 'cover' => null];
+    }
+    if (!file_exists($imageFilepath)) {
+        return ['success' => false, 'error' => 'Image file not found', 'cover' => null];
+    }
+    
+    $ffmpeg = defined('ELFINDER_FFMPEG_PATH') ? ELFINDER_FFMPEG_PATH : 'ffmpeg';
+    
+    // Test ffmpeg availability
+    exec($ffmpeg . ' -version 2>&1', $testOutput, $testReturn);
+    if ($testReturn !== 0) {
+        return ['success' => false, 'error' => 'FFmpeg not available', 'cover' => null];
+    }
+    
+    $dir = dirname($audioFilepath);
+    $tempFile = $dir . '/_temp_cover_' . basename($audioFilepath);
+    
+    $escapedAudio = escapeshellarg($audioFilepath);
+    $escapedImage = escapeshellarg($imageFilepath);
+    $escapedTemp = escapeshellarg($tempFile);
+    
+    // Embed cover: keep audio stream, add image as attached pic, output to temp
+    $cmd = "{$ffmpeg} -i {$escapedAudio} -i {$escapedImage} -map 0:0 -map 1:0 -c copy -id3v2_version 3 -metadata:s:v title=\"Album cover\" -metadata:s:v comment=\"Cover (front)\" -y {$escapedTemp} 2>&1";
+    exec($cmd, $output, $returnCode);
+    
+    if ($returnCode !== 0 || !file_exists($tempFile)) {
+        if (file_exists($tempFile)) unlink($tempFile);
+        return ['success' => false, 'error' => 'Failed to embed cover art', 'cover' => null];
+    }
+    
+    // Replace original with new file
+    if (!rename($tempFile, $audioFilepath)) {
+        unlink($tempFile);
+        return ['success' => false, 'error' => 'Failed to replace audio file', 'cover' => null];
+    }
+    
+    // Re-extract the cover for display alongside
+    $coverBasename = ExtractAudioCoverArt($audioFilepath);
+    
+    return ['success' => true, 'error' => null, 'cover' => $coverBasename];
+}
+
+/**
+ * Strip embedded cover art from an audio file and delete the extracted .cover.jpg.
+ * Returns ['success' => bool, 'error' => string|null].
+ */
+function StripAudioCoverArt($audioFilepath): array {
+    if (!file_exists($audioFilepath)) {
+        return ['success' => false, 'error' => 'Audio file not found'];
+    }
+    
+    // Delete the extracted cover thumbnail if it exists
+    $coverPath = $audioFilepath . '.cover.jpg';
+    if (file_exists($coverPath)) {
+        unlink($coverPath);
+    }
+    
+    $ffmpeg = defined('ELFINDER_FFMPEG_PATH') ? ELFINDER_FFMPEG_PATH : 'ffmpeg';
+    
+    // Test ffmpeg availability
+    exec($ffmpeg . ' -version 2>&1', $testOutput, $testReturn);
+    if ($testReturn !== 0) {
+        return ['success' => true, 'error' => null]; // Already deleted the cover file
+    }
+    
+    $dir = dirname($audioFilepath);
+    $tempFile = $dir . '/_temp_strip_' . basename($audioFilepath);
+    
+    $escapedAudio = escapeshellarg($audioFilepath);
+    $escapedTemp = escapeshellarg($tempFile);
+    
+    // Strip all metadata including cover art
+    $cmd = "{$ffmpeg} -i {$escapedAudio} -map 0:0 -c copy -write_id3v2 0 -y {$escapedTemp} 2>&1";
+    exec($cmd, $output, $returnCode);
+    
+    if ($returnCode === 0 && file_exists($tempFile)) {
+        rename($tempFile, $audioFilepath);
+    } elseif (file_exists($tempFile)) {
+        unlink($tempFile);
+    }
+    
+    return ['success' => true, 'error' => null];
+}
+
 
 /**
  * Get a list of files in the portfolio directory (excluding portfolio.json and thumbnails).
@@ -329,21 +486,12 @@ function ListPortfolioFiles($username): array {
     foreach ($files as $file) {
         if ($file === '.' || $file === '..') continue;
         if ($file === 'portfolio.json') continue;
+        // Skip extracted cover art (they'll be matched with their audio)
+        if (str_ends_with($file, '.cover.jpg')) continue;
+
         // Skip generated thumbnails (they'll be matched with their video)
         if (str_ends_with($file, '.thumb.jpg')) continue;
         $result[] = $file;
     }
     return $result;
-}
-
-/**
- * Check if the current session can edit a given artist's portfolio.
- * Admins are read-only (rely on IsImpersonating check in the handler).
- */
-function CanEditPortfolio($targetUsername): bool {
-    if (IsImpersonating()) return false;
-    if (GetRole() === 'admin') return false;
-    if (GetRole() === 'client') return false;
-    // Artist can only edit their own
-    return $_SESSION['username'] === $targetUsername;
 }

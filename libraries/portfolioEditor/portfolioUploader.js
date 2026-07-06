@@ -65,18 +65,10 @@ const PortfolioUploader = {
             const files = e.dataTransfer.files;
             if (files.length === 0) return;
 
-            // Get drop coordinates relative to canvas
-            const canvasRect = this.canvas.getBoundingClientRect();
-            const dropX = (e.clientX - canvasRect.left) / this.state.zoom - this.state.panX;
-            const dropY = (e.clientY - canvasRect.top) / this.state.zoom - this.state.panY;
-            const centerX = (canvasRect.width / 2) / this.state.zoom;
-            const centerY = (canvasRect.height / 2) / this.state.zoom;
-            const x = dropX - centerX;
-            const y = dropY - centerY;
-
             for (const file of files) {
-                this.uploadFile(file, x, y);
+                this.uploadFile(file, null, null);
             }
+
         });
     },
 
@@ -113,7 +105,9 @@ const PortfolioUploader = {
                 'webp': 'image', 'svg': 'image',
                 'mp4': 'video', 'webm': 'video',
                 'pdf': 'pdf',
-                'txt': 'text'
+                'txt': 'text',
+                'mp3': 'audio', 'wav': 'audio', 'ogg': 'audio',
+                'flac': 'audio', 'aac': 'audio', 'wma': 'audio'
             };
             const type = mimeMap[ext] || 'image';
 

@@ -842,3 +842,110 @@
     min-width: 36px;
     text-align: center;
 }
+/* ── Audio Piece ── */
+.portfolio-piece-audio {
+    width: 200px;
+    height: 200px;
+    background: #7c3aed;
+    border-radius: 8px;
+    position: relative;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.portfolio-piece-audio-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.portfolio-piece-audio-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.portfolio-piece-audio-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    text-align: center;
+}
+
+.portfolio-piece-audio-waveform {
+    font-size: 1.5rem;
+    line-height: 1.3;
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    letter-spacing: 3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.portfolio-piece-audio .portfolio-piece-label {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    right: 6px;
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    background: rgba(0,0,0,0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.portfolio-piece-audio .portfolio-piece-play-overlay {
+    z-index: 1;
+}
+
+/* ── Cover Art Channel Box ── */
+.portfolio-channel-cover-actions {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+}
+
+.portfolio-cover-btn {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid var(--color-border-bright, rgba(255,255,255,0.15));
+    border-radius: 4px;
+    background: var(--color-bg-raised, #2a2a3e);
+    color: var(--color-text, #e0e0e0);
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.portfolio-cover-btn:hover {
+    background: var(--color-bg-hover, #3a3a4e);
+    border-color: var(--color-primary, #7c3aed);
+}
+
+.portfolio-cover-remove-btn {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.portfolio-cover-remove-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+}
+

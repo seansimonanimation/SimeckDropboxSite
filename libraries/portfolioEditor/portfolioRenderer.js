@@ -57,6 +57,50 @@ const PortfolioRenderer = {
             label.className = 'portfolio-piece-label';
             label.textContent = piece.filename;
             inner.appendChild(label);
+        } else if (piece.type === 'audio') {
+            inner.className += ' portfolio-piece-audio';
+            element.style.width = '200px';
+            element.style.height = '200px';
+            // Try to show cover art
+            const coverUrl = state.portfolioDir + '/' + piece.filename + '.cover.jpg';
+            const coverImg = document.createElement('img');
+            coverImg.className = 'portfolio-piece-audio-cover';
+
+            coverImg.alt = piece.filename;
+            coverImg.onerror = function() {
+                this.style.display = 'none';
+                // Show waveform fallback
+                const fallback = document.createElement('div');
+                fallback.className = 'portfolio-piece-audio-fallback';
+                fallback.innerHTML = '<div class="portfolio-piece-audio-waveform">♪♪♪<br>♪♪♪♪♪<br>♪♪♪</div>';
+                inner.appendChild(fallback);
+                const playOv = document.createElement('div');
+                playOv.className = 'portfolio-piece-play-overlay';
+                playOv.innerHTML = '&#9654;';
+                inner.appendChild(playOv);
+                const lbl = document.createElement('div');
+                lbl.className = 'portfolio-piece-label';
+                lbl.textContent = piece.filename;
+                inner.appendChild(lbl);
+            };
+            coverImg.onload = function() {
+                // Cover loaded, add waveform overlay on top
+                const overlay = document.createElement('div');
+                overlay.className = 'portfolio-piece-audio-overlay';
+                overlay.innerHTML = '<div class="portfolio-piece-audio-waveform">♪♪♪<br>♪♪♪♪♪<br>♪♪♪</div>';
+                inner.appendChild(overlay);
+                const playOv = document.createElement('div');
+                playOv.className = 'portfolio-piece-play-overlay';
+                playOv.innerHTML = '&#9654;';
+                inner.appendChild(playOv);
+                const lbl = document.createElement('div');
+                lbl.className = 'portfolio-piece-label';
+                lbl.textContent = piece.filename;
+                inner.appendChild(lbl);
+            };
+            coverImg.src = coverUrl;
+            inner.appendChild(coverImg);
+
         } else {
             // image (default)
             inner.className += ' portfolio-piece-image';

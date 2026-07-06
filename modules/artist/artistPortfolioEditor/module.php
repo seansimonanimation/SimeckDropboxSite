@@ -150,6 +150,14 @@ $files = ListPortfolioFiles($username);
                             <label>Font Size</label>
                             <input type="number" class="portfolio-channel-input" id="channel-fontsize" step="1" min="1" <?= $readOnly ? 'disabled' : '' ?>>
                         </div>
+                        <div class="portfolio-channel-row" id="channel-coverart-row" style="display:none;">
+                            <label>Cover Art</label>
+                            <div class="portfolio-channel-cover-actions">
+                                <button class="portfolio-cover-btn" id="portfolio-cover-set-btn">Set</button>
+                                <button class="portfolio-cover-btn portfolio-cover-remove-btn" id="portfolio-cover-remove-btn">Remove</button>
+                            </div>
+                        </div>
+
                         <?php if (!$readOnly): ?>
                         <button class="portfolio-remove-btn" id="portfolio-remove-piece-btn">Remove</button>
                         <?php endif; ?>
@@ -161,7 +169,8 @@ $files = ListPortfolioFiles($username);
 </div>
 
 <!-- Hidden file input for import -->
-<input type="file" id="portfolio-file-input" accept="image/*,video/mp4,application/pdf,text/plain" style="display:none" multiple>
+<input type="file" id="portfolio-file-input" accept="image/*,video/mp4,application/pdf,text/plain,audio/*" style="display:none" multiple>
+<input type="file" id="portfolio-cover-file-input" accept="image/*" style="display:none">
 
 <!-- Gallery Order Floating Island -->
 <div class="portfolio-floating-island" id="portfolio-gallery-island" style="display:none;">

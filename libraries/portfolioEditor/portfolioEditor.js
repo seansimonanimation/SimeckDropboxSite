@@ -172,7 +172,6 @@
     document.getElementById('portfolio-redo-btn')?.addEventListener('click', () => state.redo());
 
     // Add Text
-        // Add Text
     document.getElementById('portfolio-add-text-btn')?.addEventListener('click', () => {
         if (state.readOnly) return;
         const id = PortfolioSerializer.generateId();

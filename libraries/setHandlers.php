@@ -383,3 +383,63 @@ if (isset($_GET['action']) && $_GET['action'] === 'portfolio_save_text') {
     echo json_encode($result);
     exit;
 }
+// ——— Portfolio: Embed cover art into an audio file ———
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_embed_cover' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    
+    $username = $_SESSION['username'];
+    $allowedRoles = ['artist', 'admin'];
+    if (!in_array(GetTempRole(), $allowedRoles) || IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Access denied']);
+        exit;
+    }
+    
+    $audioFilename = $_POST['audio_filename'] ?? '';
+    $audioFilename = basename($audioFilename); // Sanitize
+    
+    if (empty($audioFilename) || !isset($_FILES['cover_image'])) {
+        echo json_encode(['success' => false, 'error' => 'Missing audio filename or cover image']);
+        exit;
+    }
+    
+    $audioPath = GetPortfolioPath($username) . '/' . $audioFilename;
+    if (!file_exists($audioPath)) {
+        echo json_encode(['success' => false, 'error' => 'Audio file not found']);
+        exit;
+    }
+    
+    include_once __ROOT__ . '/libraries/portfoliolib.php';
+    $result = EmbedAudioCoverArtIntoFile($audioPath, $_FILES['cover_image']['tmp_name']);
+    
+    echo json_encode($result);
+    exit;
+}
+
+// ——— Portfolio: Remove cover art from an audio file ———
+if (isset($_GET['action']) && $_GET['action'] === 'portfolio_remove_cover' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json');
+    
+    $username = $_SESSION['username'];
+    $allowedRoles = ['artist', 'admin'];
+    if (!in_array(GetTempRole(), $allowedRoles) || IsImpersonating()) {
+        echo json_encode(['success' => false, 'error' => 'Access denied']);
+        exit;
+    }
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    $audioFilename = $input['filename'] ?? '';
+    $audioFilename = basename($audioFilename); // Sanitize
+    
+    if (empty($audioFilename)) {
+        echo json_encode(['success' => false, 'error' => 'Missing audio filename']);
+        exit;
+    }
+    
+    $audioPath = GetPortfolioPath($username) . '/' . $audioFilename;
+    
+    include_once __ROOT__ . '/libraries/portfoliolib.php';
+    $result = StripAudioCoverArt($audioPath);
+    
+    echo json_encode($result);
+    exit;
+}
