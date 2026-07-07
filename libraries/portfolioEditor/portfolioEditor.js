@@ -34,17 +34,18 @@
         canvasWidth: 1920,
         canvasHeight: 1080,
 
+        autoSaveTimer: null,
+
         markDirty() {
             this.dirty = true;
-            const saveBtn = document.getElementById('portfolio-save-btn');
-            if (saveBtn) saveBtn.classList.add('portfolio-save-btn--dirty');
+            if (this.autoSaveTimer) clearTimeout(this.autoSaveTimer);
+            this.autoSaveTimer = setTimeout(() => savePortfolio(), 800);
         },
 
         markClean() {
             this.dirty = false;
-            const saveBtn = document.getElementById('portfolio-save-btn');
-            if (saveBtn) saveBtn.classList.remove('portfolio-save-btn--dirty');
         },
+
 
         pushUndoState() {
             // Save current piece positions
@@ -207,13 +208,6 @@
         state.pushUndoState();
     });
 
-
-    // Save
-    document.getElementById('portfolio-save-btn')?.addEventListener('click', () => {
-        if (state.readOnly) return;
-        savePortfolio();
-    });
-
     // Publish toggle
     const publishCheckbox = document.getElementById('portfolio-publish-checkbox');
     if (publishCheckbox) {
@@ -304,9 +298,6 @@
         jsonData.artist.display_name = state.profile.displayName;
         jsonData.artist.bio = state.profile.bio;
 
-        const saveBtn = document.getElementById('portfolio-save-btn');
-        if (saveBtn) saveBtn.textContent = 'Saving...';
-
         fetch('index.php?action=portfolio_save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -314,23 +305,17 @@
         })
         .then(res => res.json())
         .then(result => {
-            if (saveBtn) saveBtn.textContent = 'Save';
             if (result.success) {
                 state.markClean();
-                if (saveBtn) saveBtn.textContent = 'Saved!';
-                setTimeout(() => { if (saveBtn) saveBtn.textContent = 'Save'; }, 2000);
             } else {
-                alert('Save failed: ' + (result.error || 'Unknown error'));
+                console.error('Save failed:', result.error || 'Unknown error');
             }
         })
         .catch(err => {
-            if (saveBtn) saveBtn.textContent = 'Save';
-            alert('Save error: ' + err.message);
+            console.error('Save error:', err.message);
         });
     }
 
-    // Expose save globally so uploader can auto-save after adding pieces
-    window.__savePortfolio = savePortfolio;
 
 
     // ── Gallery Order Floating Island ──

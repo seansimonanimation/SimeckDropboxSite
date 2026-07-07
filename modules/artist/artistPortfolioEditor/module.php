@@ -41,9 +41,6 @@ $files = ListPortfolioFiles($username);
                 <?php endif; ?>
                 <button class="portfolio-btn" id="portfolio-undo-btn" title="Undo" disabled>Undo</button>
                 <button class="portfolio-btn" id="portfolio-redo-btn" title="Redo" disabled>Redo</button>
-                <?php if (!$readOnly): ?>
-                <button class="portfolio-btn portfolio-save-btn" id="portfolio-save-btn" title="Save portfolio">Save</button>
-                <?php endif; ?>
             </div>
             <div class="portfolio-toolbar-right">
                 <button class="portfolio-btn" id="portfolio-zoom-fit-btn" title="Fit all pieces to screen">Fit to Screen</button>

@@ -66,11 +66,6 @@
     border-color: var(--color-border-bright, rgba(255,255,255,0.2));
 }
 
-.portfolio-save-btn--dirty {
-    border-color: #f59e0b !important;
-    animation: pulse-border 1.5s ease-in-out infinite;
-}
-
 @keyframes pulse-border {
     0%, 100% { border-color: #f59e0b; }
     50% { border-color: #fbbf24; }

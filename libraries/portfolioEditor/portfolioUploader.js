@@ -161,10 +161,6 @@ const PortfolioUploader = {
         PortfolioRenderer.createSelectionHandles(el);
         PortfolioInteraction.updateChannelBox();
         this.state.markDirty();
-        
-        if (typeof window.__savePortfolio === 'function') {
-            window.__savePortfolio();
-        }
         // Push undo state
         if (typeof window.__pushUndoState === 'function') {
             window.__pushUndoState();
