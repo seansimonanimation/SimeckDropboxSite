@@ -15,7 +15,15 @@ elFinder.prototype.commands.sendToDiscord = function() {
         var fm = this.fm, files = fm.selectedFiles();
         if (files.length === 0) return $.Deferred().resolve();
         var fileData = files.map(function(f) { return { name: f.name, url: fm.url(f.hash) }; });
-        $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', { files: JSON.stringify(fileData), folderHash: fm.cwd().hash }, function(html) { $('body').append(html); }, 'html').fail(function() { fm.notify({ type: 'error', msg: 'Failed to load Discord send dialog.' }); });
+        var adjustedHash = fm.cwd().hash;
+        if (adjustedHash.startsWith('s1_')) {
+            var path = decodeElfinderHash(adjustedHash);
+            var session = window.simeckSession;
+            var userName = session.lastname + ', ' + session.firstname;
+            var reEncoded = encodeElfinderPath(userName + '/' + path);
+            adjustedHash = 's2_' + reEncoded;
+        }
+        $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', { files: JSON.stringify(fileData), folderHash: adjustedHash }, function(html) { $('body').append(html); }, 'html').fail(function() { fm.notify({ type: 'error', msg: 'Failed to load Discord send dialog.' }); });
         return $.Deferred().resolve();
     };
     this.getstate = function() { return this.fm.selectedFiles().length ? 1 : 0; };
