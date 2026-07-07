@@ -133,9 +133,9 @@ elFinder.prototype._options = {
 	 * Max size of chunked data of file upload
 	 * 
 	 * @type Number
-	 * @default  10485760(10MB)
+	 * @default  104857600(100MB)
 	 */
-	uploadMaxChunkSize : 10485760,
+	uploadMaxChunkSize : 104857600,
 	
 	/**
 	 * Regular expression of file name to exclude when uploading folder
