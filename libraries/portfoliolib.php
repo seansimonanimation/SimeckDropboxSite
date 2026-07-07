@@ -145,15 +145,24 @@ function UploadPortfolioFile($username, $file): array {
     }
 
     // Generate video thumbnail if applicable
-    if (in_array($ext, ['mp4', 'webm'])) {
-        GenerateVideoThumbnail($dest);
-    }
-    // Extract embedded cover art from audio files
-    if (in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
-        ExtractAudioCoverArt($dest);
+    try {
+        if (in_array($ext, ['mp4', 'webm'])) {
+            GenerateVideoThumbnail($dest);
+        }
+        // Extract embedded cover art from audio files
+        if (in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
+            ExtractAudioCoverArt($dest);
+        }
+    } catch (Exception $e) {
+        // Processing failed — clean up the file that was already written
+        if (file_exists($dest)) {
+            unlink($dest);
+        }
+        return ['success' => false, 'filename' => null, 'error' => 'Failed to process uploaded file: ' . $e->getMessage()];
     }
 
     return ['success' => true, 'filename' => $filename, 'error' => null];
+
 }
 
 /**
@@ -494,4 +503,57 @@ function ListPortfolioFiles($username): array {
         $result[] = $file;
     }
     return $result;
+}
+/**
+ * Delete files in the portfolio directory that are not referenced by portfolio.json.
+ * This runs on editor load to clean up orphaned files from failed uploads or forgotten saves.
+ */
+function CleanupOrphanedPortfolioFiles($username): void {
+    $dir = GetPortfolioPath($username);
+    if (!is_dir($dir)) {
+        return;
+    }
+
+    // Get filenames referenced in portfolio.json
+    $portfolio = LoadPortfolio($username);
+    $referencedFiles = [];
+    foreach ($portfolio['pieces'] as $piece) {
+        if (!empty($piece['filename'])) {
+            $referencedFiles[] = $piece['filename'];
+        }
+    }
+
+    // Scan the directory
+    $files = scandir($dir);
+    foreach ($files as $file) {
+        if ($file === '.' || $file === '..') continue;
+        if ($file === 'portfolio.json') continue;             // never delete the JSON itself
+        if (str_starts_with($file, 'pfp.')) continue;         // never delete profile pictures
+
+        $fullPath = $dir . '/' . $file;
+        if (!is_file($fullPath)) continue;
+
+        $isOrphan = false;
+
+        // Handle generated sidecar files (thumbnails, cover art)
+        if (str_ends_with($file, '.thumb.jpg')) {
+            $baseFile = substr($file, 0, -10); // remove '.thumb.jpg'
+            if (!in_array($baseFile, $referencedFiles, true)) {
+                $isOrphan = true;
+            }
+        } elseif (str_ends_with($file, '.cover.jpg')) {
+            $baseFile = substr($file, 0, -10); // remove '.cover.jpg'
+            if (!in_array($baseFile, $referencedFiles, true)) {
+                $isOrphan = true;
+            }
+        } else {
+            if (!in_array($file, $referencedFiles, true)) {
+                $isOrphan = true;
+            }
+        }
+
+        if ($isOrphan) {
+            unlink($fullPath);
+        }
+    }
 }

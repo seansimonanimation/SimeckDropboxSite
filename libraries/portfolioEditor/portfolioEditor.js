@@ -159,6 +159,9 @@
     PortfolioUploader.init(state, canvas, canvasWrapper);
     PortfolioProfilePanel.init(state);
     PortfolioChannelBox.init(state);
+    
+    // Zoom to fit all pieces after layout is complete
+    requestAnimationFrame(() => zoomToFit());
 
     // Push initial state
     state.pushUndoState();
@@ -325,6 +328,10 @@
             alert('Save error: ' + err.message);
         });
     }
+
+    // Expose save globally so uploader can auto-save after adding pieces
+    window.__savePortfolio = savePortfolio;
+
 
     // ── Gallery Order Floating Island ──
     function showGalleryOrder() {

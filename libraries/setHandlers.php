@@ -264,8 +264,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'portfolio_load' && isset($_GE
         exit;
     }
     
+    // Clean up any orphaned files not referenced in portfolio.json
+    CleanupOrphanedPortfolioFiles($targetArtist);
+    
     // For admin/impersonating, load the target artist's portfolio
     $portfolio = LoadPortfolio($targetArtist);
+
     $pfpFile = FindPortfolioPfp($targetArtist);
     $files = ListPortfolioFiles($targetArtist);
     
