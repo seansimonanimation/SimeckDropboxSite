@@ -328,12 +328,12 @@ function copyFolderLink(fm, file) {
     // Adjust hash the same way CopyLinkToFolder does
     var adjustedHash = phash;
         if (phash.startsWith('s1_')) {
-        var path = decodeElfinderHash(phash);
-        var session = window.simeckSession;
-        var userName = session.lastname + ', ' + session.firstname;
-        var reEncoded = encodeElfinderPath(userName + '/' + path);
-        adjustedHash = 's2_' + reEncoded;
-    }
+            var path = decodeElfinderHash(phash);
+            var session = window.simeckSession;
+            var userName = session.lastname + ', ' + session.firstname;
+            var reEncoded = encodeElfinderPath(userName + '/' + path);
+            adjustedHash = 's2_' + reEncoded;
+        }
     
     var link = baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash);
     
@@ -344,15 +344,25 @@ function copyFolderLink(fm, file) {
 function sendToDiscord(fm, file) {
     var fileData = [{ name: file.name, url: fm.url(file.hash) }];
     
+    var adjustedHash = fm.cwd().hash;
+    if (adjustedHash.startsWith('s1_')) {
+        var path = decodeElfinderHash(adjustedHash);
+        var session = window.simeckSession;
+        var userName = session.lastname + ', ' + session.firstname;
+        var reEncoded = encodeElfinderPath(userName + '/' + path);
+        adjustedHash = 's2_' + reEncoded;
+    }
+    
     $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
         files: JSON.stringify(fileData),
-        folderHash: fm.cwd().hash
+        folderHash: adjustedHash
     }, function(html) {
         $('body').append(html);
     }, 'html').fail(function() {
         fm.notify({ type: 'error', msg: 'Failed to load Discord dialog.' });
     });
 }
+
 
 function openPreviewIsland(fm, file, fileUrl, isImage) {
     // Build a floating island with a large preview
