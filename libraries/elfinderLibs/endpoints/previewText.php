@@ -255,7 +255,7 @@ header('Content-Type: text/html; charset=utf-8');
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/css/elfinderThemes/highlightjs-custom.css">
 <link rel="stylesheet" href="/css/siteThemes/<?= htmlspecialchars($themeId) ?>.css">
-<script src="/libraries/highlightjs/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
 <title><?= $displayName ?> — Preview</title>
 </head>
 <body class="text-preview-body <?= $themeClass ?>">
