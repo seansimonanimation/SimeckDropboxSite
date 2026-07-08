@@ -203,7 +203,9 @@ window.__PORTFOLIO_CONFIG__ = {
 <script src="libraries/portfolioEditor/portfolioUploader.js"></script>
 <script src="libraries/portfolioEditor/portfolioProfilePanel.js"></script>
 <script src="libraries/portfolioEditor/portfolioChannelBox.js"></script>
+<script src="libraries/portfolioEditor/portfolioGridLabels.js"></script>
 <script src="libraries/portfolioEditor/portfolioEditor.js"></script>
+
 
 <!-- Load CSS -->
 <link rel="stylesheet" href="libraries/portfolioEditor/portfolioEditor.css">

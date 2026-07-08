@@ -516,6 +516,11 @@
         }
     }
     applyThemeBackground();
+    
+    // ── Initialize Grid Labels ──
+    if (typeof initGridLabels === 'function') {
+        initGridLabels(state, canvas);
+    }
 
     // ── Cleanup ──
     console.log('Portfolio Editor initialized for', config.username, state.readOnly ? '(read-only)' : '(editable)');
