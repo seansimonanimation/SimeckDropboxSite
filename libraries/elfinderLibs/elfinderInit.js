@@ -131,18 +131,20 @@ function updatePreviewPane(fm) {
         // Load the snippet
         var snippetContainerId = 'preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '');
         (function(containerId, snippetUrl) {
-            $.get(snippetUrl, function(html) {
-                // Extract just the <pre><code> block from the response
-                var match = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-                if (match) {
-                    var snippet = '<pre>' + match[1] + '</pre>';
-                    $('#' + containerId).html(snippet);
-                } else {
-                    $('#' + containerId).html('<p class="seecm-status-empty">No preview available.</p>');
-                }
-            }).fail(function() {
-                $('#' + containerId).html('<p class="seecm-status-error">Failed to load preview.</p>');
-            });
+            fetch(snippetUrl)
+                .then(function(r) { return r.text(); })
+                .then(function(html) {
+                    var match = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+                    if (match) {
+                        var snippet = '<pre>' + match[1] + '</pre>';
+                        $('#' + containerId).html(snippet);
+                    } else {
+                        $('#' + containerId).html('<p class="seecm-status-empty">No preview available.</p>');
+                    }
+                })
+                .catch(function() {
+                    $('#' + containerId).html('<p class="seecm-status-error">Failed to load preview.</p>');
+                });
         })(snippetContainerId, snippetUrl);
 
     
@@ -165,7 +167,7 @@ function updatePreviewPane(fm) {
     html += '<div class="preview-filename">' + fm.escape(f.name) + '</div>';
     
     // 5. Filesize (centered)
-    var size = f.mime === 'directory' ? '—' : formatBytes(f.size);
+    var size = f.mime === 'directory' ? '—' : Helpers.formatBytes(f.size);
     html += '<div class="preview-filesize">' + size + '</div>';
     
     // 6. Comments section
@@ -217,10 +219,10 @@ function getElfinderIconClass(mime, name) {
 function loadPreviewComments(fileUrl, isCommentLocked) {
     var $list = $('.preview-comments-list');
     
-    $.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+    Helpers.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
         action: 'fetch',
         file_url: fileUrl
-    }, function(response) {
+    }).then(function(response) {
         if (!response.success) {
             $list.html('<p class="seecm-status-error">Failed to load comments.</p>');
             return;
@@ -262,41 +264,43 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
                 var content = $input.val().trim();
                 if (!content) return;
                 
-                $.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+                Helpers.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
                     action: 'add',
                     file_url: fileUrl,
                     content: content
-                }, function(addResponse) {
+                }).then(function(addResponse) {
                     if (addResponse.success) {
                         $input.val('');
                         loadPreviewComments(fileUrl, isCommentLocked);
                     } else {
-                        alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
+                        Helpers.alertIsland('Error', 'Failed to add comment: ' + (addResponse.error || 'unknown error'), 'error');
                     }
-                }, 'json').fail(function() {
-                    alert('Failed to add comment.');
+                }).catch(function() {
+                    Helpers.alertIsland('Error', 'Failed to add comment.', 'error');
                 });
-            });
             
             $list.find('.preview-comment-input').on('keydown', function(e) {
                 e.stopPropagation();
             });
-        }
+        });
+    }
+    }).catch(function() {
+        $list.html('<p class="seecm-status-error">Failed to load comments.</p>');
     });
 }
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
-    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
+    Helpers.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [file.hash]
-    }, function(response) {
+    }).then(function(response) {
         if (response.success && response.urls.length > 0) {
             var link = response.urls[0];
-            copyToClipboard(link, 'Download link copied to clipboard!', fm);
+            Helpers.copyToClipboard(link, 'Download link copied to clipboard!');
         } else {
-            fm.notify({ type: 'error', msg: response.error || 'Failed to generate link.' });
+            Helpers.alertIsland('Error', response.error || 'Failed to generate link.', 'error');
         }
-    }, 'json');
+    });
 }
 /**
  * Replace an image's src with a watermarked download URL for clients.
@@ -308,14 +312,14 @@ function applyWatermarkedUrl(fm, hash, imgSelector, callback) {
         if (callback) callback();
         return;
     }
-    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
+    Helpers.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [hash]
-    }, function(response) {
+    }).then(function(response) {
         if (response.success && response.urls.length > 0) {
             $(imgSelector).attr('src', response.urls[0]);
         }
         if (callback) callback();
-    }, 'json').fail(function() {
+    }).catch(function() {
         if (callback) callback();
     });
 }
@@ -337,7 +341,7 @@ function copyFolderLink(fm, file) {
     
     var link = baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash);
     
-    copyToClipboard(link, 'Folder link copied to clipboard!', fm);
+    Helpers.copyToClipboard(link, 'Folder link copied to clipboard!', fm);
 
 }
 
@@ -353,13 +357,20 @@ function sendToDiscord(fm, file) {
         adjustedHash = 's2_' + reEncoded;
     }
     
-    $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
-        files: JSON.stringify(fileData),
-        folderHash: adjustedHash
-    }, function(html) {
+    fetch('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            files: JSON.stringify(fileData),
+            folderHash: adjustedHash
+        })
+    })
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
         $('body').append(html);
-    }, 'html').fail(function() {
-        fm.notify({ type: 'error', msg: 'Failed to load Discord dialog.' });
+    })
+    .catch(function() {
+        Helpers.alertIsland('Error', 'Failed to load Discord dialog.', 'error');
     });
 }
 
@@ -447,7 +458,7 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
             contentHtml += '  <div class="' + iconClass + '" style="font-size:128px;width:128px;height:128px;margin:0 auto 20px;"></div>';
             contentHtml += '  <h2>' + fm.escape(file.name) + '</h2>';
             contentHtml += '  <p style="color:var(--color-text-muted);">' + (file.mime || 'Unknown type') + '</p>';
-            contentHtml += '  <p style="color:var(--color-text-muted);">' + formatBytes(file.size) + '</p>';
+            contentHtml += '  <p style="color:var(--color-text-muted);">' + Helpers.formatBytes(file.size) + '</p>';
             contentHtml += '</div>';
         }
     }
@@ -522,14 +533,6 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
             });
         }
     }
-}
-
-
-function formatBytes(bytes) {
-    if (isNaN(bytes) || bytes === 0) return '0 B';
-    var units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    var i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0) + ' ' + units[i];
 }
 function togglePreviewPane() {
     var $pane = $('#preview-pane');

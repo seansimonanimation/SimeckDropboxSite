@@ -87,35 +87,29 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
         var raw = input.value.trim();
         if (!raw) return;
 
-        // Strip full download.php URL down to just the token
         var token = raw;
         var dlPrefix = 'download=';
         var dlIndex = token.indexOf(dlPrefix);
         if (dlIndex !== -1) {
             token = token.substring(dlIndex + dlPrefix.length);
-            // Remove any trailing URL parameters
             var ampIndex = token.indexOf('&');
             if (ampIndex !== -1) token = token.substring(0, ampIndex);
         }
-        // Decode any URL-encoded chars (e.g. %2B -> +) without corrupting +
         token = decodeURIComponent(token);
-
 
         errorDiv.style.display = 'none';
         resultsDiv.style.display = 'none';
-        btn.disabled = true;
-        btn.textContent = 'Analyzing…';
+        Helpers.loading(btn, true);
 
-        fetch('index.php?action=analyze_download_token&token=' + encodeURIComponent(token))
-            .then(function(r) { return r.json(); })
+        Helpers.get('index.php', { action: 'analyze_download_token', token: token })
             .then(function(data) {
                 if (!data.success) {
                     errorDiv.textContent = data.error || 'Failed to analyze token.';
                     errorDiv.style.display = 'block';
+                    Helpers.alertIsland('Analysis Failed', data.error || 'Failed to analyze token.', 'error');
                     return;
                 }
 
-                // Format the mode name for display
                 var modeNames = {
                     'internal':       'Internal',
                     'clientPreview':  'Client Preview',
@@ -125,7 +119,6 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
                 };
                 var modeDisplay = modeNames[data.mode] || data.mode;
 
-                // Build the link content: clickable thumbnail
                 var contentHtml = '';
                 if (data.thumbnail_url) {
                     var thumbUrl = 'download.php?download=' + encodeURIComponent(data.thumbnail_url);
@@ -137,16 +130,13 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
                 laCreator.textContent = data.author_name || data.author;
                 laType.textContent = modeDisplay;
                 laContent.innerHTML = contentHtml;
-
                 resultsDiv.style.display = 'block';
             })
             .catch(function(err) {
-                errorDiv.textContent = 'Request failed: ' + err.message;
-                errorDiv.style.display = 'block';
+                Helpers.alertIsland('Request Failed', 'Could not complete request: ' + err.message, 'error');
             })
             .finally(function() {
-                btn.disabled = false;
-                btn.textContent = 'Analyze';
+                Helpers.loading(btn, false, 'Analyze');
             });
     }
 
@@ -156,27 +146,21 @@ include_once __ROOT__ . '/libraries/dashboardlib.php';
     });
 })();
 
-/**
- * Open a floating island preview for a filepath.
- * This function is global so the onclick in the thumbnail can call it.
- */
 function openPreviewIsland(filepath) {
-    fetch('index.php?action=get_preview_island&filepath=' + encodeURIComponent(filepath))
-        .then(function(r) { return r.json(); })
+    Helpers.get('index.php', { action: 'get_preview_island', filepath: filepath })
         .then(function(data) {
             if (data.success && data.html) {
-                // Append the floating island HTML to the body
                 var wrapper = document.createElement('div');
                 wrapper.innerHTML = data.html;
                 while (wrapper.firstChild) {
                     document.body.appendChild(wrapper.firstChild);
                 }
             } else {
-                alert('Failed to load preview: ' + (data.error || 'unknown error'));
+                Helpers.alertIsland('Preview Failed', data.error || 'Failed to load preview.', 'error');
             }
         })
         .catch(function(err) {
-            alert('Request failed: ' + err.message);
+            Helpers.alertIsland('Request Failed', 'Could not load preview: ' + err.message, 'error');
         });
 }
 </script>

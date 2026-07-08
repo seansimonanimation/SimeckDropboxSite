@@ -55,10 +55,9 @@ function LoadElfinderJSCommands() { //loads the command and command override fun
 
     if (!is_dir($fsBase)) return '';
     //Hardcode in the shared lib so that it loads fist.
-    $html .= '<script src="' . $webBase . 'CommonFuncs.js" type="text/javascript" charset="utf-8"></script>' . "\n";
-    
+    $html .= '<script src="' . $webBase . 'ElfinderCommonFuncs.js" ...>';
     foreach (new DirectoryIterator($fsBase) as $file) {
-        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'CommonFuncs.js') continue;
+        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'ElfinderCommonFuncs.js') continue;
         // Convert filesystem path to web path
         $webPath = str_replace(__ROOT__, '', $file->getPathname());
         $webPath = str_replace('\\', '/', $webPath); // Windows backslashes → forward slashes
@@ -190,7 +189,7 @@ function OutputElfinderCommandsMeta() {
     $metaArray = array();
     
     foreach (new DirectoryIterator($dirpath) as $file) {
-        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'CommonFuncs.js') continue;
+        if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'ElfinderCommonFuncs.js') continue;
         
         $content = file_get_contents($file->getPathname());
         

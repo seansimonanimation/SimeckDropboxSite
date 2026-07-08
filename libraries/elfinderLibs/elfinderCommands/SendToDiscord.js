@@ -14,6 +14,7 @@ elFinder.prototype.commands.sendToDiscord = function() {
     this.exec = function(hashes) {
         var fm = this.fm, files = fm.selectedFiles();
         if (files.length === 0) return $.Deferred().resolve();
+        
         var fileData = files.map(function(f) { return { name: f.name, url: fm.url(f.hash) }; });
         var adjustedHash = fm.cwd().hash;
         if (adjustedHash.startsWith('s1_')) {
@@ -23,7 +24,16 @@ elFinder.prototype.commands.sendToDiscord = function() {
             var reEncoded = encodeElfinderPath(userName + '/' + path);
             adjustedHash = 's2_' + reEncoded;
         }
-        $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', { files: JSON.stringify(fileData), folderHash: adjustedHash }, function(html) { $('body').append(html); }, 'html').fail(function() { fm.notify({ type: 'error', msg: 'Failed to load Discord send dialog.' }); });
+        
+        Helpers.postHtml('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
+            files: JSON.stringify(fileData),
+            folderHash: adjustedHash
+        }).then(function(html) {
+            document.body.insertAdjacentHTML('beforeend', html);
+        }).catch(function(err) {
+            fm.notify({ type: 'error', msg: 'Failed to load Discord send dialog.' });
+        });
+        
         return $.Deferred().resolve();
     };
     this.getstate = function() { return this.fm.selectedFiles().length ? 1 : 0; };

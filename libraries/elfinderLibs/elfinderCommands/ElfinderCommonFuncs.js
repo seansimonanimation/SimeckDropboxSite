@@ -19,12 +19,6 @@
         }
         return false;
     };
-
-    SimeckRefresh = function(){
-        window.onbeforeunload = null;
-        $(window).off('beforeunload');  // In case it was attached via jQuery
-        location.reload();
-    }
 function populateLockCache(fm) {
     $.post('libraries/elfinderLibs/endpoints/GetLockedfilesInProjectEndpoint.php', {}, function(response) {
         if (!response.success || !response.lockedFiles) return;
@@ -82,21 +76,6 @@ function encodeElfinderPath(path) {
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
         .replace(/=/g, '.');
-}
-
-// ── Clipboard Copy with Fallback ──────────────────────────────────
-// Copies text to clipboard. Falls back to prompt() if clipboard API unavailable.
-// fm parameter is optional — omitting it skips notify messages.
-function copyToClipboard(text, successMsg, fm) {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-            if (fm) fm.notify({ type: 'info', msg: successMsg || 'Copied to clipboard!' });
-        }).catch(function() {
-            prompt('Copy this text (Ctrl+C, then Enter):', text);
-        });
-    } else {
-        prompt('Copy this text (Ctrl+C, then Enter):', text);
-    }
 }
 
 // ── Normalize File Path ───────────────────────────────────────────

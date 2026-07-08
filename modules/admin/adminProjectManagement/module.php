@@ -32,32 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_project'])) {
 ?>
 <script>
 function archiveProject(pid, action) {
-    fetch('/libraries/archive_project.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'pid=' + pid + '&action=' + action
-    })
-    .then(response => response.json())
-    .then(data => {
+    Helpers.post('/libraries/archive_project.php', {
+        pid: pid,
+        action: action
+    }).then(function(data) {
         if (data.status === 'started') {
-            // Button already shows "Transitioning..." from DB update
-            // Start polling for completion
             pollTransitionStatus(pid);
         }
     });
 }
 
 function pollTransitionStatus(pid) {
-    const interval = setInterval(() => {
-        fetch('/libraries/check_transition.php?pid=' + pid)
-        .then(r => r.json())
-        .then(data => {
+    var interval = setInterval(function() {
+        Helpers.get('/libraries/check_transition.php', { pid: pid })
+        .then(function(data) {
             if (data.transitioning == 0) {
                 clearInterval(interval);
-                location.reload(); // Refresh the page to show updated state
+                location.reload();
             }
         });
-    }, 3000); // Poll every 3 seconds
+    }, 3000);
 }
 
 // Two-sided toggle interaction
@@ -86,38 +80,35 @@ document.addEventListener('change', function(e) {
     const pid = dropdown.dataset.pid;
     const newLead = dropdown.value;
 
-    fetch('/modules/admin/adminProjectManagement/endpoint.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'action=update_lead&pid=' + encodeURIComponent(pid) + '&lead=' + encodeURIComponent(newLead)
-    })
-    .then(response => response.json())
-    .then(data => {
+    Helpers.post('/modules/admin/adminProjectManagement/endpoint.php', {
+        action: 'update_lead',
+        pid: pid,
+        lead: newLead
+    }).then(function(data) {
         if (data.success) {
-            // Optionally show a brief success indicator
             dropdown.style.borderColor = '#4caf50';
-            setTimeout(() => { dropdown.style.borderColor = ''; }, 1500);
+            setTimeout(function() { dropdown.style.borderColor = ''; }, 1500);
         } else {
             console.error('Failed to update project lead:', data.error);
         }
-    })
-    .catch(err => console.error('Error updating project lead:', err));
+    }).catch(function(err) {
+        console.error('Error updating project lead:', err);
+    });
 });
 
 // ── Size On Disk: Async Recalculation ──
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.proj-card__size').forEach(function(el) {
-        const pid = el.dataset.pid;
+        var pid = el.dataset.pid;
         if (!pid) return;
-
-        fetch('/libraries/update_project_size.php?pid=' + encodeURIComponent(pid))
-        .then(response => response.json())
-        .then(data => {
+        Helpers.get('/libraries/update_project_size.php', { pid: pid })
+        .then(function(data) {
             if (data.size_mb !== undefined) {
                 el.textContent = data.size_mb + ' MB';
             }
-        })
-        .catch(err => console.error('Error fetching project size:', err));
+        }).catch(function(err) {
+            console.error('Error fetching project size:', err);
+        });
     });
 });
 

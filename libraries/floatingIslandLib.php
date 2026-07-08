@@ -50,90 +50,9 @@ function SpawnFloatingIsland($contents, $title = 'Floating Island')
 </div>
 HTML;
 
-    // Inline drag logic
-    $dragJs = <<<JS
-<script>
-(function() {
-    var island = document.getElementById('fi-{$sanitizedId}');
-    if (!island) return;
-
-    var header = island.querySelector('.floating-island__header');
-    if (!header) return;
-
-    var offsetX = 0, offsetY = 0, dragging = false;
-
-    header.addEventListener('mousedown', function(e) {
-        if (e.target.closest('.floating-island__close')) return;
-
-        dragging = true;
-        var rect = island.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-        island.style.cursor = 'grabbing';
-        island.style.transition = 'none';
-        e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', function(e) {
-        if (!dragging) return;
-        island.style.left = (e.clientX - offsetX) + 'px';
-        island.style.top  = (e.clientY - offsetY) + 'px';
-        island.style.transform = 'none';
-    });
-
-    document.addEventListener('mouseup', function() {
-        if (!dragging) return;
-        dragging = false;
-        island.style.cursor = '';
-        island.style.transition = '';
-    });
-})();
-</script>
-JS;
-
-    // Inline resize logic
-    $resizeJs = <<<JS
-<script>
-(function() {
-    var island = document.getElementById('fi-{$sanitizedId}');
-    if (!island) return;
-
-    var handle = island.querySelector('.floating-island__resize-handle');
-    if (!handle) return;
-
-    var resizing = false, startX, startY, startW, startH;
-
-    handle.addEventListener('mousedown', function(e) {
-        resizing = true;
-        var rect = island.getBoundingClientRect();
-        startX = e.clientX;
-        startY = e.clientY;
-        startW = rect.width;
-        startH = rect.height;
-        island.style.transition = 'none';
-        e.preventDefault();
-        e.stopPropagation();
-    });
-
-    document.addEventListener('mousemove', function(e) {
-        if (!resizing) return;
-        var w = Math.max(300, startW + (e.clientX - startX));
-        var h = Math.max(200, startH + (e.clientY - startY));
-        island.style.width  = w + 'px';
-        island.style.height = h + 'px';
-    });
-
-    document.addEventListener('mouseup', function() {
-        if (!resizing) return;
-        resizing = false;
-        island.style.transition = '';
-    });
-})();
-</script>
-JS;
-
-    return $html . $dragJs . $resizeJs;
+    return $html;
 }
+
 
 
 
@@ -198,10 +117,10 @@ ISLANDBODY;
     function loadComments() { //It's built into a function so that we can call it when we post a new comment.
         container.innerHTML = '<p class="seeComments-loading">Loading comments…</p>';
 
-        $.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+        Helpers.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
             action: 'fetch',
             file_url: '{$fileUrl}'
-        }, function(response) {
+        }).then(function(response) {
             if (!response.success) {
                 container.innerHTML = '<p class="seeComments-status-error">Failed to load comments.</p>';
                 return;
@@ -233,26 +152,25 @@ ISLANDBODY;
                 var content = $('#{$containerId}-input').val().trim();
                 if (!content) return;
 
-                $.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+                Helpers.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
                     action: 'add',
                     file_url: '{$fileUrl}',
                     content: content
-                }, function(addResponse) {
+                }).then(function(addResponse) {
                     if (addResponse.success) {
-                        $('#{$containerId}-input').val('');
+                        document.getElementById('{$containerId}-input').value = '';
                         loadComments();  // re-fetch to show new comment
                     } else {
-                        alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
+                        Helpers.alertIsland('Error', 'Failed to add comment: ' + (addResponse.error || 'unknown error'), 'error');
                     }
-                }, 'json').fail(function() {
-                    alert('Failed to add comment.');
+                }).catch(function() {
+                    Helpers.alertIsland('Error', 'Failed to add comment.', 'error');
                 });
-            });
 
             // Stop elFinder hotkeys from firing while typing
             $('#{$containerId}-input').on('keydown', function(e) { e.stopPropagation(); });
 
-        }, 'json').fail(function() {
+        }).catch(function() {
             container.innerHTML = '<p class="seeComments-status-error">Failed to load comments due to a server error.</p>';
         });
     }
