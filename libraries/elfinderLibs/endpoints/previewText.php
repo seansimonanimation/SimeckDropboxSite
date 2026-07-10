@@ -14,8 +14,19 @@ $themeId = $_SESSION['theme'] ?? 'dark-boo';
 $themeClass = 'theme-' . $themeId;
 
 
-// ─── Parameter parsing ───────────────────────────────────────────────
-$filePath = ResolvePreviewFilePath();
+// ─── Parameter parsing (hash or url) ─────────────────────────────
+$hash = $_GET['hash'] ?? '';
+if ($hash) {
+    $elfinderOptions = GetRoleElfinderOptions();
+    $filePath = DecodeElfinderHash($hash, $elfinderOptions);
+    if ($filePath === null) {
+        http_response_code(400);
+        echo 'Invalid file hash.';
+        exit;
+    }
+} else {
+    $filePath = ResolvePreviewFilePath();
+}
 
 // ─── Encoding detection ──────────────────────────────────────────────
 $raw = file_get_contents($filePath);

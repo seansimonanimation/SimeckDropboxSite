@@ -9,8 +9,20 @@ require_once __ROOT__ . '/libraries/session.php';
 require_once __ROOT__ . '/libraries/db.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
-// ─── Parameter parsing ───────────────────────────────────────────────
-$filePath = ResolvePreviewFilePath();
+// ─── Parameter parsing (hash or url) ─────────────────────────────
+$hash = $_GET['hash'] ?? '';
+if ($hash) {
+    $elfinderOptions = GetRoleElfinderOptions();
+    $filePath = DecodeElfinderHash($hash, $elfinderOptions);
+    if ($filePath === null) {
+        http_response_code(400);
+        echo 'Invalid file hash.';
+        exit;
+    }
+} else {
+    $filePath = ResolvePreviewFilePath();
+}
+
 
 
 // ─── Extension validation ────────────────────────────────────────────

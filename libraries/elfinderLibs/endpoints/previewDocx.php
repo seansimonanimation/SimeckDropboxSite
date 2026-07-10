@@ -6,7 +6,20 @@
 if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 require_once __ROOT__ . '/vendor/autoload.php';
 include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
-$filePath = ResolvePreviewFilePath();
+// ─── Parameter parsing (hash or url) ─────────────────────────────
+$hash = $_GET['hash'] ?? '';
+if ($hash) {
+    $elfinderOptions = GetRoleElfinderOptions();
+    $filePath = DecodeElfinderHash($hash, $elfinderOptions);
+    if ($filePath === null) {
+        http_response_code(400);
+        echo 'Invalid file hash.';
+        exit;
+    }
+} else {
+    $filePath = ResolvePreviewFilePath();
+}
+
 
 $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 if (!in_array($ext, ['docx', 'doc'])) {

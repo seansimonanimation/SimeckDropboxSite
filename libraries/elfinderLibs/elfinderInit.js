@@ -12,6 +12,15 @@ $(function() {
     //fm.bind('load', function() { refreshLockOverrides(fm); });
     resizeElfinder();
 });
+/**
+ * Get a protected display URL for an elFinder file hash.
+ * Routes through download.php so nginx internal; on /files/ doesn't block it.
+ * For admin/artist: serves full file.
+ * For clients: serves watermarked 800px preview.
+ */
+function getDisplayUrl(hash) {
+    return '/download.php?hash=' + encodeURIComponent(hash);
+}
 
 function bindLockRefreshOnNavigate(fm) {
     // Refresh lock cache whenever elFinder finishes opening a directory.
@@ -55,6 +64,7 @@ function updatePreviewPane(fm) {
     
     var f = selected[0];
     var fileUrl = fm.url(f.hash);
+    var displayUrl = getDisplayUrl(f.hash);
     var isImage = f.mime && f.mime.startsWith('image/');
     var isLocked = false;
     var commentLocked = false;
@@ -118,12 +128,12 @@ function updatePreviewPane(fm) {
     // 3. Preview image/icon
     html += '<div class="preview-visual' + (isImage ? '' : ' preview-visual--icon') + '">';
     if (isImage) {
-        html += '  <img src="' + fm.escape(fileUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '" data-needs-watermark="1">';
+        html += '  <img src="' + fm.escape(displayUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '">';
     } else if (f.mime && f.mime.indexOf('video') === 0) {
-        html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(fileUrl) + '"></video>';
+        html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(displayUrl) + '"></video>';
     } else if (isTextFile) {
         // Show inline text snippet in the side pane
-        var snippetUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl) + '&lines=5&page=1';
+        var snippetUrl = '/libraries/elfinderLibs/endpoints/previewText.php?hash=' + encodeURIComponent(f.hash) + '&lines=5&page=1';
         html += '  <div class="preview-text-snippet" id="preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '') + '">';
         html += '    <p class="seecm-loading">Loading preview…</p>';
         html += '  </div>';
@@ -190,7 +200,7 @@ function updatePreviewPane(fm) {
     
     // Wire up click on preview to open in floating island
     $('.preview-visual').on('click', function() {
-        openPreviewIsland(fm, f, fileUrl, isImage);
+        openPreviewIsland(fm, f, fileUrl, isImage, displayUrl);
     });
     
     // Wire up action buttons
@@ -346,7 +356,7 @@ function copyFolderLink(fm, file) {
 }
 
 function sendToDiscord(fm, file) {
-    var fileData = [{ name: file.name, url: fm.url(file.hash) }];
+    var fileData = [{ name: file.name, url: getDisplayUrl(file.hash) }];
     
     var adjustedHash = fm.cwd().hash;
     if (adjustedHash.startsWith('s1_')) {
@@ -375,7 +385,7 @@ function sendToDiscord(fm, file) {
 }
 
 
-function openPreviewIsland(fm, file, fileUrl, isImage) {
+function openPreviewIsland(fm, file, fileUrl, isImage, displayUrl) {
     // Build a floating island with a large preview
     var islandId = 'fi-preview-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
     
@@ -394,10 +404,10 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         contentHtml = '<div id="' + modelContainerId + '" style="width:100%;height:100%;position:relative;background:#1a1a1a;overflow:hidden;"></div>';
     } else if (isImage) {
         var islandImgId = 'pi-img-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
-        contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;" data-needs-watermark="1">';
+        contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(displayUrl || fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else if (file.mime && file.mime.indexOf('video') === 0) {
         contentHtml = '<video controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000;">';
-        contentHtml += '  <source src="' + fm.escape(fileUrl) + '" type="' + fm.escape(file.mime) + '">';
+        contentHtml += '  <source src="' + fm.escape(displayUrl || fileUrl) + '" type="' + fm.escape(file.mime) + '">';
         contentHtml += '  Your browser does not support the video tag.';
         contentHtml += '</video>';
     } else {
@@ -436,20 +446,20 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         }
 
         if (isTextFile) {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl);
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewText.php?hash=' + encodeURIComponent(file.hash);
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
 
         } else if (ext2 === 'docx' || ext2 === 'doc') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'xlsx' || ext2 === 'xls' || ext2 === 'csv' || ext2 === 'ods') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'pptx' || ext2 === 'ppt' || ext2 === 'odp') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'pdf') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPdf.php?url=' + encodeURIComponent(fileUrl);
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPdf.php?hash=' + encodeURIComponent(file.hash);
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else {
 
@@ -486,13 +496,13 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         var container = document.getElementById(modelContainerId);
         if (container) {
             if (typeof window.open3DViewer === 'function') {
-                window.open3DViewer(container, fileUrl, ext, file.name);
+                window.open3DViewer(container, displayUrl || fileUrl, ext, file.name);
             } else {
                 // Dynamically load 3dViewer.js first, then call it
                 var script = document.createElement('script');
                 script.src = '/libraries/elfinderLibs/3dViewer.js';
                 script.onload = function() {
-                    window.open3DViewer(container, fileUrl, ext, file.name);
+                    window.open3DViewer(container, displayUrl || fileUrl, ext, file.name);
                 };
                 script.onerror = function() {
                     container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-family:sans-serif;">Failed to load 3D viewer.</div>';
