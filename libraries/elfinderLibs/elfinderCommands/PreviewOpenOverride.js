@@ -17,8 +17,9 @@ function overrideOpenCommand(fm) {
                 e.preventDefault();
                 e.stopPropagation();
                 var fileUrl = fm.url(file.hash);
+                var displayUrl = getDisplayUrl(file.hash);
                 var isImage = file.mime.indexOf('image') === 0;
-                openPreviewIsland(fm, file, fileUrl, isImage);
+                openPreviewIsland(fm, file, fileUrl, isImage, displayUrl);
             }
         }
     }, true);  // ← priorityFirst = true, runs BEFORE the open command's handler

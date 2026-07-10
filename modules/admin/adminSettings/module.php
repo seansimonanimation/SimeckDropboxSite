@@ -80,7 +80,7 @@ if (isset($_GET['remove_secondary_role']) && isset($_GET['id'])) {
                             <td style="padding:0.3rem 0;"><?= htmlspecialchars($role['role_name']) ?></td>
                             <td style="padding:0.3rem 0;"><?= htmlspecialchars($role['display_name']) ?></td>
                             <td style="padding:0.3rem 0;">
-                                <a href="?remove_secondary_role=1&id=<?= $role['id'] ?>" onclick="return confirm('Delete role &quot;<?= htmlspecialchars($role['display_name'], ENT_QUOTES) ?>&quot;?');" style="text-decoration:none;">❌</a>
+                                <a href="?remove_secondary_role=1&id="<?= $role['id'] ?>" ...>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -90,4 +90,23 @@ if (isset($_GET['remove_secondary_role']) && isset($_GET['id'])) {
         </div>
 
     </div>
+    <script>
+(function() {
+    // Bind Helpers.confirm to delete-secondary-role links
+    document.querySelectorAll('a[href*="remove_secondary_role"]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = this.getAttribute('href');
+            var roleName = this.closest('tr').querySelector('td').textContent.trim();
+            Helpers.confirm('Delete role "' + roleName + '"?')
+                .then(function(confirmed) {
+                    if (confirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+        });
+    });
+})();
+</script>
+
 </div>

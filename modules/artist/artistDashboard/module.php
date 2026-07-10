@@ -159,15 +159,18 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     function loadAvailability(username){
-        fetch('?action=get_artist_availability&username=' + encodeURIComponent(username))
-            .then(r => r.json())
-            .then(data => {
+        Helpers.get('?action=get_artist_availability', { username: username })
+            .then(function(data) {
                 const avail = data.available_now === 'Yes' ? '✅ Yes' : '❌ No';
                 results.innerHTML = '<div style="border:1px solid #ccc;padding:12px;border-radius:6px;">'
                     + '<strong>Available now: ' + avail + '</strong>'
                     + '<div style="margin-top:8px;">' + data.availability_html + '</div>'
                     + '</div>';
+            })
+            .catch(function(err) {
+                Helpers.alertIsland('Request Failed', 'Could not load availability: ' + err.message, 'error');
             });
+
     }
 
     // ── Date/Time Calculator ──
@@ -194,22 +197,18 @@ document.addEventListener('DOMContentLoaded', function(){
                 return;
             }
             const datetime = date + ' ' + time;
-            fetch('?action=convert_datetime&artist=' + encodeURIComponent(artist) + '&datetime=' + encodeURIComponent(datetime))
-                .then(r => r.json())
-                .then(data => {
-                    if(data.error){
-                        dtcResult.innerHTML = '<span style="color:red;">Error: ' + data.error + '</span>';
-                        dtcResult.style.borderColor = '#e74c3c';
-                        return;
-                    }
-                    dtcResult.innerHTML = '<strong>That\'s ' + data.display + '</strong><br>'
-                        + '<span style="font-size:0.9em;">for ' + data.artist_name + ' (' + data.artist_timezone + ')</span>';
-                    dtcResult.style.borderColor = '#2ecc71';
-                })
-                .catch(err => {
-                    dtcResult.innerHTML = '<span style="color:red;">Request failed.</span>';
-                    dtcResult.style.borderColor = '#e74c3c';
-                });
+            Helpers.get('?action=convert_datetime', { artist: artist, datetime: datetime })
+            .then(function(data) {
+                if(data.error){
+                    Helpers.alertIsland('Conversion Error', data.error, 'error');
+                    return;
+                }
+                dtcResult.innerHTML = '<strong>That\'s ' + data.display + '</strong><br>'
+                    + '<span style="font-size:0.9em;">for ' + data.artist_name + ' (' + data.artist_timezone + ')</span>';
+                dtcResult.style.borderColor = '#2ecc71';
+            }).catch(function(err) {
+                Helpers.alertIsland('Request Failed', 'Could not convert datetime: ' + err.message, 'error');
+            });
         } else {
             const tz = dtcTzSelect.value;
             if(!tz || !date || !time){
@@ -218,21 +217,18 @@ document.addEventListener('DOMContentLoaded', function(){
                 return;
             }
             const datetime = date + ' ' + time;
-            fetch('?action=convert_datetime&timezone=' + encodeURIComponent(tz) + '&datetime=' + encodeURIComponent(datetime))
-                .then(r => r.json())
-                .then(data => {
+                        Helpers.get('?action=convert_datetime', { timezone: tz, datetime: datetime })
+                .then(function(data) {
                     if(data.error){
-                        dtcResult.innerHTML = '<span style="color:red;">Error: ' + data.error + '</span>';
-                        dtcResult.style.borderColor = '#e74c3c';
+                        Helpers.alertIsland('Conversion Error', data.error, 'error');
                         return;
                     }
                     dtcResult.innerHTML = '<strong>That\'s ' + data.display + '</strong><br>'
                         + '<span style="font-size:0.9em;">for ' + data.target_timezone + '</span>';
                     dtcResult.style.borderColor = '#2ecc71';
                 })
-                .catch(err => {
-                    dtcResult.innerHTML = '<span style="color:red;">Request failed.</span>';
-                    dtcResult.style.borderColor = '#e74c3c';
+                .catch(function(err) {
+                    Helpers.alertIsland('Request Failed', 'Could not convert datetime: ' + err.message, 'error');
                 });
         }
     }

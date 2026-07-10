@@ -160,8 +160,6 @@ function RenderLogPagination($currentPage, $totalPages){
  */
 function RenderLogFilterBar($showAdminFilters = true){
     $currentModule = $_GET['module'] ?? ($_SESSION['ActiveModule'] ?? '');
-    // Strip the role prefix if present (e.g. "adminLogging" → "Logging")
-    // Actually we need the raw module key as the router uses it.  Keep whatever the page set.
     $moduleVal = isset($_GET['module']) ? htmlspecialchars($_GET['module']) : '';
 
     $fUsername   = htmlspecialchars($_GET['filter_username'] ?? '');
@@ -172,57 +170,49 @@ function RenderLogFilterBar($showAdminFilters = true){
     $fHideImp    = isset($_GET['filter_hide_impersonated']) ? 'checked' : '';
     $perPage     = (int)($_GET['per_page'] ?? GetUserLogRowsPerPage($_SESSION['username'] ?? 'admin'));
 
-    echo '<form method="GET" class="log-filter-bar" style="margin-bottom:14px; padding:10px; border:1px solid #555; border-radius:4px; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;">';
+    echo '<form method="GET" class="log-filter-bar" style="margin-bottom:14px; padding:10px; border:1px solid var(--color-border-bright); border-radius:6px; display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end;">';
 
-    // Preserve the module route
     if($moduleVal){
         echo '<input type="hidden" name="module" value="' . $moduleVal . '">';
     }
 
-    // Username filter (admin only)
     if($showAdminFilters){
         echo '<div style="display:flex; flex-direction:column;">';
         echo '<label for="filter_username" style="font-size:0.85em; margin-bottom:2px;">Username</label>';
-        echo '<input type="text" id="filter_username" name="filter_username" value="' . $fUsername . '" placeholder="Username" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+        echo '<input type="text" id="filter_username" name="filter_username" value="' . $fUsername . '" placeholder="Username" class="log-filter-input">';
         echo '</div>';
     }
 
-    // Start time
     echo '<div style="display:flex; flex-direction:column;">';
     echo '<label for="filter_time_start" style="font-size:0.85em; margin-bottom:2px;">From</label>';
-    echo '<input type="datetime-local" id="filter_time_start" name="filter_time_start" value="' . $fTimeStart . '" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+    echo '<input type="datetime-local" id="filter_time_start" name="filter_time_start" value="' . $fTimeStart . '" class="log-filter-datetime">';
     echo '</div>';
 
-    // End time
     echo '<div style="display:flex; flex-direction:column;">';
     echo '<label for="filter_time_end" style="font-size:0.85em; margin-bottom:2px;">To</label>';
-    echo '<input type="datetime-local" id="filter_time_end" name="filter_time_end" value="' . $fTimeEnd . '" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+    echo '<input type="datetime-local" id="filter_time_end" name="filter_time_end" value="' . $fTimeEnd . '" class="log-filter-datetime">';
     echo '</div>';
 
-    // IP filter (admin only)
     if($showAdminFilters){
         echo '<div style="display:flex; flex-direction:column;">';
         echo '<label for="filter_ip" style="font-size:0.85em; margin-bottom:2px;">IP Address</label>';
-        echo '<input type="text" id="filter_ip" name="filter_ip" value="' . $fIp . '" placeholder="IP Address" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+        echo '<input type="text" id="filter_ip" name="filter_ip" value="' . $fIp . '" placeholder="IP Address" class="log-filter-input">';
         echo '</div>';
     }
 
-    // Project filter
     echo '<div style="display:flex; flex-direction:column;">';
     echo '<label for="filter_project" style="font-size:0.85em; margin-bottom:2px;">Project</label>';
-    echo '<input type="text" id="filter_project" name="filter_project" value="' . $fProject . '" placeholder="Project (e.g. C01)" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+    echo '<input type="text" id="filter_project" name="filter_project" value="' . $fProject . '" placeholder="Project (e.g. C01)" class="log-filter-input">';
     echo '</div>';
 
-    // Hide impersonated
     echo '<div style="display:flex; flex-direction:column; justify-content:flex-end;">';
     echo '<label for="filter_hide_impersonated" style="font-size:0.85em; margin-bottom:2px;">&nbsp;</label>';
     echo '<div><input type="checkbox" id="filter_hide_impersonated" name="filter_hide_impersonated" value="1" ' . $fHideImp . '> <label for="filter_hide_impersonated">Hide impersonated</label></div>';
     echo '</div>';
 
-    // Per-page dropdown
     echo '<div style="display:flex; flex-direction:column;">';
     echo '<label for="per_page" style="font-size:0.85em; margin-bottom:2px;">Rows</label>';
-    echo '<select id="per_page" name="per_page" onchange="this.form.submit()" style="padding:4px 6px; border:1px solid #555; border-radius:3px;">';
+    echo '<select id="per_page" name="per_page" onchange="this.form.submit()" class="log-filter-select">';
     foreach([10,25,50,100,200,500] as $pp){
         $sel = ($pp === $perPage) ? ' selected' : '';
         echo '<option value="' . $pp . '"' . $sel . '>' . $pp . '</option>';
@@ -230,14 +220,12 @@ function RenderLogFilterBar($showAdminFilters = true){
     echo '</select>';
     echo '</div>';
 
-    // Buttons
     echo '<div style="display:flex; flex-direction:column; justify-content:flex-end;">';
     echo '<label style="font-size:0.85em; margin-bottom:2px;">&nbsp;</label>';
     echo '<div style="display:flex; gap:4px;">';
-    echo '<button type="submit" style="padding:4px 12px; border:1px solid #555; border-radius:3px; cursor:pointer;">Apply</button>';
-    // Reset link — clears all filters but stays on the same module
+    echo '<button type="submit" class="log-filter-btn">Apply</button>';
     $resetQs = $moduleVal ? ('module=' . urlencode($moduleVal)) : '';
-    echo '<a href="?' . $resetQs . '" style="padding:4px 12px; border:1px solid #555; border-radius:3px; text-decoration:none; display:inline-block;">Reset</a>';
+    echo '<a href="?' . $resetQs . '" class="log-filter-link">Reset</a>';
     echo '</div>';
     echo '</div>';
 

@@ -24,7 +24,7 @@ function GenerateTimeclockTable(){
         echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineShiftLengthOrSummonButton($entry['time_in'], $entry['time_out'], $entry['shift_id']) . '</td>';
-        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2" style="width:100%; resize:vertical;">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
+        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
         echo '<td><a href="index.php?delete_shift_id=' . htmlspecialchars($entry['shift_id']) . '">❌</a></td>';
 
         echo '</tr>';
@@ -52,7 +52,7 @@ function GenerateArtistTimeclockTable($artistID){
         echo '  <span class="atc-display">' . htmlspecialchars($displayOut ?? '') . '</span>';
         echo '</td>';
         echo '<td>' . DetermineArtistShiftLength($entry['time_in'], $entry['time_out']) . '</td>';
-        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2" style="width:100%; resize:vertical;">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
+        echo '<td><textarea class="shift-comment" data-shift-id="' . $entry['shift_id'] . '" rows="2">' . htmlspecialchars($entry['shift_comments'] ?? '') . '</textarea></td>';
         echo '</tr>';
     }
     echo '</tbody></table>';

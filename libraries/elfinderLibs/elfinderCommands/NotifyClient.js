@@ -15,7 +15,15 @@ elFinder.prototype.commands.notifyClient = function() {
         var fm = this.fm, files = fm.selectedFiles();
         if (files.length === 0) return $.Deferred().resolve();
         var f = files[0];
-        $.post('libraries/elfinderLibs/endpoints/notifyClientEndpoint.php', { filepath: fm.url(f.hash) }, function(html) { $('body').append(html); }, 'html').fail(function() { fm.notify({ type: 'error', msg: 'Failed to load Notify Client dialog.' }); });
+        
+        Helpers.postHtml('libraries/elfinderLibs/endpoints/notifyClientEndpoint.php', {
+            filepath: fm.url(f.hash)
+        }).then(function(html) {
+            document.body.insertAdjacentHTML('beforeend', html);
+        }).catch(function(err) {
+            fm.notify({ type: 'error', msg: 'Failed to load Notify Client dialog.' });
+        });
+        
         return $.Deferred().resolve();
     };
     this.getstate = function() {

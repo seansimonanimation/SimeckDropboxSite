@@ -8,7 +8,20 @@ include_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 
 //error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
-$filePath = ResolvePreviewFilePath();
+// ─── Parameter parsing (hash or url) ─────────────────────────────
+$hash = $_GET['hash'] ?? '';
+if ($hash) {
+    $elfinderOptions = GetRoleElfinderOptions();
+    $filePath = DecodeElfinderHash($hash, $elfinderOptions);
+    if ($filePath === null) {
+        http_response_code(400);
+        echo 'Invalid file hash.';
+        exit;
+    }
+} else {
+    $filePath = ResolvePreviewFilePath();
+}
+
 
 $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 $allowedExts = ['pptx', 'ppt', 'odp'];

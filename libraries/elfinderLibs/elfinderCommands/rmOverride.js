@@ -90,7 +90,7 @@ this.getstate = function() {
             if (response.success) {
                 // Reload the current directory to reflect changes
                 // Remove the beforeunload handler to bypass the "unsaved changes" prompt
-                SimeckRefresh();
+                Helpers.refresh();
 
 
                 
@@ -112,7 +112,7 @@ this.getstate = function() {
                 // Still reload in case partial success
                 if (response.deleted && response.deleted.length > 0) {
                     // Remove the beforeunload handler to bypass the "unsaved changes" prompt
-                    SimeckRefresh();
+                    Helpers.refresh();
 
                 }
             }

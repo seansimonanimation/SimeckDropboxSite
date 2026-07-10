@@ -12,6 +12,15 @@ $(function() {
     //fm.bind('load', function() { refreshLockOverrides(fm); });
     resizeElfinder();
 });
+/**
+ * Get a protected display URL for an elFinder file hash.
+ * Routes through download.php so nginx internal; on /files/ doesn't block it.
+ * For admin/artist: serves full file.
+ * For clients: serves watermarked 800px preview.
+ */
+function getDisplayUrl(hash) {
+    return '/download.php?hash=' + encodeURIComponent(hash);
+}
 
 function bindLockRefreshOnNavigate(fm) {
     // Refresh lock cache whenever elFinder finishes opening a directory.
@@ -55,6 +64,7 @@ function updatePreviewPane(fm) {
     
     var f = selected[0];
     var fileUrl = fm.url(f.hash);
+    var displayUrl = getDisplayUrl(f.hash);
     var isImage = f.mime && f.mime.startsWith('image/');
     var isLocked = false;
     var commentLocked = false;
@@ -118,12 +128,12 @@ function updatePreviewPane(fm) {
     // 3. Preview image/icon
     html += '<div class="preview-visual' + (isImage ? '' : ' preview-visual--icon') + '">';
     if (isImage) {
-        html += '  <img src="' + fm.escape(fileUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '" data-needs-watermark="1">';
+        html += '  <img src="' + fm.escape(displayUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '">';
     } else if (f.mime && f.mime.indexOf('video') === 0) {
-        html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(fileUrl) + '"></video>';
+        html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(displayUrl) + '"></video>';
     } else if (isTextFile) {
         // Show inline text snippet in the side pane
-        var snippetUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl) + '&lines=5&page=1';
+        var snippetUrl = '/libraries/elfinderLibs/endpoints/previewText.php?hash=' + encodeURIComponent(f.hash) + '&lines=5&page=1';
         html += '  <div class="preview-text-snippet" id="preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '') + '">';
         html += '    <p class="seecm-loading">Loading preview…</p>';
         html += '  </div>';
@@ -131,18 +141,20 @@ function updatePreviewPane(fm) {
         // Load the snippet
         var snippetContainerId = 'preview-snippet-' + f.hash.replace(/[^a-zA-Z0-9_-]/g, '');
         (function(containerId, snippetUrl) {
-            $.get(snippetUrl, function(html) {
-                // Extract just the <pre><code> block from the response
-                var match = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-                if (match) {
-                    var snippet = '<pre>' + match[1] + '</pre>';
-                    $('#' + containerId).html(snippet);
-                } else {
-                    $('#' + containerId).html('<p class="seecm-status-empty">No preview available.</p>');
-                }
-            }).fail(function() {
-                $('#' + containerId).html('<p class="seecm-status-error">Failed to load preview.</p>');
-            });
+            fetch(snippetUrl)
+                .then(function(r) { return r.text(); })
+                .then(function(html) {
+                    var match = html.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+                    if (match) {
+                        var snippet = '<pre>' + match[1] + '</pre>';
+                        $('#' + containerId).html(snippet);
+                    } else {
+                        $('#' + containerId).html('<p class="seecm-status-empty">No preview available.</p>');
+                    }
+                })
+                .catch(function() {
+                    $('#' + containerId).html('<p class="seecm-status-error">Failed to load preview.</p>');
+                });
         })(snippetContainerId, snippetUrl);
 
     
@@ -165,7 +177,7 @@ function updatePreviewPane(fm) {
     html += '<div class="preview-filename">' + fm.escape(f.name) + '</div>';
     
     // 5. Filesize (centered)
-    var size = f.mime === 'directory' ? '—' : formatBytes(f.size);
+    var size = f.mime === 'directory' ? '—' : Helpers.formatBytes(f.size);
     html += '<div class="preview-filesize">' + size + '</div>';
     
     // 6. Comments section
@@ -188,7 +200,7 @@ function updatePreviewPane(fm) {
     
     // Wire up click on preview to open in floating island
     $('.preview-visual').on('click', function() {
-        openPreviewIsland(fm, f, fileUrl, isImage);
+        openPreviewIsland(fm, f, fileUrl, isImage, displayUrl);
     });
     
     // Wire up action buttons
@@ -217,10 +229,10 @@ function getElfinderIconClass(mime, name) {
 function loadPreviewComments(fileUrl, isCommentLocked) {
     var $list = $('.preview-comments-list');
     
-    $.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+    Helpers.get('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
         action: 'fetch',
         file_url: fileUrl
-    }, function(response) {
+    }).then(function(response) {
         if (!response.success) {
             $list.html('<p class="seecm-status-error">Failed to load comments.</p>');
             return;
@@ -262,41 +274,43 @@ function loadPreviewComments(fileUrl, isCommentLocked) {
                 var content = $input.val().trim();
                 if (!content) return;
                 
-                $.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
+                Helpers.post('libraries/elfinderLibs/endpoints/commentsEndpoint.php', {
                     action: 'add',
                     file_url: fileUrl,
                     content: content
-                }, function(addResponse) {
+                }).then(function(addResponse) {
                     if (addResponse.success) {
                         $input.val('');
                         loadPreviewComments(fileUrl, isCommentLocked);
                     } else {
-                        alert('Failed to add comment: ' + (addResponse.error || 'unknown error'));
+                        Helpers.alertIsland('Error', 'Failed to add comment: ' + (addResponse.error || 'unknown error'), 'error');
                     }
-                }, 'json').fail(function() {
-                    alert('Failed to add comment.');
+                }).catch(function() {
+                    Helpers.alertIsland('Error', 'Failed to add comment.', 'error');
                 });
-            });
             
             $list.find('.preview-comment-input').on('keydown', function(e) {
                 e.stopPropagation();
             });
-        }
+        });
+    }
+    }).catch(function() {
+        $list.html('<p class="seecm-status-error">Failed to load comments.</p>');
     });
 }
 
 function copyDirectLink(fm, file) {
     // Reuse the CopyDirectLink command logic
-    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
+    Helpers.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [file.hash]
-    }, function(response) {
+    }).then(function(response) {
         if (response.success && response.urls.length > 0) {
             var link = response.urls[0];
-            copyToClipboard(link, 'Download link copied to clipboard!', fm);
+            Helpers.copyToClipboard(link, 'Download link copied to clipboard!');
         } else {
-            fm.notify({ type: 'error', msg: response.error || 'Failed to generate link.' });
+            Helpers.alertIsland('Error', response.error || 'Failed to generate link.', 'error');
         }
-    }, 'json');
+    });
 }
 /**
  * Replace an image's src with a watermarked download URL for clients.
@@ -308,14 +322,14 @@ function applyWatermarkedUrl(fm, hash, imgSelector, callback) {
         if (callback) callback();
         return;
     }
-    $.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
+    Helpers.post('/libraries/elfinderLibs/endpoints/generateLinkEndpoint.php', {
         hashes: [hash]
-    }, function(response) {
+    }).then(function(response) {
         if (response.success && response.urls.length > 0) {
             $(imgSelector).attr('src', response.urls[0]);
         }
         if (callback) callback();
-    }, 'json').fail(function() {
+    }).catch(function() {
         if (callback) callback();
     });
 }
@@ -337,12 +351,12 @@ function copyFolderLink(fm, file) {
     
     var link = baseUrl + '/viewfolder.php?folderid=' + encodeURIComponent(adjustedHash);
     
-    copyToClipboard(link, 'Folder link copied to clipboard!', fm);
+    Helpers.copyToClipboard(link, 'Folder link copied to clipboard!', fm);
 
 }
 
 function sendToDiscord(fm, file) {
-    var fileData = [{ name: file.name, url: fm.url(file.hash) }];
+    var fileData = [{ name: file.name, url: getDisplayUrl(file.hash) }];
     
     var adjustedHash = fm.cwd().hash;
     if (adjustedHash.startsWith('s1_')) {
@@ -353,18 +367,25 @@ function sendToDiscord(fm, file) {
         adjustedHash = 's2_' + reEncoded;
     }
     
-    $.post('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
-        files: JSON.stringify(fileData),
-        folderHash: adjustedHash
-    }, function(html) {
+    fetch('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            files: JSON.stringify(fileData),
+            folderHash: adjustedHash
+        })
+    })
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
         $('body').append(html);
-    }, 'html').fail(function() {
-        fm.notify({ type: 'error', msg: 'Failed to load Discord dialog.' });
+    })
+    .catch(function() {
+        Helpers.alertIsland('Error', 'Failed to load Discord dialog.', 'error');
     });
 }
 
 
-function openPreviewIsland(fm, file, fileUrl, isImage) {
+function openPreviewIsland(fm, file, fileUrl, isImage, displayUrl) {
     // Build a floating island with a large preview
     var islandId = 'fi-preview-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
     
@@ -383,10 +404,10 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         contentHtml = '<div id="' + modelContainerId + '" style="width:100%;height:100%;position:relative;background:#1a1a1a;overflow:hidden;"></div>';
     } else if (isImage) {
         var islandImgId = 'pi-img-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
-        contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;" data-needs-watermark="1">';
+        contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(displayUrl || fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else if (file.mime && file.mime.indexOf('video') === 0) {
         contentHtml = '<video controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000;">';
-        contentHtml += '  <source src="' + fm.escape(fileUrl) + '" type="' + fm.escape(file.mime) + '">';
+        contentHtml += '  <source src="' + fm.escape(displayUrl || fileUrl) + '" type="' + fm.escape(file.mime) + '">';
         contentHtml += '  Your browser does not support the video tag.';
         contentHtml += '</video>';
     } else {
@@ -425,20 +446,20 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         }
 
         if (isTextFile) {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewText.php?url=' + encodeURIComponent(fileUrl);
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewText.php?hash=' + encodeURIComponent(file.hash);
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
 
         } else if (ext2 === 'docx' || ext2 === 'doc') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewDocx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'xlsx' || ext2 === 'xls' || ext2 === 'csv' || ext2 === 'ods') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewXlsx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'pptx' || ext2 === 'ppt' || ext2 === 'odp') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?url=' + fileUrl;
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPptx.php?hash=' + file.hash;
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else if (ext2 === 'pdf') {
-            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPdf.php?url=' + encodeURIComponent(fileUrl);
+            var previewUrl = '/libraries/elfinderLibs/endpoints/previewPdf.php?hash=' + encodeURIComponent(file.hash);
             contentHtml = '<iframe src="' + previewUrl + '" style="width:100%;height:100%;border:0;"></iframe>';
         } else {
 
@@ -447,7 +468,7 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
             contentHtml += '  <div class="' + iconClass + '" style="font-size:128px;width:128px;height:128px;margin:0 auto 20px;"></div>';
             contentHtml += '  <h2>' + fm.escape(file.name) + '</h2>';
             contentHtml += '  <p style="color:var(--color-text-muted);">' + (file.mime || 'Unknown type') + '</p>';
-            contentHtml += '  <p style="color:var(--color-text-muted);">' + formatBytes(file.size) + '</p>';
+            contentHtml += '  <p style="color:var(--color-text-muted);">' + Helpers.formatBytes(file.size) + '</p>';
             contentHtml += '</div>';
         }
     }
@@ -475,13 +496,13 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
         var container = document.getElementById(modelContainerId);
         if (container) {
             if (typeof window.open3DViewer === 'function') {
-                window.open3DViewer(container, fileUrl, ext, file.name);
+                window.open3DViewer(container, displayUrl || fileUrl, ext, file.name);
             } else {
                 // Dynamically load 3dViewer.js first, then call it
                 var script = document.createElement('script');
                 script.src = '/libraries/elfinderLibs/3dViewer.js';
                 script.onload = function() {
-                    window.open3DViewer(container, fileUrl, ext, file.name);
+                    window.open3DViewer(container, displayUrl || fileUrl, ext, file.name);
                 };
                 script.onerror = function() {
                     container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-family:sans-serif;">Failed to load 3D viewer.</div>';
@@ -522,14 +543,6 @@ function openPreviewIsland(fm, file, fileUrl, isImage) {
             });
         }
     }
-}
-
-
-function formatBytes(bytes) {
-    if (isNaN(bytes) || bytes === 0) return '0 B';
-    var units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    var i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0) + ' ' + units[i];
 }
 function togglePreviewPane() {
     var $pane = $('#preview-pane');

@@ -38,6 +38,8 @@ function adminSwitchViewButtonActivation(){
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="/libraries/helpers.js?v=<?=filemtime(__ROOT__.'/libraries/helpers.js')?>"></script>
+  <script src="/libraries/linklib.js?v=<?=filemtime(__ROOT__.'/libraries/linklib.js')?>"></script>
    <link rel="stylesheet" href="css/portal.css">
    <link rel="stylesheet" href="css/moduleStyle.css">
    <?php

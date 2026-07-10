@@ -63,15 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
 }
 ?>
 <script>
-// ==========================================================
-// AJAX helper — sends a GET request with the XHR header
-// so RefreshPortal() returns JSON instead of redirecting
-// ==========================================================
-async function ajaxGet(url) {
-    return fetch(url, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    });
-}
 
 // ==========================================================
 // Refreshes the #content area in-place (no redirect)
@@ -90,6 +81,7 @@ async function refreshContent() {
     // Re-bind event listeners since the DOM was replaced
     initPageListeners();
 }
+
 
 // ==========================================================
 // Project assignment

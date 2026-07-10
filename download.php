@@ -32,6 +32,27 @@ if (file_exists('/var/www/dbconfig.php')) {
 if (isset($_GET['download'])) {
     InitiateDownload($_GET['download']);
 }
+// ─── Hash-based Preview ──────────────────────────────────────────
+// Accepts ?hash= (elfinder hash) for same-session file serving.
+// Resolves hash to real path, validates access, serves with role-based mode.
+if (isset($_GET['hash'])) {
+    require_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
+    require_once __ROOT__ . '/libraries/elfinderLibs/volumeConfig.php';
+    
+    $elfinderOptions = GetRoleElfinderOptions();
+    $decodedPath = DecodeElfinderHash($_GET['hash'], $elfinderOptions);
+    if ($decodedPath === null) {
+        http_response_code(404);
+        echo "File not found.";
+        exit;
+    }
+    
+    $role = $_SESSION['tempRole'] ?? $_SESSION['role'] ?? 'artist';
+    $mode = ($role === 'client') ? 'clientPreview' : 'internal';
+    
+    ServeElfinderFile($decodedPath, $mode);
+    exit;
+}
 
 // ─── Token Generation (see libraries/tokenlib.php) ──────────────────
 //   GenerateElfinderDownloadToken()  → V2 elFinder token

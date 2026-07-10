@@ -15,11 +15,11 @@ elFinder.prototype.commands.seeComments = function() {
         var fm = this.fm;
         var files = fm.selectedFiles();
         if (files.length === 1) {
-            $.get('libraries/elfinderLibs/endpoints/getCommentsIsland.php', {
-                filepath: fm.url(files[0].hash)
-            }, function(html) { $('body').append(html); }, 'html').fail(function() { alert('Failed to load comments.'); });
+            var fileUrl = fm.url(files[0].hash);
+            var endpoint = 'libraries/elfinderLibs/endpoints/getCommentsIsland.php?filepath=' + encodeURIComponent(fileUrl);
+            Helpers.spawnIsland(endpoint, 'Comments');
         } else {
-            alert('You can only see comments for one file at a time, you silly goose!');
+            Helpers.alertIsland('Hold on', 'You can only see comments for one file at a time, you silly goose!', 'warning');
         }
         return $.Deferred().resolve();
     };
