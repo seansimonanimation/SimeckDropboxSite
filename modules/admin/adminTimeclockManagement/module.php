@@ -49,7 +49,7 @@ RunAdminTimeclockIssets();
         <div class="module-card module-card--span-1">
             <center>
                 <h3>Filter by content</h3>
-                <input type="text" id="artistFilter" placeholder="Type filter info..." style="width:90%; padding:8px; border-radius:6px; border:1px solid var(--color-border-bright); background:var(--color-bg-raised); color:var(--color-text); margin-top:8px;">
+                <input type="text" id="artistFilter" placeholder="Type filter info..." class="artist-filter-input" style="margin-top:8px;">
             </center>
         </div>
         <div class="module-card module-card--span-4">

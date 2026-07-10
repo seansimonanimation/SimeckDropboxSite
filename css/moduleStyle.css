@@ -692,3 +692,141 @@ body:not(.bgvid-active) .module {
     -webkit-overflow-scrolling: touch;
   }
 }
+/* ── Log Filter Bar Inputs ─────────────────────────── */
+.log-filter-input {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.log-filter-input:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.log-filter-datetime {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.log-filter-datetime:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.log-filter-select {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.log-filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+.log-filter-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.log-filter-btn:hover {
+  background: var(--color-bg-raised);
+  border-color: var(--color-primary-light, #1a73e8);
+}
+
+.log-filter-link {
+  padding: 4px 12px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s, border-color 0.2s;
+}
+.log-filter-link:hover {
+  background: var(--color-bg-raised);
+  border-color: var(--color-primary-light, #1a73e8);
+}
+
+/* ── Shift Comment Textarea (timeclock notes) ─────── */
+.shift-comment {
+  width: 100%;
+  resize: vertical;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.shift-comment:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+/* ── Artist Filter Input (admin timeclock) ────────── */
+.artist-filter-input {
+  width: 90%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-bright);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.artist-filter-input:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
+
+/* ── Artist Management Dropdowns (in cards) ───────── */
+.artist-mgmt-select {
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-bright);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.artist-mgmt-select:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}

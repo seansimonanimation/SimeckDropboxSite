@@ -281,7 +281,7 @@ function FetchArtistSecondaryRoles($username, $secondaryRolesStr){
     $output = [];
 
     // --- Dropdown to add a secondary role ---
-    $dropdown = '<select onchange="assignSecondaryRole(\'' . $username . '\', this.value)">';
+    $dropdown = '<select class="artist-mgmt-select" onchange="assignSecondaryRole(\'' . $username . '\', this.value)">';
     $dropdown .= '<option value="">-- Add secondary role --</option>';
     $availableCount = 0;
     foreach ($allRoles as $role) {
@@ -396,7 +396,7 @@ function FetchArtistProjectAssignments($username, $projectAssignmentStr){
     // --- Dropdown at top ---
     $allProjects = RetrieveAllActiveProjects();
     $output = [];
-    $dropdown = '<select onchange="assignProject(\'' . $username . '\', this.value)">';
+    $dropdown = '<select class="artist-mgmt-select" onchange="assignProject(\'' . $username . '\', this.value)">';
     $dropdown .= '<option value="">-- Add project --</option>';
     $availableCount = 0;
     foreach ($allProjects as $proj) {
