@@ -19,7 +19,7 @@ function getAdminFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Everyone's Dropboxes volume
             array(
@@ -31,7 +31,7 @@ function getAdminFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Project volume
             array(
@@ -42,7 +42,7 @@ function getAdminFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Resources volume
             array(
@@ -54,7 +54,7 @@ function getAdminFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             array(
                 //Corporate volume
@@ -65,14 +65,14 @@ function getAdminFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             // Trash volume
             array(
                 'id'            => '1',
                 'driver'        => 'Trash',
                 'path'   => __ROOT__ . '/files/.trash/',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
@@ -100,7 +100,7 @@ function getArtistFileBrowserOptions(){
                 'accessControl' => 'access',
                 'dotFiles' => false,
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Everyone's Dropboxes volume
             array(
@@ -113,7 +113,7 @@ function getArtistFileBrowserOptions(){
                 'accessControl' => 'access',
                 'dotFiles' => false,
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Project volume
             array(
@@ -125,7 +125,7 @@ function getArtistFileBrowserOptions(){
                 'accessControl' => 'access',
                 'dotFiles' => false,
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             //Resources volume
             array(
@@ -138,14 +138,14 @@ function getArtistFileBrowserOptions(){
                 'accessControl' => 'access',
                 'dotFiles' => false,
                 'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
             // Trash volume
             array(
                 'id'            => '1',
                 'driver'        => 'Trash',
                 'path'   => __ROOT__ . '/files/.trash/',
-                'tmbURL' => '/files/.tmb/',
+                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
@@ -196,7 +196,7 @@ function getClientFileBrowserOptions(){
             'accessControl' => 'access',
             'dotFiles' => false,
             'tmbPath' => __ROOT__ . '/files/.tmb',
-            'tmbURL' => '/files/.tmb/',
+            'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             'clientMode' => true,
         );
     }
