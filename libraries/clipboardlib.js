@@ -62,7 +62,7 @@ var SimeckClipboardCommands = window.SimeckClipboardCommands || {};
      * @example
      * SimeckClipboardCommands.CopyToClipboard('https://example.com', 'Link copied!', fm);
      */
-    this.CopyToClipboard = function(text, successMsg, fm) {
+    SimeckClipboardCommands.CopyToClipboard = function(text, successMsg, fm) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
                 if (fm) fm.notify({ type: 'info', msg: successMsg || 'Copied to clipboard!' });
