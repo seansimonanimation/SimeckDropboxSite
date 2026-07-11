@@ -16,7 +16,38 @@
 if(!defined('__ROOT__')){define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);}
 include_once __ROOT__ . '/libraries/session.php';
 
+require_once __ROOT__ . '/libraries/elfinder/php/autoload.php';
+require_once __ROOT__ . '/libraries/elfinderLibs/SimeckVolumeDriver.php';
+require_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
+require_once __ROOT__ . '/libraries/elfinderLibs/volumeConfig.php';
+
 header('Content-Type: application/json');
+
+$rawFiles = $_POST['files'] ?? '';
+$rawFolderHash = $_POST['folderHash'] ?? '';
+
+if ($rawFiles === '') {
+    error_log('[discordWebhookEndpoint] missing files param; POST keys=' . implode(',', array_keys($_POST)));
+    http_response_code(400);
+    echo json_encode([
+        'error' => 'Missing files parameter.',
+        'debug' => 'no files payload',
+        'post_keys' => array_keys($_POST)
+    ]);
+    exit;
+}
+
+$files = json_decode($rawFiles, true);
+if (!is_array($files)) {
+    error_log('[discordWebhookEndpoint] invalid files JSON: ' . json_last_error_msg() . ' raw=' . substr($rawFiles, 0, 2000));
+    http_response_code(400);
+    echo json_encode([
+        'error' => 'Invalid files JSON.',
+        'json_error' => json_last_error_msg(),
+        'raw_files' => $rawFiles
+    ]);
+    exit;
+}
 
 // ---------- Configuration ----------
 define('DISCORD_MAX_ATTACHMENTS', 10);
@@ -44,34 +75,41 @@ if (!$webhookUrl) {
     echo json_encode(['error' => 'Invalid action. Use "sendToMondayChat" or "sendToThursdayChat".']);
     exit;
 }
-
-// ---------- Validate files ----------
-$rawFiles = $_POST['files'] ?? '';
-if (empty($rawFiles)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing files parameter.']);
-    exit;
-}
-
-$files = json_decode($rawFiles, true);
-if (!is_array($files) || empty($files)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'files must be a non-empty JSON array.']);
-    exit;
-}
-
 // ---------- Build file list with server paths ----------
 $fileEntries = [];
+$elfinderOptions = GetRoleElfinderOptions();
+
 foreach ($files as $f) {
     $name = $f['name'] ?? 'unknown';
+    $hash = $f['hash'] ?? '';
     $url  = $f['url'] ?? '';
-    if (empty($url)) {
+    $serverPath = null;
+
+    // Preferred: resolve from the elFinder hash so we always get the real file path.
+    if (!empty($hash)) {
+        $decodedPath = DecodeElfinderHash($hash, $elfinderOptions);
+
+        if ($decodedPath !== null) {
+            $realPath = realpath($decodedPath);
+            if ($realPath !== false && file_exists($realPath) && is_readable($realPath)) {
+                $serverPath = $realPath;
+            }
+        }
+    }
+
+    // Fallback for older payloads that still include a URL.
+    if ($serverPath === null && !empty($url)) {
+        $candidatePath = __ROOT__ . urldecode($url);
+        $realPath = realpath($candidatePath);
+        if ($realPath !== false && file_exists($realPath) && is_readable($realPath)) {
+            $serverPath = $realPath;
+        }
+    }
+
+    if ($serverPath === null) {
         continue;
     }
-    $serverPath = __ROOT__ . urldecode($url);
-    if (!file_exists($serverPath) || !is_readable($serverPath)) {
-        continue; // skip files that can't be read
-    }
+
     $fileEntries[] = [
         'name' => $name,
         'path' => $serverPath,
@@ -86,13 +124,6 @@ if (empty($fileEntries)) {
             return ['url' => $f['url'] ?? '', 'serverPath' => __ROOT__ . urldecode($f['url'] ?? '')]; 
         }, $files)
     ]);
-    exit;
-}
-
-
-if (empty($fileEntries)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'No accessible files to send.']);
     exit;
 }
 

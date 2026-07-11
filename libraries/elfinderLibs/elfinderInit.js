@@ -356,8 +356,8 @@ function copyFolderLink(fm, file) {
 }
 
 function sendToDiscord(fm, file) {
-    var fileData = [{ name: file.name, url: fm.url(file.hash) }];
-    
+    var fileData = [{ name: file.name, hash: file.hash }];
+
     var adjustedHash = fm.cwd().hash;
     if (adjustedHash.startsWith('s1_')) {
         var path = decodeElfinderHash(adjustedHash);
@@ -366,7 +366,7 @@ function sendToDiscord(fm, file) {
         var reEncoded = encodeElfinderPath(userName + '/' + path);
         adjustedHash = 's2_' + reEncoded;
     }
-    
+
     fetch('libraries/elfinderLibs/endpoints/getDiscordIsland.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

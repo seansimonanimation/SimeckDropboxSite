@@ -15,7 +15,7 @@ elFinder.prototype.commands.sendToDiscord = function() {
         var fm = this.fm, files = fm.selectedFiles();
         if (files.length === 0) return $.Deferred().resolve();
         
-        var fileData = files.map(function(f) { return { name: f.name, url: fm.url(f.hash) }; });
+        var fileData = files.map(function(f) { return { name: f.name, hash: f.hash }; });
         var adjustedHash = fm.cwd().hash;
         if (adjustedHash.startsWith('s1_')) {
             var path = decodeElfinderHash(adjustedHash);
@@ -29,7 +29,7 @@ elFinder.prototype.commands.sendToDiscord = function() {
             files: JSON.stringify(fileData),
             folderHash: adjustedHash
         }).then(function(html) {
-            document.body.insertAdjacentHTML('beforeend', html);
+            $('body').append(html);
         }).catch(function(err) {
             fm.notify({ type: 'error', msg: 'Failed to load Discord send dialog.' });
         });

@@ -203,19 +203,61 @@ function ServeElfinderFile($filepath, $mode = 'internal', $author = 'unknown') {
 /**
  * Serve the elFinder cached thumbnail from /files/.tmb/
  */
+function FindThumbnailFile($realPath) {
+    $tmbDir = __ROOT__ . '/files/.tmb/';
+    if (!is_dir($tmbDir)) {
+        return null;
+    }
+
+    $prefix = md5($realPath);
+
+    // First try the modern elFinder-style naming, which is usually
+    // "<md5(path)>...(.png)".
+    $candidates = glob($tmbDir . $prefix . '*');
+    if ($candidates !== false && !empty($candidates)) {
+        foreach ($candidates as $candidate) {
+            if (is_file($candidate)) {
+                $ext = strtolower(pathinfo($candidate, PATHINFO_EXTENSION));
+                if (in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'], true)) {
+                    return $candidate;
+                }
+            }
+        }
+    }
+
+    // Fallback for the older naming convention used in some environments.
+    $legacyPath = $tmbDir . $prefix . filemtime($realPath) . '.png';
+    if (file_exists($legacyPath) && is_file($legacyPath)) {
+        return $legacyPath;
+    }
+
+    return null;
+}
+
 function ServeThumbnail($realPath) {
-    $tmbName = md5($realPath) . filemtime($realPath) . '.png';
-    $tmbPath = __ROOT__ . '/files/.tmb/' . $tmbName;
-    
-    if (!file_exists($tmbPath)) {
+    $tmbPath = FindThumbnailFile($realPath);
+
+    if ($tmbPath === null || !file_exists($tmbPath) || !is_readable($tmbPath)) {
         http_response_code(404);
         echo "Thumbnail not available.";
         return;
     }
-    
+
+    $ext = strtolower(pathinfo($tmbPath, PATHINFO_EXTENSION));
+    $contentType = 'image/png';
+    if ($ext === 'jpg' || $ext === 'jpeg') {
+        $contentType = 'image/jpeg';
+    } elseif ($ext === 'gif') {
+        $contentType = 'image/gif';
+    } elseif ($ext === 'webp') {
+        $contentType = 'image/webp';
+    } elseif ($ext === 'bmp') {
+        $contentType = 'image/bmp';
+    }
+
     header('Content-Description: Thumbnail');
-    header('Content-Type: image/png');
-    header('Content-Disposition: inline; filename="' . $tmbName . '"');
+    header('Content-Type: ' . $contentType);
+    header('Content-Disposition: inline; filename="' . basename($tmbPath) . '"');
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
