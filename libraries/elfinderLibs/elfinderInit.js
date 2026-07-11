@@ -356,7 +356,7 @@ function copyFolderLink(fm, file) {
 }
 
 function sendToDiscord(fm, file) {
-    var fileData = [{ name: file.name, url: getDisplayUrl(file.hash) }];
+    var fileData = [{ name: file.name, url: fm.url(file.hash) }];
     
     var adjustedHash = fm.cwd().hash;
     if (adjustedHash.startsWith('s1_')) {
