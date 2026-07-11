@@ -211,8 +211,11 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
         $fileListHtml .= '<li>• ' . $fileName . '</li>';
     }
 
-    // Build a JSON blob the endpoint expects: [{ name: "…", url: "…" }, …]
-    $filesJson = json_encode($files);
+    $filesJson = json_encode(
+        $files,
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+    );
+    $filesJsonString = json_encode($filesJson, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
     // We need a unique ID per instance so multiple islands can coexist
     $uid = 'fi-discord-' . md5(uniqid('', true));
@@ -221,6 +224,7 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
 <p><strong>{$fileCount} file(s) selected:</strong></p>
 <ul style="margin: 8px 0 16px 20px; padding: 0;">{$fileListHtml}</ul>
 
+<p>Debug info: Folder hash is {$folderHash}</p>
 <label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">
     Note (optional):
 </label>
@@ -260,15 +264,16 @@ ISLANDBODYHTML;
         statusDiv.innerHTML = '<p style="color:var(--color-text-muted);">Sending…</p>';
         btn.disabled = true;
 
+        var discordFiles = JSON.parse({$filesJsonString});
+
         var formData = new FormData();
         formData.append('action', channel.value);
-        formData.append('files', '{$filesJson}');
+        formData.append('files', JSON.stringify(discordFiles));
         if (note) {
             formData.append('note', note);
         }
         var fh = document.getElementById('{$uid}-folderHash');
         if (fh && fh.value) formData.append('folderHash', fh.value);
-
         fetch('libraries/elfinderLibs/endpoints/discordWebhookEndpoint.php', {
             method: 'POST',
             body: formData
