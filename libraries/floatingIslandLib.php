@@ -223,8 +223,6 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
     $bodyHtml = <<<ISLANDBODYHTML
 <p><strong>{$fileCount} file(s) selected:</strong></p>
 <ul style="margin: 8px 0 16px 20px; padding: 0;">{$fileListHtml}</ul>
-
-<p>Debug info: Folder hash is {$folderHash}</p>
 <label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">
     Note (optional):
 </label>

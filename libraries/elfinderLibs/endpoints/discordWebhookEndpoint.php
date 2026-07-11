@@ -120,9 +120,6 @@ if (empty($fileEntries)) {
     http_response_code(400);
     echo json_encode([
         'error' => 'No accessible files to send.',
-        'debug_received_urls' => array_map(function($f) { 
-            return ['url' => $f['url'] ?? '', 'serverPath' => __ROOT__ . urldecode($f['url'] ?? '')]; 
-        }, $files)
     ]);
     exit;
 }
