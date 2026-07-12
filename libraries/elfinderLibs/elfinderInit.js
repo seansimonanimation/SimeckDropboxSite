@@ -66,7 +66,12 @@ function updatePreviewPane(fm) {
     var fileUrl = fm.url(f.hash);
     var displayUrl = getDisplayUrl(f.hash);
     var isImage = f.mime && f.mime.startsWith('image/');
+    // PSD files are detected as image/vnd.adobe.photoshop but browsers
+    // cannot render them natively — they need client-side conversion via psd.js
+    var isPsd = isImage && (f.mime === 'image/vnd.adobe.photoshop' || (f.name && f.name.toLowerCase().endsWith('.psd')));
+    if (isPsd) isImage = false;  // Don't try to render as a plain <img>
     var isLocked = false;
+
     var commentLocked = false;
     var rawCommentLocked = false;
 
@@ -127,7 +132,10 @@ function updatePreviewPane(fm) {
     
     // 3. Preview image/icon
     html += '<div class="preview-visual' + (isImage ? '' : ' preview-visual--icon') + '">';
-    if (isImage) {
+    if (isPsd) {
+        html += '  <img src="/libraries/elfinderLibs/endpoints/previewPsd.php?hash=' + encodeURIComponent(f.hash) + '" class="preview-image" alt="' + fm.escape(f.name) + '">';
+    } else if (isImage) {
+
         html += '  <img src="' + fm.escape(displayUrl) + '" class="preview-image" data-hash="' + f.hash + '" alt="' + fm.escape(f.name) + '">';
     } else if (f.mime && f.mime.indexOf('video') === 0) {
         html += '  <video controls preload="metadata" style="width:100%;height:100%;object-fit:contain;" src="' + fm.escape(displayUrl) + '"></video>';
@@ -392,20 +400,25 @@ function openPreviewIsland(fm, file, fileUrl, isImage, displayUrl) {
     // Remove existing preview island if any
     $('#' + islandId).remove();
     
-    var contentHtml = '';
+     var contentHtml = '';
     
         // ─── 3D Model Detection ──────────────────────────────────────────
     var ext = (file.name.split('.').pop() || '').toLowerCase();
     var is3DModel = ['obj', 'fbx', 'blend', 'mb'].indexOf(ext) !== -1;
+    // PSD detection for floating island
+    var isPsdIsland = (file.mime === 'image/vnd.adobe.photoshop' || ext === 'psd');
 
     if (is3DModel) {
         // Build a container div that the 3D viewer will use, plus a loading placeholder
         var modelContainerId = 'model-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
         contentHtml = '<div id="' + modelContainerId + '" style="width:100%;height:100%;position:relative;background:#1a1a1a;overflow:hidden;"></div>';
+    } else if (isPsdIsland) {
+        contentHtml = '<img src="/libraries/elfinderLibs/endpoints/previewPsd.php?hash=' + encodeURIComponent(file.hash) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else if (isImage) {
         var islandImgId = 'pi-img-' + file.hash.replace(/[^a-zA-Z0-9_-]/g, '');
         contentHtml = '<img id="' + islandImgId + '" src="' + fm.escape(displayUrl || fileUrl) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else if (file.mime && file.mime.indexOf('video') === 0) {
+
         contentHtml = '<video controls autoplay style="width:100%;height:100%;object-fit:contain;background:#000;">';
         contentHtml += '  <source src="' + fm.escape(displayUrl || fileUrl) + '" type="' + fm.escape(file.mime) + '">';
         contentHtml += '  Your browser does not support the video tag.';

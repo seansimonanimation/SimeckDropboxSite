@@ -5,3 +5,4 @@ composer.json
 vendor/
 .clinerules
 composer.lock
+libraries/node/node_modules/
