@@ -26,8 +26,37 @@ $readOnly = IsImpersonating();
 // Load portfolio data for initial state
 $portfolio = LoadPortfolio($username);
 $pfpFile = FindPortfolioPfp($username);
-$pfpUrl = $pfpFile ? $portfolioDir . '/' . $pfpFile : '';
+$pfpFile = FindPortfolioPfp($username);
+$pfpToken = $pfpFile ? GeneratePortfolioFileToken($username, $pfpFile, 'internal') : false;
+$pfpUrl = $pfpToken ? 'download.php?download=' . $pfpToken : ($pfpFile ? $portfolioDir . '/' . $pfpFile : '');
 $files = ListPortfolioFiles($username);
+
+// --- Generate download tokens for all portfolio files ---
+$fileTokens = [];
+foreach ($files as $file) {
+    $base = pathinfo($file, PATHINFO_FILENAME);
+    $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    
+    // Main file token
+    $fileTokens[$file] = GeneratePortfolioFileToken($username, $file, 'internal');
+    
+    // Video thumbnail token
+    if (in_array($ext, ['mp4', 'webm'])) {
+        $thumbFile = $file . '.thumb.jpg';
+        if (file_exists(GetPortfolioPath($username) . '/' . $thumbFile)) {
+            $fileTokens[$file . '_thumb'] = GeneratePortfolioFileToken($username, $thumbFile, 'internal');
+        }
+    }
+    
+    // Audio cover art token
+    if (in_array($ext, ['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'])) {
+        $coverFile = $file . '.cover.jpg';
+        if (file_exists(GetPortfolioPath($username) . '/' . $coverFile)) {
+            $fileTokens[$file . '_cover'] = GeneratePortfolioFileToken($username, $coverFile, 'internal');
+        }
+    }
+}
+
 
 ?>
 <div class="module portfolio-editor-module">
@@ -192,9 +221,11 @@ window.__PORTFOLIO_CONFIG__ = {
     pfpUrl: '<?= addslashes($pfpUrl) ?>',
     portfolioJson: <?= json_encode($portfolio, JSON_UNESCAPED_SLASHES) ?>,
     files: <?= json_encode($files) ?>,
-    displayName: '<?= addslashes(GetHumanName('firstlast')) ?>'
+    displayName: '<?= addslashes(GetHumanName('firstlast')) ?>',
+    fileTokens: <?= json_encode($fileTokens) ?>
 };
 </script>
+
 
 <!-- Load portfolio editor scripts -->
 <script src="libraries/portfolioEditor/portfolioSerializer.js"></script>

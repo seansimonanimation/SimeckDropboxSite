@@ -31,6 +31,7 @@
         dirty: false,
         readOnly: config.readOnly,
         portfolioDir: config.portfolioDir,
+        fileTokens: config.fileTokens || {},
         canvasWidth: 1920,
         canvasHeight: 1080,
 
