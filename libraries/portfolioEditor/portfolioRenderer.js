@@ -29,7 +29,10 @@ const PortfolioRenderer = {
             element.style.height = Math.round(bh * piece.scaleY) + 'px';
         } else if (piece.type === 'video') {
             inner.className += ' portfolio-piece-video';
-            const thumbUrl = state.portfolioDir + '/' + piece.filename + '.thumb.jpg';
+            const thumbTokenKey = piece.filename + '_thumb';
+            const thumbUrl = state.fileTokens[thumbTokenKey] 
+                ? '/download.php?download=' + encodeURIComponent(state.fileTokens[thumbTokenKey])
+                : state.portfolioDir + '/' + piece.filename + '.thumb.jpg';
             const img = document.createElement('img');
             img.className = 'portfolio-piece-thumb';
             img.src = thumbUrl;
@@ -62,7 +65,10 @@ const PortfolioRenderer = {
             element.style.width = '200px';
             element.style.height = '200px';
             // Try to show cover art
-            const coverUrl = state.portfolioDir + '/' + piece.filename + '.cover.jpg';
+            const coverTokenKey = piece.filename + '_cover';
+            const coverUrl = state.fileTokens[coverTokenKey]
+                ? '/download.php?download=' + encodeURIComponent(state.fileTokens[coverTokenKey])
+                : state.portfolioDir + '/' + piece.filename + '.cover.jpg';
             const coverImg = document.createElement('img');
             coverImg.className = 'portfolio-piece-audio-cover';
 
@@ -100,17 +106,20 @@ const PortfolioRenderer = {
             };
             coverImg.src = coverUrl;
             inner.appendChild(coverImg);
-
         } else {
             // image (default)
             inner.className += ' portfolio-piece-image';
             const img = document.createElement('img');
             img.className = 'portfolio-piece-img';
-            img.src = state.portfolioDir + '/' + piece.filename;
+            const tokenKey = piece.filename;
+            img.src = state.fileTokens[tokenKey]
+                ? '/download.php?download=' + encodeURIComponent(state.fileTokens[tokenKey])
+                : state.portfolioDir + '/' + piece.filename;
             img.alt = piece.filename;
             img.draggable = false;
             inner.appendChild(img);
         }
+
 
         element.appendChild(inner);
         this.updatePieceTransform(element, piece);

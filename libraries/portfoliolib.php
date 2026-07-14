@@ -3,6 +3,7 @@
  * portfolioLib.php — Portfolio Editor backend for Simeck Entertainment Dropbox.
  * Handles all file operations for the artist portfolio canvas.
  */
+require_once __ROOT__ . '/libraries/tokenlib.php';
 
 /**
  * Get the filesystem path to an artist's portfolio directory.
@@ -557,3 +558,31 @@ function CleanupOrphanedPortfolioFiles($username): void {
         }
     }
 }
+/**
+ * Generate a V2 download token for a portfolio file.
+ * Used to serve portfolio files through download.php for consistent access control.
+ *
+ * @param string $username  Portfolio owner's username
+ * @param string $filename  The portfolio file filename
+ * @param string $mode      Token mode: internal, clientPreview, thumbnail, deliverable
+ * @return string|false     Base64-encoded token, or false on failure
+ */
+function GeneratePortfolioFileToken($username, $filename, $mode = 'internal') {
+    // Ensure DB_ENCRYPTION_KEY is loaded (not loaded in normal page lifecycle)
+    if (!defined('DB_ENCRYPTION_KEY')) {
+        if (file_exists('/var/www/dbconfig.php')) {
+            require_once '/var/www/dbconfig.php';
+        } elseif (file_exists(__ROOT__ . '/dbconfig.php')) {
+            require_once __ROOT__ . '/dbconfig.php';
+        } elseif (file_exists(__ROOT__ . '/../dbconfig.php')) {
+            require_once __ROOT__ . '/../dbconfig.php';
+        }
+    }
+    
+    $filepath = GetPortfolioPath($username) . '/' . $filename;
+    if (!file_exists($filepath)) {
+        return false;
+    }
+    return GenerateElfinderDownloadToken($filepath, $mode);
+}
+
