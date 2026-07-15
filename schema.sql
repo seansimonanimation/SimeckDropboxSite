@@ -552,11 +552,27 @@ INSERT IGNORE INTO `timeclockshifts` (`user`, `shift_id`, `time_in`, `time_out`,
 	('admin', 17, '2026-06-10 12:40:02', '2026-06-10 12:40:00', ''),
 	('admin', 19, '2026-06-10 11:52:00', '2026-06-12 12:53:54', '');
 
+-- Dumping structure for table simeckdb.vendordocuments
+CREATE TABLE IF NOT EXISTS `vendordocuments` (
+  `owner` varchar(70) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `uploadID` int NOT NULL AUTO_INCREMENT,
+  `filepath` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `uploaded_by` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `upload_time` datetime DEFAULT NULL,
+  KEY `uploadID` (`uploadID`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+
+-- Dumping data for table simeckdb.vendordocuments: ~1 rows (approximately)
+INSERT IGNORE INTO `vendordocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
+	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
+
 -- Dumping structure for table simeckdb.vendors
 CREATE TABLE IF NOT EXISTS `vendors` (
   `vendor_id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `name` varchar(200) NOT NULL DEFAULT '',
+  `company_name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `vendor_poc_firstname` varchar(200) NOT NULL DEFAULT '',
+  `vendor_poc_lastname` varchar(200) NOT NULL DEFAULT '',
   `password` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '$2a$12$kZyA0/Fch25QUavNdPXkQ.m1JAKkjXNLhXFf3Ln3IIMlzqYMTrNl6',
   `project_assignments` varchar(100) NOT NULL DEFAULT '',
   `active` int unsigned NOT NULL DEFAULT (1),

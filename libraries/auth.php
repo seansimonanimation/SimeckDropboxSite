@@ -8,7 +8,6 @@ include_once __DIR__ . '/session.php';
 include_once __ROOT__ . '/libraries/logging.php';
 
 function attempt_login($username, $password){
-//This function attemps to log an artist user in first. If that fails, it attempts to log a client user in. If both fail, it returns false.
     $artistAdminData = pull_artistAdmin_data($username);
     if($artistAdminData && password_verify($password, $artistAdminData['password'])){ 
         PutArtistDataInSession($artistAdminData);
@@ -19,8 +18,14 @@ function attempt_login($username, $password){
         PutClientDataInSession($clientData);
         return true;
     }
+    $vendorData = pull_vendor_data($username);
+    if($vendorData && password_verify($password, $vendorData['password'])){
+        PutVendorDataInSession($vendorData);
+        return true;
+    }
     return false;
 }
+
     function logout(){
         session_unset();
         session_destroy();
@@ -45,9 +50,24 @@ function SetClientPassword($username, $newpass){
     LogSimeckAction('Client password changed', "Password for client '{$username}' was changed.", 'System');
     return true;
 }
+function SetVendorPassword($username, $newpass){
+    $hashpass = password_hash($newpass, PASSWORD_BCRYPT);
+    $SQLString = "UPDATE vendors SET password = ? WHERE username = ?";
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($SQLString);
+    $stmt->execute([$hashpass,$username]);
+    LogSimeckAction('Vendor password changed', "Password for vendor '{$username}' was changed.", 'System');
+    return true;
+}
 
 function SetUserTheme($username, $theme, $role){
-    $table = ($role === 'client') ? 'clients' : 'artists';
+    if($role === 'client'){
+        $table = 'clients';
+    } elseif($role === 'vendor'){
+        $table = 'vendors';
+    } else {
+        $table = 'artists';
+    }
     $SQLString = "UPDATE $table SET theme = ? WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);
@@ -58,8 +78,15 @@ function SetUserTheme($username, $theme, $role){
     LogSimeckAction('User theme changed', "User '{$username}' changed their theme to '{$theme}'.", 'System');
     return $result;
 }
+
 function SetUserTimezone($username, $timezone, $role){
-    $table = ($role === 'client') ? 'clients' : 'artists';
+    if($role === 'client'){
+        $table = 'clients';
+    } elseif($role === 'vendor'){
+        $table = 'vendors';
+    } else {
+        $table = 'artists';
+    }
     $SQLString = "UPDATE $table SET timezone = ? WHERE username = ?";
     $pdo = DBConnect();
     $stmt = $pdo->prepare($SQLString);

@@ -65,6 +65,25 @@ function PutClientDataInSession($clientData){
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
 }
+function PutVendorDataInSession($vendorData){
+    $_SESSION['username'] = $vendorData['username'];
+    $_SESSION['company_name'] = $vendorData['company_name'];
+    $_SESSION['firstname'] = $vendorData['vendor_poc_firstname'];
+    $_SESSION['lastname'] = $vendorData['vendor_poc_lastname'];
+    $_SESSION['password'] = $vendorData['password'];
+    $_SESSION['project_assignments'] = $vendorData['project_assignments'];
+    $_SESSION['point_of_contact'] = $vendorData['point_of_contact'];
+    $_SESSION['timezone'] = $vendorData['timezone'] ?? 'UTC';
+    $_SESSION['availability'] = $vendorData['availability'] ?? '0|0|0|0|0|0|0';
+    $_SESSION['role'] = 'vendor';
+    $_SESSION['theme'] = $vendorData['theme'] ?? 'dark-boo';
+    $_SESSION['phone_country_code'] = decryptImportantData($vendorData['phone_country_code'] ?? 1);
+    $_SESSION['phone_number'] = decryptImportantData($vendorData['phone_number'] ?? null);
+    $_SESSION['receive_texts'] = $vendorData['receive_texts'] ?? 0;
+    $_SESSION['bgvid_visibility'] = $vendorData['bgvid_visibility'] ?? 0;
+    $_SESSION['tempRole'] = 'vendor';
+    $_SESSION['activeModulePath'] = null;
+}
 
 
 function GetUserTheme(){
@@ -77,6 +96,8 @@ function GetUserName(){
 }
 
 function GetHumanName($format){
+    // Vendors use company_name or POC name
+    $isVendor = ($_SESSION['role'] ?? '') === 'vendor';
     switch($format){
         case 'first':
             return $_SESSION['firstname'];
@@ -89,11 +110,21 @@ function GetHumanName($format){
         case 'nickname':
             return (!empty($_SESSION['nickname'])) ? $_SESSION['nickname'] : $_SESSION['firstname'];
         case 'greeting':
+            if($isVendor && !empty($_SESSION['company_name'])){
+                return $_SESSION['company_name'];
+            }
             return (!empty($_SESSION['nickname'])) ? $_SESSION['nickname'] : $_SESSION['firstname'];
+        case 'name':
+            // Returns company name for vendors, first+last for others
+            if($isVendor && !empty($_SESSION['company_name'])){
+                return $_SESSION['company_name'];
+            }
+            return $_SESSION['firstname'] . ' ' . $_SESSION['lastname'];
         default:
             return $_SESSION['firstname'] . ' ' . $_SESSION['lastname'];
     }
 }
+
 
 function GetRole(){
 
@@ -174,6 +205,33 @@ function ImpersonateClient($clientData){
     $_SESSION['impersonating'] = true;
     $_SESSION['tempRole'] = 'client';
 }
+function ImpersonateVendor($vendorData){
+    LogSimeckAction('Started impersonation', $_SESSION['username'] . " started impersonating vendor '{$vendorData['username']}'.", 'System');
+    // Save original admin data
+    $_SESSION['_imp_orig_username']  = $_SESSION['username'];
+    $_SESSION['_imp_orig_firstname'] = $_SESSION['firstname'];
+    $_SESSION['_imp_orig_lastname']  = $_SESSION['lastname'];
+    $_SESSION['_imp_orig_userID']    = $_SESSION['userID'];
+    $_SESSION['_imp_orig_availability'] = $_SESSION['availability'];
+    $_SESSION['_imp_orig_company_name'] = $_SESSION['company_name'] ?? '';
+    $_SESSION['_imp_orig_phone_country_code'] = $_SESSION['phone_country_code'] ?? 1;
+    $_SESSION['_imp_orig_phone_number'] = $_SESSION['phone_number'] ?? null;
+    $_SESSION['_imp_orig_receive_texts'] = $_SESSION['receive_texts'] ?? 0;
+
+    // Override with impersonated vendor's data
+    $_SESSION['username']      = $vendorData['username'];
+    $_SESSION['company_name']  = $vendorData['company_name'] ?? '';
+    $_SESSION['firstname']     = $vendorData['vendor_poc_firstname'] ?? '';
+    $_SESSION['lastname']      = $vendorData['vendor_poc_lastname'] ?? '';
+    $_SESSION['project_assignments'] = $vendorData['project_assignments'] ?? '';
+    $_SESSION['point_of_contact'] = $vendorData['point_of_contact'] ?? '';
+    $_SESSION['availability'] = $vendorData['availability'] ?? '0|0|0|0|0|0|0';
+    $_SESSION['phone_country_code'] = decryptImportantData($vendorData['phone_country_code'] ?? 1);
+    $_SESSION['phone_number'] = decryptImportantData($vendorData['phone_number'] ?? null);
+    $_SESSION['receive_texts'] = $vendorData['receive_texts'] ?? 0;
+    $_SESSION['impersonating'] = true;
+    $_SESSION['tempRole'] = 'vendor';
+}
 
 function StopImpersonating(){
     if(!isset($_SESSION['_imp_orig_username'])) return;
@@ -205,9 +263,8 @@ function StopImpersonating(){
     unset($_SESSION['clientProjects']);
     unset($_SESSION['lock_overrides']);
     unset($_SESSION['_imp_orig_availability']);
-
-
-
+    unset($_SESSION['_imp_orig_company_name']);
+    unset($_SESSION['company_name']);
     $_SESSION['tempRole'] = 'admin';
 }
 

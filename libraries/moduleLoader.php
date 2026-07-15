@@ -14,8 +14,10 @@ function LoadNavbarContent(){
         $moduleDir = __ROOT__ . '/modules/artist';
     } else if($_SESSION['tempRole'] == 'client'){
         $moduleDir = __ROOT__ . '/modules/client';
+    } else if($_SESSION['tempRole'] == 'vendor'){
+        $moduleDir = __ROOT__ . '/modules/vendor';
     }
-    
+
     $moduleFiles = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($moduleDir),
         RecursiveIteratorIterator::LEAVES_ONLY

@@ -38,6 +38,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'impersonate_client' && isset(
     header("Location: index.php");
     exit;
 }
+if (isset($_GET['action']) && $_GET['action'] === 'impersonate_vendor' && isset($_GET['vendor']) && GetRole() === 'admin') {
+    $vendorData = pull_vendor_data($_GET['vendor']);
+    if ($vendorData) {
+        ImpersonateVendor($vendorData);
+    }
+    header("Location: index.php");
+    exit;
+}
 
    if(isset($_GET['action']) && $_GET['action'] === 'logout'){
       logout();
@@ -61,6 +69,8 @@ if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonat
     $username = $_SESSION['username'];
     if($_SESSION['role'] === 'client'){
         $stmt = $pdo->prepare("UPDATE clients SET bgvid_visibility = ? WHERE username = ?");
+    } elseif($_SESSION['role'] === 'vendor'){
+        $stmt = $pdo->prepare("UPDATE vendors SET bgvid_visibility = ? WHERE username = ?");
     } else {
         $stmt = $pdo->prepare("UPDATE artists SET bgvid_visibility = ? WHERE username = ?");
     }
@@ -68,6 +78,7 @@ if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonat
     header("Location: index.php");
     exit;
 }
+
 
 if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];

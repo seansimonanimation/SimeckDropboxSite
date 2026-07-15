@@ -129,6 +129,51 @@ function SetClientPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts
         $username
     ]);
 }
+function VendorSettingsErrorDisplay($inputMessage){
+    if($inputMessage == ""){ return "";}
+    echo '<div class="module-card module-card--span-4">';
+    echo '<center><h1 style="color:red;">Error: ' . $inputMessage;
+    echo '</h1></center>';
+    echo '</div>';
+}
+
+function VendorSettingsSuccessDisplay($inputMessage){
+    if($inputMessage == ""){ return "";}
+    echo '<div class="module-card module-card--span-4">';
+    echo '<center><h1 style="color:green;">Success: ' . $inputMessage;
+    echo '</h1></center>';
+    echo '</div>';
+}
+
+function GetVendorPhoneInfo($username){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM vendors WHERE username = ?");
+    $stmt->execute([$username]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return [
+            'phone_country_code' => 1,
+            'phone_number' => null,
+            'receive_texts' => 0
+        ];
+    }
+    return [
+        'phone_country_code' => (int)decryptImportantData($row['phone_country_code']),
+        'phone_number'       => decryptImportantData($row['phone_number']),
+        'receive_texts'      => (int)$row['receive_texts']
+    ];
+}
+
+function SetVendorPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE vendors SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
+    return $stmt->execute([
+        encryptImportantData((string)(int)$countryCode),
+        encryptImportantData($phoneNumber),
+        (int)$receiveTexts,
+        $username
+    ]);
+}
 
 function GetCountryCodeOptions($selected = '+1'){
     $autoloadPath = __ROOT__ . '/vendor/autoload.php';

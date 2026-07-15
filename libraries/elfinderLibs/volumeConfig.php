@@ -217,3 +217,60 @@ function GetClientProjectAssignments(){
     }
     return explode(',', $result['project_assignments']);
 }
+function getVendorFileBrowserOptions(){
+    ConnectorSetup();
+    $vendorAssignments = GetVendorProjectAssignments();
+    $roots = array();
+    if(empty($vendorAssignments)){
+        return $roots;
+    }
+    
+    $placeholders = implode(',', array_fill(0, count($vendorAssignments), '?'));
+    $projectQuery = "SELECT pid, project_name, active_path FROM projects WHERE pid IN ($placeholders)";
+
+    $stmt = $GLOBALS['db']->prepare($projectQuery);
+    $stmt->execute($vendorAssignments);
+    $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $connectorOptions = array('roots' => array());
+
+    foreach ($projects as $project){
+        $ProjectPath = __ROOT__ . $project['active_path'];
+        $vendorUploadPath = __ROOT__ . $project['active_path'] . '/vendorUpload/';
+        if(!is_dir($ProjectPath)){
+            mkdir($ProjectPath, 0777, true);
+        }
+
+        if (!is_dir($vendorUploadPath)) {
+            mkdir($vendorUploadPath, 0777, true);
+            @mkdir($vendorUploadPath . '.tmb', 0777, true);
+        }
+        $roots[] = array(
+            'driver'        => 'SimeckVolume',
+            'alias'        => $project['project_name'],
+            'path' => __ROOT__ . rtrim($project['active_path'], '/') . '/vendorUpload/',
+            'URL'  => rtrim($project['active_path'], '/') . '/vendorUpload/',
+            'trashHash'     => 't1_Lw',
+            'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+            'accessControl' => 'access',
+            'dotFiles' => false,
+            'tmbPath' => __ROOT__ . '/files/.tmb',
+            'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+            'vendorMode' => true,
+        );
+    }
+
+    return array('roots' => $roots);
+}
+
+function GetVendorProjectAssignments(){
+    $vendorassignments = [];
+    $query = "SELECT project_assignments FROM vendors WHERE username = ?";
+    $stmt = $GLOBALS['db']->prepare($query);
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (empty($result['project_assignments'])) {
+        return [];
+    }
+    return explode(',', $result['project_assignments']);
+}

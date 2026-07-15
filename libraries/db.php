@@ -13,6 +13,7 @@
 // $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
 $clientSQL = "Select * from clients where username = ? AND active = 1";
+$vendorSQL = "SELECT * FROM vendors WHERE username = ? AND active = 1";
 
 $db_instance = null;
 function DBConnect(){
@@ -131,3 +132,17 @@ function ListAllActiveClients(){
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function pull_vendor_data($username){
+    global $vendorSQL;
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare($vendorSQL);
+    $stmt->execute([$username]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function ListAllActiveVendors(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT username, company_name, vendor_poc_firstname, vendor_poc_lastname FROM vendors WHERE active = 1 ORDER BY company_name");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
