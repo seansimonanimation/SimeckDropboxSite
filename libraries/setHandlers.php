@@ -79,7 +79,6 @@ if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonat
     exit;
 }
 
-
 if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];
     // Set the active module in session

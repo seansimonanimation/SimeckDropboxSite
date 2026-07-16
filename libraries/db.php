@@ -126,23 +126,39 @@ function ListAllActiveArtists(){
 
 
 function ListAllActiveClients(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM clients WHERE active = 1 ORDER BY lastname");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("username,firstname,lastname","clients","active",1,"ORDER BY lastname");
 }
 
 function pull_vendor_data($username){
-    global $vendorSQL;
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($vendorSQL);
-    $stmt->execute([$username]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return PullDBValues("*","vendors","username",$username,"AND active = 1");
 }
 
 function ListAllActiveVendors(){
+    return PullDBValues("username, company_name, vendor_poc_firstname, vendor_poc_lastname","vendors","active",1,"ORDER BY company_name");
+}
+function PullDBValues($table, $columns, $identifier, $identifier_value, $extraParams=''){
+    //Pulls a series of values in the order requested. Can accept one or more values.
+    //Can accept an array or a string.
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, company_name, vendor_poc_firstname, vendor_poc_lastname FROM vendors WHERE active = 1 ORDER BY company_name");
-    $stmt->execute();
+    $stmt = $pdo->prepare("SELECT ? FROM ? WHERE ? = ? ?");
+    $stmt->execute([ParseColumnString($columns),$table,$identifier,$identifier_value,$extraParams]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function ParseColumnString($columns){
+    if(is_string($columns)){
+        //First get the items in the string into an array.
+        //This way we can control the formatting of the query string.
+        $columnArr = explode(',',$columns);
+    } else {
+        $columnArr = $columns;
+    }
+    $columnStr = '';
+    foreach($columnArr as $column){
+        if($columnStr !== '') {
+            $columnStr .= ", ";
+        }
+        $columnStr .= $column;
+    }
+    return $columnStr;
 }

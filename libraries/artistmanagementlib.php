@@ -456,8 +456,7 @@ function RemoveArtistFromProject($username, $pid){
 }
 
 function RetrieveAllActiveProjects(){
-    $SQLString = "SELECT pid, project_name FROM projects WHERE active = 1";
-    return GetDataFromDB($SQLString);
+    return PullDBValues("pid,project_name","projects","active",1);
 }
 
 function AddArtistToProject($username, $pid){
