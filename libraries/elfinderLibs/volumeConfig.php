@@ -41,6 +41,8 @@ function getAdminFileBrowserOptions(){
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Projects/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
