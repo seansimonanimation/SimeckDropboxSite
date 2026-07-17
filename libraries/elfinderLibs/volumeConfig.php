@@ -18,6 +18,8 @@ function getAdminFileBrowserOptions(){
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -30,6 +32,8 @@ function getAdminFileBrowserOptions(){
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -55,6 +59,8 @@ function getAdminFileBrowserOptions(){
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Resources/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -66,6 +72,8 @@ function getAdminFileBrowserOptions(){
                 'trashHash'     => 't1_Lw',
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Corporate/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -101,6 +109,8 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -114,6 +124,8 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -126,6 +138,8 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Projects/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -139,6 +153,8 @@ function getArtistFileBrowserOptions(){
                 'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
                 'accessControl' => 'access',
                 'dotFiles' => false,
+                'tmpLink'            => true,   // Enable instant merging
+                'uploadTempPath'     => __ROOT__ . '/files/Resources/.tmp/',
                 'tmbPath' => __ROOT__ . '/files/.tmb',
                 'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             ),
@@ -197,6 +213,8 @@ function getClientFileBrowserOptions(){
             'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
             'accessControl' => 'access',
             'dotFiles' => false,
+            'tmpLink'            => true,   // Enable instant merging
+            'uploadTempPath'     => __ROOT__ . '/files/Projects/.tmp/',
             'tmbPath' => __ROOT__ . '/files/.tmb',
             'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
             'clientMode' => true,
