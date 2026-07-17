@@ -458,7 +458,13 @@ INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `ext
 	('admin', '2026-07-08 09:11:39', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'sky-boo\'.', 'System', NULL),
 	('admin', '2026-07-08 09:12:51', 'User theme changed', '127.0.0.1', 'User \'admin\' changed their theme to \'dark-boo\'.', 'System', NULL),
 	('admin', '2026-07-10 19:54:17', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
-	('client', '2026-07-10 19:59:19', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin');
+	('client', '2026-07-10 19:59:19', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-07-15 12:50:27', 'Vendor created', '127.0.0.1', 'Vendor \'NiceFunnyGames\' (Nice Funny Games) was created.', 'System', NULL),
+	('admin', '2026-07-15 12:51:27', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('NiceFunnyGames', '2026-07-15 12:52:48', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'NiceFunnyGames\'.', 'System', 'admin'),
+	('admin', '2026-07-15 12:52:50', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('NiceFunnyGames', '2026-07-15 12:54:37', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'NiceFunnyGames\'.', 'System', 'admin'),
+	('admin', '2026-07-15 12:54:43', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL);
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -558,11 +564,11 @@ CREATE TABLE IF NOT EXISTS `vendordocuments` (
   `uploadID` int NOT NULL AUTO_INCREMENT,
   `filepath` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `uploaded_by` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `upload_time` datetime DEFAULT NULL,
+  `upload_time` datetime DEFAULT (now()),
   KEY `uploadID` (`uploadID`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table simeckdb.vendordocuments: ~1 rows (approximately)
+-- Dumping data for table simeckdb.vendordocuments: ~0 rows (approximately)
 INSERT IGNORE INTO `vendordocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
 
@@ -585,9 +591,11 @@ CREATE TABLE IF NOT EXISTS `vendors` (
   `receive_texts` int unsigned DEFAULT '0',
   `bgvid_visibility` int DEFAULT '0',
   KEY `vendor_id` (`vendor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.vendors: ~0 rows (approximately)
+-- Dumping data for table simeckdb.vendors: ~1 rows (approximately)
+INSERT IGNORE INTO `vendors` (`vendor_id`, `username`, `company_name`, `vendor_poc_firstname`, `vendor_poc_lastname`, `password`, `project_assignments`, `active`, `point_of_contact`, `theme`, `timezone`, `availability`, `phone_country_code`, `phone_number`, `receive_texts`, `bgvid_visibility`) VALUES
+	(1, 'NiceFunnyGames', 'Nice Funny Games', 'Ivan', 'Unknown', '$2a$12$kZyA0/Fch25QUavNdPXkQ.m1JAKkjXNLhXFf3Ln3IIMlzqYMTrNl6', 'P00', 1, 'admin', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', 1, NULL, 0, 0);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
