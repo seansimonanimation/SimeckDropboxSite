@@ -75,11 +75,9 @@ function GenerateVendorCards(){
 }
 
 function GetAllVendors(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT * FROM vendors");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("*", "vendors", 1, 1);
 }
+
 
 function GetSearchedVendor($searchterm){
     $pdo = DBConnect();
@@ -90,18 +88,14 @@ function GetSearchedVendor($searchterm){
 }
 
 function GetAllClientProjectListForVendor(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_name, pid FROM projects WHERE pid LIKE 'c%' OR pid LIKE 'p%'");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("project_name, pid", "projects", 1, 1, "AND (pid LIKE 'c%' OR pid LIKE 'p%')");
 }
 
+
 function GetAllArtistsForVendor(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname, nickname FROM artists");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("username, firstname, lastname, nickname", "artists", 1, 1);
 }
+
 
 function CreateNewVendor($username, $company_name, $pocFirstname, $pocLastname, $PoC, $pid){
     $pdo = DBConnect();
@@ -125,11 +119,10 @@ function UpdateVendorField($username, $field, $value){
 }
 
 function ToggleVendorActive($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT active FROM vendors WHERE username = ?");
-    $stmt->execute([$username]);
-    $vendor = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $vendor = PullDBValues("active", "vendors", "username", $username)[0] ?? null;
     if($vendor){
+        $pdo = DBConnect();
         $newActive = $vendor['active'] ? 0 : 1;
         $stmt = $pdo->prepare("UPDATE vendors SET active = ? WHERE username = ?");
         $stmt->execute([$newActive, $username]);
@@ -140,11 +133,9 @@ function ToggleVendorActive($username){
 // ── Document Management ──
 
 function SelectVendorDocuments($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT uploadID, filepath, uploaded_by, upload_time FROM vendordocuments WHERE owner = ?");
-    $stmt->execute([$username]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("uploadID, filepath, uploaded_by, upload_time", "vendordocuments", "owner", $username);
 }
+
 
 function DisplayVendorDocuments($username){
     $documents = SelectVendorDocuments($username);
@@ -242,16 +233,15 @@ function FetchVendorProjectAssignments($username, $projectAssignmentStr){
 }
 
 function AddVendorToProject($username, $pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_assignments FROM vendors WHERE username = ?");
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $result = PullDBValues("project_assignments", "vendors", "username", $username)[0] ?? null;
     if($result){
         $projectArr = empty($result['project_assignments']) ? [] : explode(",", $result['project_assignments']);
         if(!in_array($pid, $projectArr)){
             $projectArr[] = $pid;
         }
         $newStr = implode(",", $projectArr);
+        $pdo = DBConnect();
         $stmt = $pdo->prepare("UPDATE vendors SET project_assignments = ? WHERE username = ?");
         $stmt->execute([$newStr, $username]);
     }
@@ -259,11 +249,9 @@ function AddVendorToProject($username, $pid){
 }
 
 function RemoveVendorFromProject($username, $pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_assignments FROM vendors WHERE username = ?");
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $result = PullDBValues("project_assignments", "vendors", "username", $username)[0] ?? null;
     if($result){
+        $pdo = DBConnect();
         $projectArr = explode(",", $result['project_assignments']);
         if(($key = array_search($pid, $projectArr)) !== false){
             unset($projectArr[$key]);

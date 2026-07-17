@@ -126,22 +126,46 @@ function ListAllActiveArtists(){
 
 
 function ListAllActiveClients(){
-    return PullDBValues("username,firstname,lastname","clients","active",1,"ORDER BY lastname");
+    return PullDBValues("username,firstname,lastname", "clients", "active", 1, "ORDER BY lastname");
 }
 
 function pull_vendor_data($username){
-    return PullDBValues("*","vendors","username",$username,"AND active = 1");
+    return PullDBValues("*", "vendors", "username", $username, "AND active = 1");
 }
 
 function ListAllActiveVendors(){
-    return PullDBValues("username, company_name, vendor_poc_firstname, vendor_poc_lastname","vendors","active",1,"ORDER BY company_name");
+    return PullDBValues("username, company_name, vendor_poc_firstname, vendor_poc_lastname", "vendors", "active", 1, "ORDER BY company_name");
 }
-function PullDBValues($table, $columns, $identifier, $identifier_value, $extraParams=''){
-    //Pulls a series of values in the order requested. Can accept one or more values.
-    //Can accept an array or a string.
+function PullDBValues($columns, $table, $identifier, $identifier_value, $extraParams=''){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT ? FROM ? WHERE ? = ? ?");
-    $stmt->execute([ParseColumnString($columns),$table,$identifier,$identifier_value,$extraParams]);
+    
+    // Allow parentheses for SQL functions like COUNT(*)
+    $columns = preg_replace('/[^a-zA-Z0-9_,.*`() ]/', '', $columns);
+    $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+    
+    // If identifier is numeric, it's a "no WHERE clause" sentinel
+    // (used for SELECT * FROM table or COUNT queries)
+    if (is_numeric($identifier)) {
+        $sql = "SELECT $columns FROM $table";
+        if (!empty($extraParams)) {
+            $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
+            $sql .= " $extraParams";
+        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Real identifier: build WHERE clause
+    $identifier = preg_replace('/[^a-zA-Z0-9_]/', '', $identifier);
+    $sql = "SELECT $columns FROM $table WHERE $identifier = ?";
+    if (!empty($extraParams)) {
+        $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
+        $sql .= " $extraParams";
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$identifier_value]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 

@@ -234,12 +234,9 @@ function UploadArtistDocument($artistName, $firstname, $lastname, $file){
 }
 
 function SelectArtistDocuments($artistName){
-    $SQLString = "SELECT uploadID, filepath, uploaded_by, upload_time FROM artistdocuments WHERE owner = ?";
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute([$artistName]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("uploadID, filepath, uploaded_by, upload_time", "artistdocuments", "owner", $artistName);
 }
+
 function DisplayArtistDocuments($artistName){
     $documents = SelectArtistDocuments($artistName);
     foreach($documents as $doc){
@@ -322,12 +319,9 @@ function FetchArtistSecondaryRoles($username, $secondaryRolesStr){
 }
 
 function AddSecondaryRoleToArtist($username, $roleName){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT secondary_roles FROM artists WHERE username = ?");
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    $result = PullDBValues("secondary_roles", "artists", "username", $username)[0] ?? null;
     if ($result) {
+        $pdo = DBConnect();
         $currentStr = $result['secondary_roles'];
         $roleArr = empty($currentStr) ? [] : explode(",", $currentStr);
         if (!in_array($roleName, $roleArr)) {
@@ -341,12 +335,9 @@ function AddSecondaryRoleToArtist($username, $roleName){
 }
 
 function RemoveSecondaryRoleFromArtist($username, $roleName){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT secondary_roles FROM artists WHERE username = ?");
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
+    $result = PullDBValues("secondary_roles", "artists", "username", $username)[0] ?? null;
     if ($result) {
+        $pdo = DBConnect();
         $currentStr = $result['secondary_roles'];
         $roleArr = empty($currentStr) ? [] : explode(",", $currentStr);
         if (($key = array_search($roleName, $roleArr)) !== false) {
@@ -364,11 +355,9 @@ function RemoveSecondaryRoleFromArtist($username, $roleName){
 // ════════════════════════════════════════════════════════════
 
 function GetAllDefinedSecondaryRoles(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT id, role_name, display_name FROM secondary_roles ORDER BY display_name ASC");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("id, role_name, display_name", "secondary_roles", 1, 1, "ORDER BY display_name ASC");
 }
+
 
 function AddDefinedSecondaryRole($roleName, $displayName){
     $pdo = DBConnect();
@@ -435,12 +424,7 @@ function FetchArtistProjectAssignments($username, $projectAssignmentStr){
 
 
 function RemoveArtistFromProject($username, $pid){
-    $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+    $result = PullDBValues("project_assignments", "artists", "username", $username)[0] ?? null;
     if ($result) {
         $projectAssignmentStr = $result['project_assignments'];
         $projectArr = explode(",", $projectAssignmentStr);
@@ -448,6 +432,7 @@ function RemoveArtistFromProject($username, $pid){
             unset($projectArr[$key]);
         }
         $newProjectAssignmentStr = implode(",", $projectArr);
+        $pdo = DBConnect();
         $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
         $updateStmt = $pdo->prepare($updateSQL);
         $updateStmt->execute([$newProjectAssignmentStr, $username]);
@@ -460,12 +445,7 @@ function RetrieveAllActiveProjects(){
 }
 
 function AddArtistToProject($username, $pid){
-    $SQLString = "SELECT project_assignments FROM artists WHERE username = ?";
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute([$username]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+    $result = PullDBValues("project_assignments", "artists", "username", $username)[0] ?? null;
     if ($result) {
         $projectAssignmentStr = $result['project_assignments'];
         $projectArr = explode(",", $projectAssignmentStr);
@@ -473,6 +453,7 @@ function AddArtistToProject($username, $pid){
             $projectArr[] = $pid;
         }
         $newProjectAssignmentStr = implode(",", $projectArr);
+        $pdo = DBConnect();
         $updateSQL = "UPDATE artists SET project_assignments = ? WHERE username = ?";
         $updateStmt = $pdo->prepare($updateSQL);
         $updateStmt->execute([$newProjectAssignmentStr, $username]);
