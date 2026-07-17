@@ -145,16 +145,21 @@ function PullDBValues($columns, $table, $identifier, $identifier_value, $extraPa
     
     // If identifier is numeric, it's a "no WHERE clause" sentinel
     // (used for SELECT * FROM table or COUNT queries)
-        if (is_numeric($identifier)) {
-            $sql = "SELECT $columns FROM $table";
-            if (!empty($extraParams)) {
-                $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
-                $sql .= " WHERE 1=1 $extraParams";
-            }
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (is_numeric($identifier)) {
+    $sql = "SELECT $columns FROM $table";
+    if (!empty($extraParams)) {
+        $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
+        if (stripos(ltrim($extraParams), 'WHERE') !== 0) {
+            $sql .= " WHERE 1=1 $extraParams";
+        } else {
+            $sql .= " $extraParams";
+        }
     }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
     
     // Real identifier: build WHERE clause
     $identifier = preg_replace('/[^a-zA-Z0-9_]/', '', $identifier);
