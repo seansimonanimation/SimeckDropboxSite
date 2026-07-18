@@ -83,10 +83,7 @@ function UpdateProjectLead($pid, $newLead){
 
 }
 function GetProjectFolderSize($pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT active_path FROM projects WHERE pid = ?");
-    $stmt->execute([$pid]);
-    $project = $stmt->fetch(PDO::FETCH_ASSOC);
+    $project = PullDBValues("active_path", "projects", "pid", $pid)[0] ?? null;
     if (!$project || empty($project['active_path'])) {
         return 0;
     }
@@ -105,35 +102,15 @@ function GetProjectFolderSize($pid){
 }
 
 function GetAllProjects(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT * FROM projects");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("*", "projects", 1, 1);
 }
+
 
 function GetAssignedProjectOptionList(){
     $pdo = DBConnect();
-    
-    // Get the project_assignments string for the current user
-    $stmt = $pdo->prepare("SELECT project_assignments FROM artists WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$result || empty($result['project_assignments'])) {
-        return; // No projects assigned
-    }
-    
-    $projectArr = array_filter(explode(",", $result['project_assignments']));
-    if (empty($projectArr)) {
-        return;
-    }
-    
-    // Get project names for the assigned PIDs
-    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
-    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders) AND active = 1 AND transitioning = 0");
-    $stmt->execute(array_values($projectArr));
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
     foreach ($projects as $p) {
         echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
     }
@@ -141,50 +118,21 @@ function GetAssignedProjectOptionList(){
 
 
 
+
 function GetAssignedClientProjectOptionList(){
     $pdo = DBConnect();
-    // Get the project_assignments string for the current user
-    $stmt = $pdo->prepare("SELECT project_assignments FROM clients WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN clients c ON FIND_IN_SET(p.pid, c.project_assignments) WHERE c.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$result || empty($result['project_assignments'])) {
-        return; // No projects assigned
-    }
-    
-    $projectArr = array_filter(explode(",", $result['project_assignments']));
-    if (empty($projectArr)) {
-        return;
-    }
-    // Get project names for the assigned PIDs
-    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
-    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
-    $stmt->execute(array_values($projectArr));
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
 }
+
 function GetAssignedArtistProjectOptionList(){
     $pdo = DBConnect();
-    // Get the project_assignments string for the current user
-    $stmt = $pdo->prepare("SELECT project_assignments FROM artists WHERE username = ?");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$result || empty($result['project_assignments'])) {
-        return; // No projects assigned
-    }
-    
-    $projectArr = array_filter(explode(",", $result['project_assignments']));
-    if (empty($projectArr)) {
-        return;
-    }
-    // Get project names for the assigned PIDs
-    $placeholders = implode(",", array_fill(0, count($projectArr), "?"));
-    $stmt = $pdo->prepare("SELECT pid, project_name FROM projects WHERE pid IN ($placeholders)");
-    $stmt->execute(array_values($projectArr));
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
 }
+
 
 
 function GetAssignedArtistProjectOptionListHTML(){
@@ -199,16 +147,25 @@ function GetAssignedClientProjectOptionListHTML(){
         echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
     }
 }
+function GetAssignedVendorProjectOptionList(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN vendors v ON FIND_IN_SET(p.pid, v.project_assignments) WHERE v.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt->execute([$_SESSION['username']]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-
-
+function GetAssignedVendorProjectOptionListHTML(){
+    $projects = GetAssignedVendorProjectOptionList();
+    foreach ($projects as $p) {
+        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+    }
+}
 
 function ToggleProjectActivation($pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT active FROM projects WHERE pid = ?");
-    $stmt->execute([$pid]);
-    $project = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $project = PullDBValues("active", "projects", "pid", $pid)[0] ?? null;
     if($project){
+        $pdo = DBConnect();
         $newStatus = $project['active'] ? 0 : 1;
         $updateStmt = $pdo->prepare("UPDATE projects SET active = ?, transitioning = 1  WHERE pid = ?");
         $updateStmt->execute([$newStatus, $pid]);
@@ -418,9 +375,20 @@ function GetUserDisplayName($username) {
     if ($result) {
         return $result['firstname'] . ' ' . $result['lastname'];
     }
+    // Check vendors
+    $stmt = $pdo->prepare("SELECT company_name, vendor_poc_firstname, vendor_poc_lastname FROM vendors WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        if (!empty($result['company_name'])) {
+            return $result['company_name'];
+        }
+        return $result['vendor_poc_firstname'] . ' ' . $result['vendor_poc_lastname'];
+    }
     // Fallback to username
     return $username;
 }
+
 
 
 function DisplayProjectFileComments($comments){

@@ -14,35 +14,24 @@ function DisplayChangelog(){
 }
 
 function GetClientCount(bool $includeInactive = false){
-
-    $SQLString = 'SELECT COUNT(*) as client_count FROM clients';
-    if(!$includeInactive){
-        $SQLString .= ' WHERE active = 1';
-    }
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC)['client_count'];
+    $extra = $includeInactive ? '' : "WHERE active = 1";
+    $rows = PullDBValues("COUNT(*) as client_count", "clients", 1, 1, $extra);
+    return $rows[0]['client_count'] ?? 0;
 }
+
 
 function GetArtistCount(bool $includeInactive = false){
-    $SQLString = 'SELECT COUNT(*) as artist_count FROM artists';
-    if(!$includeInactive){
-        $SQLString .= ' WHERE active = 1';
-    }
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC)['artist_count'];
+    $extra = $includeInactive ? '' : "WHERE active = 1";
+    $rows = PullDBValues("COUNT(*) as artist_count", "artists", 1, 1, $extra);
+    return $rows[0]['artist_count'] ?? 0;
 }
 
+
 function GetTotalCommentCount(){
-    $SQLString = 'SELECT COUNT(*) as comment_count FROM filecomments';
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare($SQLString);
-    $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC)['comment_count'];
+    $rows = PullDBValues("COUNT(*) as comment_count", "filecomments", 1, 1);
+    return $rows[0]['comment_count'] ?? 0;
 }
+
 function FormatBytes($bytes, $decimals = 2){
     $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
     $factor = floor((strlen((string)$bytes) - 1) / 3);

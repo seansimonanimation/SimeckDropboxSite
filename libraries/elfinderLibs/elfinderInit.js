@@ -121,14 +121,28 @@ function updatePreviewPane(fm) {
     // 1. Title
     html += '<h1 class="preview-title">File Preview</h1>';
     
-    // 2. Context-sensitive buttons
+    // 2. Action buttons row
     html += '<div class="preview-actions">';
-    html += '  <button class="preview-action-btn" data-action="share-link">🔗 Share Link</button>';
-    if (role !== 'client') {
-        html += '  <button class="preview-action-btn" data-action="share-folder">📁 Share Folder</button>';
-        html += '  <button class="preview-action-btn" data-action="send-discord">💬 Send to Discord</button>';
+    // Lock File button (shown only when available)
+    if (isCommandEnabled(fm, 'lockFile', role, f)) {
+        html += '  <button class="preview-action-btn" data-action="lock-file">🔒 Lock File</button>';
     }
+    // Mark as Deliverable button (shown only when available)
+    if (isCommandEnabled(fm, 'MakeFileDeliverable', role, f)) {
+        html += '  <button class="preview-action-btn" data-action="mark-deliverable">📦 Mark as Deliverable</button>';
+    }
+    // Send Client Notification button (shown only when available)
+    if (isCommandEnabled(fm, 'notifyClient', role, f)) {
+        html += '  <button class="preview-action-btn" data-action="notify-client">📧 Notify Client</button>';
+    }
+    // Share Link dropdown
+    html += '  <div class="preview-dropdown-wrapper">';
+    html += '    <button class="preview-action-btn preview-dropdown-toggle" data-action="dropdown">🔗 Share Link</button>';
+    html += '    <div class="preview-dropdown" id="preview-dropdown-menu"></div>';
+    html += '  </div>';
     html += '</div>';
+
+
     
     // 3. Preview image/icon
     html += '<div class="preview-visual' + (isImage ? '' : ' preview-visual--icon') + '">';
@@ -211,15 +225,49 @@ function updatePreviewPane(fm) {
         openPreviewIsland(fm, f, fileUrl, isImage, displayUrl);
     });
     
-    // Wire up action buttons
-    $('.preview-action-btn').on('click', function() {
-        var action = $(this).data('action');
-        switch (action) {
-            case 'share-link':  copyDirectLink(fm, f); break;
-            case 'share-folder': copyFolderLink(fm, f); break;
-            case 'send-discord': sendToDiscord(fm, f); break;
+    // Populate dropdown menu items
+    populatePreviewDropdown(fm, f);
+
+    // Wire up dropdown toggle
+    $('.preview-dropdown-toggle').off('click').on('click', function(e) {
+        e.stopPropagation();
+        var $dropdown = $('#preview-dropdown-menu');
+        var isOpen = $dropdown.hasClass('preview-dropdown--open');
+        $('.preview-dropdown').removeClass('preview-dropdown--open');
+        if (!isOpen) {
+            $dropdown.addClass('preview-dropdown--open');
         }
     });
+
+    // Wire up standalone action buttons
+    $('.preview-action-btn[data-action="lock-file"]').off('click').on('click', function(e) {
+        e.stopPropagation();
+        fm.exec('lockFile');
+    });
+    $('.preview-action-btn[data-action="mark-deliverable"]').off('click').on('click', function(e) {
+        e.stopPropagation();
+        fm.exec('MakeFileDeliverable');
+    });
+    $('.preview-action-btn[data-action="notify-client"]').off('click').on('click', function(e) {
+        e.stopPropagation();
+        fm.exec('notifyClient');
+    });
+
+    // Wire up dropdown item clicks (event delegation)
+    $('#preview-dropdown-menu').off('click', '.preview-dropdown-item').on('click', '.preview-dropdown-item', function(e) {
+        e.stopPropagation();
+        var $item = $(this);
+        if ($item.hasClass('preview-dropdown-item--disabled-header')) {
+            return;
+        }
+        var command = $item.data('command');
+        if (command) {
+            fm.exec(command);
+        }
+        // Close the dropdown
+        $('.preview-dropdown').removeClass('preview-dropdown--open');
+    });
+
 }
 
 function getElfinderIconClass(mime, name) {
@@ -622,3 +670,180 @@ function refreshLockOverrides(fm) {
         $icon.append('<span class="simeck-lock-overlay">' + icon + '</span>');
     });
 }
+// ─── Preview Dropdown Menu Builder ───────────────────────────────────
+
+/**
+ * Populate the preview dropdown with items matching the spec order.
+ * Each item's enabled state is determined by the corresponding
+ * elFinder command's getstate() — identical to the right-click menu.
+ */
+function populatePreviewDropdown(fm, file) {
+    var $menu = $('#preview-dropdown-menu');
+    if (!$menu.length) return;
+    var role = (window.simeckSession && window.simeckSession.tempRole) || 'client';
+    var html = '';
+
+    // ── Define items in the exact order specified ────────────────────
+    // type: 'item' | 'header' | 'divider'
+    var items = [
+        { type: 'item',     label: 'Folder Link',                  command: 'CopyFolderLink' },
+        { type: 'header',   label: 'Permalink', children: [
+            { label: 'Internal',    command: 'CopyInternalPermalink' },
+            { label: 'Thumbnail',   command: 'CopyThumbnailPermalink' },
+            { label: 'Watermarked', command: 'CopyWatermarkedPermalink' },
+            { label: 'Deliverable', command: 'CopyDeliverablePermalink' }
+        ]},
+        { type: 'header',   label: 'Shortlink', children: [
+            { label: 'Internal',    command: 'CopyInternalShortlink' },
+            { label: 'Thumbnail',   command: 'CopyThumbnailShortlink' },
+            { label: 'Watermarked', command: 'CopyWatermarkedShortlink' }
+        ]},
+        { type: 'divider' },
+        { type: 'item',     label: 'Send to Discord',              command: 'sendToDiscord' }
+    ];
+
+
+    // Track whether we need a divider before the next non-header item
+    var pendingDivider = false;
+
+    for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+
+        if (item.type === 'divider') {
+            pendingDivider = true;
+            continue;
+        }
+
+        if (item.type === 'header') {
+            // Only render header if at least one child is enabled
+            var enabledChildren = [];
+            for (var c = 0; c < item.children.length; c++) {
+                var child = item.children[c];
+                if (isCommandEnabled(fm, child.command, role, file)) {
+                    enabledChildren.push(child);
+                }
+            }
+            if (enabledChildren.length === 0) continue;
+
+            if (pendingDivider && html.length > 0) {
+                html += '<div class="preview-dropdown-divider"></div>';
+                pendingDivider = false;
+            }
+
+            html += '<div class="preview-dropdown-item preview-dropdown-item--disabled-header">' + escapeHtml(item.label) + '</div>';
+            for (var c = 0; c < enabledChildren.length; c++) {
+                html += '<div class="preview-dropdown-item preview-dropdown-item--indent" data-command="' + enabledChildren[c].command + '">' + escapeHtml(enabledChildren[c].label) + '</div>';
+            }
+            continue;
+        }
+
+        // Regular item
+        var enabled = false;
+        if (item.command) {
+            enabled = isCommandEnabled(fm, item.command, role, file);
+        } else if (item.action === 'copy-link') {
+            enabled = (file && file.hash) ? true : false;
+        }
+
+        if (!enabled) continue;
+
+        if (pendingDivider && html.length > 0) {
+            html += '<div class="preview-dropdown-divider"></div>';
+            pendingDivider = false;
+        }
+
+        var dataAttr = item.command ? 'data-command="' + item.command + '"' : 'data-action="' + item.action + '"';
+        html += '<div class="preview-dropdown-item" ' + dataAttr + '>' + escapeHtml(item.label) + '</div>';
+    }
+
+    // Clean up trailing divider if last item was hidden
+    html = html.replace(/<div class="preview-dropdown-divider"><\/div>\s*$/, '');
+
+    $menu.html(html || '<div class="preview-dropdown-item preview-dropdown-item--disabled">No actions available</div>');
+}
+
+
+/**
+ * Check if an elFinder command should be shown as enabled (state 0)
+ * for the current file selection and role.
+ */
+function isCommandEnabled(fm, commandID, role, file) {
+    try {
+        var cmd = fm.getCommand(commandID);
+        if (cmd && typeof cmd.getstate === 'function') {
+            // Some commands check fm.selectedFiles(), so briefly select the file if none selected
+            var sel = fm.selectedFiles();
+            var needsSelect = (sel.length === 0 && file);
+            var prevHash = null;
+            if (needsSelect && file.hash) {
+                prevHash = sel.length ? sel[0].hash : null;
+                fm.selectFiles({ selected: [file.hash] });
+            }
+            var state = cmd.getstate();
+            if (needsSelect) {
+                if (prevHash) {
+                    fm.selectFiles({ selected: [prevHash] });
+                } else {
+                    fm.selectFiles({ selected: [] });
+                }
+            }
+            return state === 0;
+        }
+    } catch (e) {
+        // If getstate errors out, consider command unavailable
+        return false;
+    }
+
+    // Fallback: check role-based availability from metadata
+    var meta = window.elfinderCommandsMeta || [];
+    for (var i = 0; i < meta.length; i++) {
+        if (meta[i].commandID === commandID) {
+            return canUseCommandForRole(meta[i], role);
+        }
+    }
+    return false;
+}
+
+/**
+ * Find command metadata by ID.
+ */
+function findCommandMeta(meta, commandID) {
+    for (var i = 0; i < meta.length; i++) {
+        if (meta[i].commandID === commandID) return meta[i];
+    }
+    return null;
+}
+
+/**
+ * Role-based filter — mirrors CanUseCommand() in elfinderOptionsCommands.js.
+ */
+function canUseCommandForRole(cmd, role) {
+    if (role === 'admin') return true;
+    if (role === 'artist') {
+        if (cmd.role === 'artist') return true;
+        if (cmd.role === 'client' && cmd.availableToHigherRoles) return true;
+    }
+    if (role === 'client') {
+        if (cmd.role === 'clientOnly') return true;
+        if (cmd.role === 'client') return true;
+    }
+    return false;
+}
+
+/**
+ * Simple HTML escaping.
+ */
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str || ''));
+    return div.innerHTML;
+}
+
+/**
+ * Close all preview dropdowns on click outside.
+ */
+$(document).on('click.previewDropdown', function(e) {
+    if (!$(e.target).closest('.preview-dropdown-wrapper').length) {
+        $('.preview-dropdown').removeClass('preview-dropdown--open');
+    }
+});

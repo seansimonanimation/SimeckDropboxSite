@@ -14,8 +14,10 @@ function LoadNavbarContent(){
         $moduleDir = __ROOT__ . '/modules/artist';
     } else if($_SESSION['tempRole'] == 'client'){
         $moduleDir = __ROOT__ . '/modules/client';
+    } else if($_SESSION['tempRole'] == 'vendor'){
+        $moduleDir = __ROOT__ . '/modules/vendor';
     }
-    
+
     $moduleFiles = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($moduleDir),
         RecursiveIteratorIterator::LEAVES_ONLY
@@ -55,6 +57,14 @@ function LoadNavbarContent(){
                         continue;
                     }
                 }
+                    // Skip Enjoy the View module if user has disabled it OR background video is off
+                    if (in_array($metadata['module'] ?? '', ['artistEnjoyView', 'clientEnjoyView', 'vendorEnjoyView'])) {
+                        if (empty($_SESSION['enjoy_the_view_visibility']) || empty($_SESSION['bgvid_visibility'])) {
+                            continue;
+                        }
+                    }
+
+
                 //echo $_SESSION['secondary-roles'];
                 //Secondary role checks.
                 //If the secondary role isn't included in the secondary roles in the session, skip past because we're not loading the module.

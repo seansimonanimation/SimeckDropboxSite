@@ -426,7 +426,12 @@ function ServeFileForDownload($username, $docID){
         $stmt->execute([$username, $docID]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+    if (!$result) {
+    $stmt = $pdo->prepare("SELECT filepath FROM vendordocuments WHERE owner = ? AND uploadID = ?");
+    $stmt->execute([$username, $docID]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
     if (!$result) {
         echo "File not found.";
         return;
