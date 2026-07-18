@@ -123,7 +123,12 @@ function verifyCurrentPW($currentPW, $artistData){
                         <?php echo !empty($_SESSION['bgvid_visibility']) ? '✅' : '❌'; ?>
                     </a>
                 </div>
-
+                <div class="bgvid-toggle-row">
+                    <span>Enjoy the View</span>
+                    <a href="index.php?action=toggle_enjoy_view" class="bgvid-toggle-link">
+                        <?php echo !empty($_SESSION['enjoy_the_view_visibility']) ? '✅' : '❌'; ?>
+                    </a>
+                </div>              
             </div>
         </div>
         <!-- ════════════════════════════════════════════════════════════════ -->

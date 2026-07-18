@@ -180,3 +180,21 @@ function GetCountryCodeOptions($selected = '+1'){
     }
     return $html;
 }
+function SetVendorAvailability($username, $availabilityString){
+    $parts = explode('|', $availabilityString);
+    if(count($parts) !== 7){
+        return false;
+    }
+    foreach($parts as $part){
+        if(!ctype_digit($part)){
+            return false;
+        }
+        // Max value for 48 bits = 2^48 - 1 = 281474976710655
+        if((int)$part > 281474976710655){
+            return false;
+        }
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE vendors SET availability = ? WHERE username = ?");
+    return $stmt->execute([$availabilityString, $username]);
+}

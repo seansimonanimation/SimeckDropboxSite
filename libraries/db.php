@@ -130,8 +130,10 @@ function ListAllActiveClients(){
 }
 
 function pull_vendor_data($username){
-    return PullDBValues("*", "vendors", "username", $username, "AND active = 1");
+    $result = PullDBValues("*", "vendors", "username", $username, "AND active = 1");
+    return $result[0] ?? null;
 }
+
 
 function ListAllActiveVendors(){
     return PullDBValues("username, company_name, vendor_poc_firstname, vendor_poc_lastname", "vendors", "active", 1, "ORDER BY company_name");

@@ -186,11 +186,17 @@ function verifyCurrentPW($currentPW, $artistData){
                     <input type="hidden" name="action" value="set_theme">
                     <noscript><button type="submit" class="btn--sm">Apply</button></noscript>
                 </form>
-                        <div class="bgvid-toggle-row">
-                <span>Background Video</span>
-                <a href="index.php?action=toggle_bgvid" class="bgvid-toggle-link">
-                    <?php echo !empty($_SESSION['bgvid_visibility']) ? '✅' : '❌'; ?>
-                </a>
+                <div class="bgvid-toggle-row">
+                    <span>Background Video</span>
+                    <a href="index.php?action=toggle_bgvid" class="bgvid-toggle-link">
+                        <?php echo !empty($_SESSION['bgvid_visibility']) ? '✅' : '❌'; ?>
+                    </a>
+                </div>
+                <div class="bgvid-toggle-row">
+                    <span>Enjoy the View</span>
+                    <a href="index.php?action=toggle_enjoy_view" class="bgvid-toggle-link">
+                        <?php echo !empty($_SESSION['enjoy_the_view_visibility']) ? '✅' : '❌'; ?>
+                    </a>
                 </div>
 
             </div>

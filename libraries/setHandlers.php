@@ -78,6 +78,23 @@ if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonat
     header("Location: index.php");
     exit;
 }
+if(isset($_GET['action']) && $_GET['action'] === 'toggle_enjoy_view' && !IsImpersonating()){
+    $current = (int)($_SESSION['enjoy_the_view_visibility'] ?? 1);
+    $newVal = $current ? 0 : 1;
+    $_SESSION['enjoy_the_view_visibility'] = $newVal;
+    $pdo = DBConnect();
+    $username = $_SESSION['username'];
+    if($_SESSION['role'] === 'client'){
+        $stmt = $pdo->prepare("UPDATE clients SET enjoy_the_view_visibility = ? WHERE username = ?");
+    } elseif($_SESSION['role'] === 'vendor'){
+        $stmt = $pdo->prepare("UPDATE vendors SET enjoy_the_view_visibility = ? WHERE username = ?");
+    } else {
+        $stmt = $pdo->prepare("UPDATE artists SET enjoy_the_view_visibility = ? WHERE username = ?");
+    }
+    $stmt->execute([$newVal, $username]);
+    header("Location: index.php");
+    exit;
+}
 
 if (isset($_GET['module'])) {
     $moduleName = $_GET['module'];

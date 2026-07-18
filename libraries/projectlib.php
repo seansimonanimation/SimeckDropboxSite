@@ -147,9 +147,19 @@ function GetAssignedClientProjectOptionListHTML(){
         echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
     }
 }
+function GetAssignedVendorProjectOptionList(){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN vendors v ON FIND_IN_SET(p.pid, v.project_assignments) WHERE v.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt->execute([$_SESSION['username']]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
-
-
+function GetAssignedVendorProjectOptionListHTML(){
+    $projects = GetAssignedVendorProjectOptionList();
+    foreach ($projects as $p) {
+        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+    }
+}
 
 function ToggleProjectActivation($pid){
     
@@ -365,9 +375,20 @@ function GetUserDisplayName($username) {
     if ($result) {
         return $result['firstname'] . ' ' . $result['lastname'];
     }
+    // Check vendors
+    $stmt = $pdo->prepare("SELECT company_name, vendor_poc_firstname, vendor_poc_lastname FROM vendors WHERE username = ?");
+    $stmt->execute([$username]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result) {
+        if (!empty($result['company_name'])) {
+            return $result['company_name'];
+        }
+        return $result['vendor_poc_firstname'] . ' ' . $result['vendor_poc_lastname'];
+    }
     // Fallback to username
     return $username;
 }
+
 
 
 function DisplayProjectFileComments($comments){
