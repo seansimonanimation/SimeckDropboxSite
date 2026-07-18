@@ -2,7 +2,7 @@ files/*
 login.conf.php
 libraries/dbconfig.php
 composer.json
-vendor/
+/vendor/
 .clinerules
 composer.lock
 libraries/node/node_modules/
