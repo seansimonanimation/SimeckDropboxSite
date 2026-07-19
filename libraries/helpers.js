@@ -237,26 +237,68 @@ var Helpers = window.Helpers || {};
      * Helpers.spawnIsland('endpoints/getCommentsIsland.php?file=...', 'Comments');
      */
     Helpers.spawnIsland = function(url, title) {
-        _islandIdCounter++;
-        var id = 'spawned-' + _islandIdCounter;
+    _islandIdCounter++;
+    var id = 'spawned-' + _islandIdCounter;
 
-        var island = _buildIsland(id, title, '<div class="island-loading">Loading...</div>', { width: '500px', height: '400px' });
-        document.body.appendChild(island);
-        _bringToFront(island);
+    var island = _buildIsland(id, title, '<div class="island-loading">Loading...</div>', { width: '500px', height: '400px' });
+    document.body.appendChild(island);
+    _bringToFront(island);
 
-        fetch(url)
-            .then(function(r) { return r.text(); })
-            .then(function(html) {
-                var contentDiv = island.querySelector('.island-content');
+    fetch(url)
+        .then(function(r) { return r.text(); })
+        .then(function(html) {
+            var contentDiv = island.querySelector('.island-content');
+
+            // Detect if the AJAX response already contains a full SpawnFloatingIsland() output
+            if (html.indexOf('class="floating-island"') !== -1) {
+                // Remove the blank loading island
+                if (island.parentNode) island.parentNode.removeChild(island);
+
+                // Parse and append the real island from the response
+                var temp = document.createElement('div');
+                temp.innerHTML = html;
+                var realIsland = temp.querySelector('.floating-island');
+                if (realIsland) {
+                    document.body.appendChild(realIsland);
+                    _bringToFront(realIsland);
+
+                    // Execute scripts inside the real island via DOM insertion
+                    var scripts = realIsland.querySelectorAll('script');
+                    scripts.forEach(function(script) {
+                        var newScript = document.createElement('script');
+                        if (script.src) {
+                            newScript.src = script.src;
+                        } else {
+                            newScript.textContent = script.textContent;
+                        }
+                        document.head.appendChild(newScript);
+                    });
+                }
+            } else {
+                // Normal path: inject HTML into existing island content
                 if (contentDiv) contentDiv.innerHTML = html;
-            })
-            .catch(function(err) {
-                var contentDiv = island.querySelector('.island-content');
-                if (contentDiv) contentDiv.innerHTML = '<p class="island-error">Failed to load content.</p>';
-            });
 
-        return id;
-    };
+                // Extract and execute any <script> tags from the HTML
+                // (innerHTML strips scripts, so we re-insert via DOM)
+                var scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || [];
+                scriptMatches.forEach(function(scriptTag) {
+                    var code = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/i, '$1');
+                    if (code.trim()) {
+                        var newScript = document.createElement('script');
+                        newScript.innerHTML = code;
+                        contentDiv.appendChild(newScript);
+                    }
+                });
+            }
+        })
+        .catch(function(err) {
+            var contentDiv = island.querySelector('.island-content');
+            if (contentDiv) contentDiv.innerHTML = '<p class="island-error">Failed to load content.</p>';
+        });
+
+    return id;
+};
+
 
     /**
      * Close and remove a floating island
