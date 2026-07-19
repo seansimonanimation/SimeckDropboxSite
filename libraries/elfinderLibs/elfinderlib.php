@@ -55,7 +55,7 @@ function LoadElfinderJSCommands() { //loads the command and command override fun
 
     if (!is_dir($fsBase)) return '';
     //Hardcode in the shared lib so that it loads fist.
-    $html .= '<script src="' . $webBase . 'ElfinderCommonFuncs.js" ...>';
+    $html .= '<script src="' . $webBase . 'ElfinderCommonFuncs.js"></script>' . "\n";
     foreach (new DirectoryIterator($fsBase) as $file) {
         if ($file->isDot() || !$file->isFile() || $file->getExtension() !== 'js' || $file->getFilename() === 'ElfinderCommonFuncs.js') continue;
         // Convert filesystem path to web path

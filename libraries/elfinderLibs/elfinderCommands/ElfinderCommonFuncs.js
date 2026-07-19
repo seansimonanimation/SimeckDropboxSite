@@ -48,14 +48,6 @@ function normalizeSimeckFilePath(path) {
     }
     return path;
 }
-
-function getSimeckLockFilePath(fm, hash) {
-    var relPath = fm.path(hash) || '';
-    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
-    relPath = normalizeSimeckFilePath(relPath);
-    return '/files/Projects/' + relPath;
-}
-
 // ── elFinder Hash Decode ──────────────────────────────────────────
 // Converts elFinder's custom base64 hash to a filesystem path string
 function decodeElfinderHash(hash) {
@@ -89,11 +81,11 @@ function normalizeSimeckFilePath(path) {
 
 // ── Get Lock File Path from Hash ──────────────────────────────────
 function getSimeckLockFilePath(fm, hash) {
-    var relPath = fm.path(hash) || '';
-    relPath = relPath.replace(/\\/g, '/').replace(/^\/+/, '');
-    relPath = normalizeSimeckFilePath(relPath);
-    return '/files/Projects/' + relPath;
+    var fileUrl = fm.url(hash) || '';
+    fileUrl = normalizeSimeckFilePath(fileUrl);
+    return fileUrl;
 }
+
 
 // ── PoC Requirement Check ─────────────────────────────────────────
 function hasPoCRequirementForHash(hash) {
