@@ -394,20 +394,56 @@ function ServeFullFile($realPath) {
         'pdf'  => 'application/pdf',
     ];
     
-    $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
-    $contentType = $mimeTypes[$ext] ?? 'application/octet-stream';
+ $filesize = filesize($realPath);
     
-    $inlineTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/svg+xml', 'video/mp4', 'video/webm'];
-    $disposition = in_array($contentType, $inlineTypes) ? 'inline' : 'attachment';
+    // Tell browser we support seeking
+    header('Accept-Ranges: bytes');
+    
+    // Check if client requested a byte range
+    if (isset($_SERVER['HTTP_RANGE'])) {
+        $range = $_SERVER['HTTP_RANGE'];
+        list($unit, $range_spec) = explode('=', $range, 2);
+        list($start, $end) = explode('-', $range_spec);
+        $start = intval($start);
+        $end = ($end === '') ? $filesize - 1 : intval($end);
+        
+        // Clamp to file bounds
+        if ($start >= $filesize) {
+            header('HTTP/1.1 416 Range Not Satisfiable');
+            header('Content-Range: bytes */' . $filesize);
+            exit;
+        }
+        $end = min($end, $filesize - 1);
+        $length = $end - $start + 1;
+        
+        header('HTTP/1.1 206 Partial Content');
+        header('Content-Range: bytes ' . $start . '-' . $end . '/' . $filesize);
+        header('Content-Length: ' . $length);
+        
+        // Clear all output buffers before serving the range
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
 
-    header('Content-Description: File Transfer');
-    header('Content-Type: ' . $contentType);
-    header('Content-Disposition: ' . $disposition . '; filename="' . basename($realPath) . '"');
-    header('Expires: 0');
-    header('Cache-Control: must-revalidate');
-    header('Pragma: public');
-    header('Content-Length: ' . filesize($realPath));
-    readfile($realPath);
+        $fp = fopen($realPath, 'rb');
+        if ($fp === false) {
+            header('HTTP/1.1 500 Internal Server Error');
+            exit;
+        }
+        fseek($fp, $start);
+
+        // Use fpassthru which writes directly to output buffer
+        $sent = fpassthru($fp);
+        fclose($fp);
+        exit;
+
+    } else {
+        // Full file response (fallback)
+        header('HTTP/1.1 200 OK');
+        header('Content-Length: ' . $filesize);
+        readfile($realPath);
+    }
+    
     exit;
 }
 
