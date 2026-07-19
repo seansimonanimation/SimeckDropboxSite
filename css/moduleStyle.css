@@ -830,3 +830,43 @@ body:not(.bgvid-active) .module {
   border-color: var(--color-primary-light, #1a73e8);
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
 }
+/* ── Vendor Management Card Styles ─────────────────── */
+
+.vendor-edit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vendor-edit-table tr {
+  border-bottom: 1px solid var(--color-border-bright, rgba(128,128,128,0.2));
+}
+
+.vendor-label {
+  width: 180px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--color-text, #333);
+  white-space: nowrap;
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.vendor-editable {
+  width: 100%;
+  max-width: 400px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-bright, #ccc);
+  border-radius: 8px;
+  background: var(--color-bg-raised, #fff);
+  color: var(--color-text, #333);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.vendor-editable:focus {
+  outline: none;
+  border-color: var(--color-primary-light, #1a73e8);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.15);
+}
