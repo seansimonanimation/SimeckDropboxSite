@@ -38,6 +38,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'impersonate_client' && isset(
     header("Location: index.php");
     exit;
 }
+if (isset($_GET['action']) && $_GET['action'] === 'impersonate_vendor' && isset($_GET['vendor']) && GetRole() === 'admin') {
+    $vendorData = pull_vendor_data($_GET['vendor']);
+    if ($vendorData) {
+        ImpersonateVendor($vendorData);
+    }
+    header("Location: index.php");
+    exit;
+}
 
    if(isset($_GET['action']) && $_GET['action'] === 'logout'){
       logout();
@@ -61,8 +69,27 @@ if(isset($_GET['action']) && $_GET['action'] === 'toggle_bgvid' && !IsImpersonat
     $username = $_SESSION['username'];
     if($_SESSION['role'] === 'client'){
         $stmt = $pdo->prepare("UPDATE clients SET bgvid_visibility = ? WHERE username = ?");
+    } elseif($_SESSION['role'] === 'vendor'){
+        $stmt = $pdo->prepare("UPDATE vendors SET bgvid_visibility = ? WHERE username = ?");
     } else {
         $stmt = $pdo->prepare("UPDATE artists SET bgvid_visibility = ? WHERE username = ?");
+    }
+    $stmt->execute([$newVal, $username]);
+    header("Location: index.php");
+    exit;
+}
+if(isset($_GET['action']) && $_GET['action'] === 'toggle_enjoy_view' && !IsImpersonating()){
+    $current = (int)($_SESSION['enjoy_the_view_visibility'] ?? 1);
+    $newVal = $current ? 0 : 1;
+    $_SESSION['enjoy_the_view_visibility'] = $newVal;
+    $pdo = DBConnect();
+    $username = $_SESSION['username'];
+    if($_SESSION['role'] === 'client'){
+        $stmt = $pdo->prepare("UPDATE clients SET enjoy_the_view_visibility = ? WHERE username = ?");
+    } elseif($_SESSION['role'] === 'vendor'){
+        $stmt = $pdo->prepare("UPDATE vendors SET enjoy_the_view_visibility = ? WHERE username = ?");
+    } else {
+        $stmt = $pdo->prepare("UPDATE artists SET enjoy_the_view_visibility = ? WHERE username = ?");
     }
     $stmt->execute([$newVal, $username]);
     header("Location: index.php");

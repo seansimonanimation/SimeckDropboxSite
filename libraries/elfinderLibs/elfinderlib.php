@@ -258,6 +258,8 @@ function GetRoleElfinderOptions() {
         case 'admin':  return getAdminFileBrowserOptions();
         case 'artist': return getArtistFileBrowserOptions();
         case 'client': return getClientFileBrowserOptions();
+        case 'vendor': return getVendorFileBrowserOptions();
         default:       return getArtistFileBrowserOptions();
     }
 }
+

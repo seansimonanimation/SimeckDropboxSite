@@ -34,19 +34,15 @@ echo '</div>';
 }
 
 function GetClientLockOverrideCount(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare('SELECT lock_overrides FROM clients WHERE username = ?');
-    $stmt->execute([$_SESSION['username']]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $result ? (int)$result['lock_overrides'] : 0;
+    $row = PullDBValues("lock_overrides", "clients", "username", $_SESSION['username']);
+    return !empty($row) ? (int)$row[0]['lock_overrides'] : 0;
 }
+
 function GetArtistAvailability($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT availability FROM artists WHERE username = ?");
-    $stmt->execute([$username]);
-    $result = $stmt->fetchColumn();
-    return $result ?: '0|0|0|0|0|0|0';
+    $row = PullDBValues("availability", "artists", "username", $username);
+    return !empty($row) ? $row[0]['availability'] : '0|0|0|0|0|0|0';
 }
+
 
 function SetArtistAvailability($username, $availabilityString){
     $parts = explode('|', $availabilityString);
@@ -71,16 +67,10 @@ function SetArtistAvailability($username, $availabilityString){
 // ════════════════════════════════════════════════════════════════
 
 function GetArtistPhoneInfo($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM artists WHERE username = ?");
-    $stmt->execute([$username]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $rows = PullDBValues("phone_country_code, phone_number, receive_texts", "artists", "username", $username);
+    $row = $rows[0] ?? null;
     if (!$row) {
-        return [
-            'phone_country_code' => 1,
-            'phone_number' => null,
-            'receive_texts' => 0
-        ];
+        return ['phone_country_code' => 1, 'phone_number' => null, 'receive_texts' => 0];
     }
     return [
         'phone_country_code' => (int)decryptImportantData($row['phone_country_code']),
@@ -88,6 +78,7 @@ function GetArtistPhoneInfo($username){
         'receive_texts'      => (int)$row['receive_texts']
     ];
 }
+
 
 function SetArtistPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
     $pdo = DBConnect();
@@ -101,16 +92,10 @@ function SetArtistPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts
 }
 
 function GetClientPhoneInfo($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT phone_country_code, phone_number, receive_texts FROM clients WHERE username = ?");
-    $stmt->execute([$username]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $rows = PullDBValues("phone_country_code, phone_number, receive_texts", "clients", "username", $username);
+    $row = $rows[0] ?? null;
     if (!$row) {
-        return [
-            'phone_country_code' => '+1',
-            'phone_number' => null,
-            'receive_texts' => 0
-        ];
+        return ['phone_country_code' => '+1', 'phone_number' => null, 'receive_texts' => 0];
     }
     return [
         'phone_country_code' => decryptImportantData($row['phone_country_code']),
@@ -119,11 +104,52 @@ function GetClientPhoneInfo($username){
     ];
 }
 
+
 function SetClientPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
     $pdo = DBConnect();
     $stmt = $pdo->prepare("UPDATE clients SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
     return $stmt->execute([
         encryptImportantData($countryCode),
+        encryptImportantData($phoneNumber),
+        (int)$receiveTexts,
+        $username
+    ]);
+}
+function VendorSettingsErrorDisplay($inputMessage){
+    if($inputMessage == ""){ return "";}
+    echo '<div class="module-card module-card--span-4">';
+    echo '<center><h1 style="color:red;">Error: ' . $inputMessage;
+    echo '</h1></center>';
+    echo '</div>';
+}
+
+function VendorSettingsSuccessDisplay($inputMessage){
+    if($inputMessage == ""){ return "";}
+    echo '<div class="module-card module-card--span-4">';
+    echo '<center><h1 style="color:green;">Success: ' . $inputMessage;
+    echo '</h1></center>';
+    echo '</div>';
+}
+
+function GetVendorPhoneInfo($username){
+    $rows = PullDBValues("phone_country_code, phone_number, receive_texts", "vendors", "username", $username);
+    $row = $rows[0] ?? null;
+    if (!$row) {
+        return ['phone_country_code' => 1, 'phone_number' => null, 'receive_texts' => 0];
+    }
+    return [
+        'phone_country_code' => (int)decryptImportantData($row['phone_country_code']),
+        'phone_number'       => decryptImportantData($row['phone_number']),
+        'receive_texts'      => (int)$row['receive_texts']
+    ];
+}
+
+
+function SetVendorPhoneInfo($username, $countryCode, $phoneNumber, $receiveTexts){
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE vendors SET phone_country_code = ?, phone_number = ?, receive_texts = ? WHERE username = ?");
+    return $stmt->execute([
+        encryptImportantData((string)(int)$countryCode),
         encryptImportantData($phoneNumber),
         (int)$receiveTexts,
         $username
@@ -153,4 +179,22 @@ function GetCountryCodeOptions($selected = '+1'){
         $html .= '<option value="' . $code . '"' . $sel . '>' . $label . '</option>';
     }
     return $html;
+}
+function SetVendorAvailability($username, $availabilityString){
+    $parts = explode('|', $availabilityString);
+    if(count($parts) !== 7){
+        return false;
+    }
+    foreach($parts as $part){
+        if(!ctype_digit($part)){
+            return false;
+        }
+        // Max value for 48 bits = 2^48 - 1 = 281474976710655
+        if((int)$part > 281474976710655){
+            return false;
+        }
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE vendors SET availability = ? WHERE username = ?");
+    return $stmt->execute([$availabilityString, $username]);
 }

@@ -13,6 +13,7 @@
 // $DBConfigLoc = 'C:\Users\randy\Documents\dropbox.simeck.com\dbconfig.php'; //Fabio only
 $artistAdminSQL = "Select * from artists where username = ? AND active = 1";
 $clientSQL = "Select * from clients where username = ? AND active = 1";
+$vendorSQL = "SELECT * FROM vendors WHERE username = ? AND active = 1";
 
 $db_instance = null;
 function DBConnect(){
@@ -125,9 +126,70 @@ function ListAllActiveArtists(){
 
 
 function ListAllActiveClients(){
+    return PullDBValues("username,firstname,lastname", "clients", "active", 1, "ORDER BY lastname");
+}
+
+function pull_vendor_data($username){
+    $result = PullDBValues("*", "vendors", "username", $username, "AND active = 1");
+    return $result[0] ?? null;
+}
+
+
+function ListAllActiveVendors(){
+    return PullDBValues("username, company_name, vendor_poc_firstname, vendor_poc_lastname", "vendors", "active", 1, "ORDER BY company_name");
+}
+function PullDBValues($columns, $table, $identifier, $identifier_value, $extraParams=''){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname FROM clients WHERE active = 1 ORDER BY lastname");
+    
+    // Allow parentheses for SQL functions like COUNT(*)
+    $columns = preg_replace('/[^a-zA-Z0-9_,.*`() ]/', '', $columns);
+    $table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+    
+    // If identifier is numeric, it's a "no WHERE clause" sentinel
+    // (used for SELECT * FROM table or COUNT queries)
+if (is_numeric($identifier)) {
+    $sql = "SELECT $columns FROM $table";
+    if (!empty($extraParams)) {
+        $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
+        if (stripos(ltrim($extraParams), 'WHERE') !== 0) {
+            $sql .= " WHERE 1=1 $extraParams";
+        } else {
+            $sql .= " $extraParams";
+        }
+    }
+    $stmt = $pdo->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+    
+    // Real identifier: build WHERE clause
+    $identifier = preg_replace('/[^a-zA-Z0-9_]/', '', $identifier);
+    $sql = "SELECT $columns FROM $table WHERE $identifier = ?";
+    if (!empty($extraParams)) {
+        $extraParams = preg_replace('/[^a-zA-Z0-9_ =,<>()\'%]/', '', $extraParams);
+        $sql .= " $extraParams";
+    }
+    
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$identifier_value]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function ParseColumnString($columns){
+    if(is_string($columns)){
+        //First get the items in the string into an array.
+        //This way we can control the formatting of the query string.
+        $columnArr = explode(',',$columns);
+    } else {
+        $columnArr = $columns;
+    }
+    $columnStr = '';
+    foreach($columnArr as $column){
+        if($columnStr !== '') {
+            $columnStr .= ", ";
+        }
+        $columnStr .= $column;
+    }
+    return $columnStr;
+}

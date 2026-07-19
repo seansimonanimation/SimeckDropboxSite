@@ -83,11 +83,9 @@ function GenerateClientCards(){
 }
 
 function GetAllClients(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT * FROM clients");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("*", "clients", 1, 1);
 }
+
 
 function GetSearchedClient($searchterm){
     $pdo = DBConnect();
@@ -98,11 +96,9 @@ function GetSearchedClient($searchterm){
 }
 
 function GetAllClientProjectList(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_name, pid FROM projects WHERE pid LIKE 'c%'");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("project_name, pid", "projects", 1, 1, "AND pid LIKE 'c%'");
 }
+
 
 function GetAllProjectsForDropdown(){
     $pdo = DBConnect();
@@ -119,24 +115,17 @@ function CreateNewClient($username, $firstname, $lastname, $PoC, $pid){
 }
 
 function GetPoCName($username){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT firstname, lastname, nickname FROM artists WHERE username = ?");
-    $stmt->execute([$username]);
-    $artist = $stmt->fetch(PDO::FETCH_ASSOC);
-    if($artist){
-        return GetArtistNicknameAndLegalName($artist);
-    }
-
-    return 'Unknown';
+    $rows = PullDBValues("firstname, lastname, nickname", "artists", "username", $username);
+    $artist = $rows[0] ?? null;
+    return $artist ? GetArtistNicknameAndLegalName($artist) : 'Unknown';
 }
+
 
 
 function GetAllArtists(){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT username, firstname, lastname, nickname FROM artists");
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("username, firstname, lastname, nickname", "artists", 1, 1);
 }
+
 
 
 /**
@@ -157,11 +146,9 @@ function UpdateClientField($email, $field, $value){
 }
 
 function ToggleClientActive($email){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT active FROM clients WHERE username = ?");
-    $stmt->execute([$email]);
-    $client = $stmt->fetch(PDO::FETCH_ASSOC);
+    $client = PullDBValues("active", "clients", "username", $email)[0] ?? null;
     if($client){
+        $pdo = DBConnect();
         $newActive = $client['active'] ? 0 : 1;
         $stmt = $pdo->prepare("UPDATE clients SET active = ? WHERE username = ?");
         $stmt->execute([$newActive, $email]);
@@ -172,11 +159,9 @@ function ToggleClientActive($email){
 // ── Document Management ──
 
 function SelectClientDocuments($email){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT uploadID, filepath, uploaded_by, upload_time FROM clientdocuments WHERE owner = ?");
-    $stmt->execute([$email]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return PullDBValues("uploadID, filepath, uploaded_by, upload_time", "clientdocuments", "owner", $email);
 }
+
 
 function DisplayClientDocuments($email){
     $documents = SelectClientDocuments($email);
@@ -277,11 +262,9 @@ function FetchClientProjectAssignments($email, $projectAssignmentStr){
 }
 
 function AddClientToProject($email, $pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_assignments FROM clients WHERE username = ?");
-    $stmt->execute([$email]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $result = PullDBValues("project_assignments", "clients", "username", $email)[0] ?? null;
     if($result){
+        $pdo = DBConnect();
         $projectArr = empty($result['project_assignments']) ? [] : explode(",", $result['project_assignments']);
         if(!in_array($pid, $projectArr)){
             $projectArr[] = $pid;
@@ -294,11 +277,10 @@ function AddClientToProject($email, $pid){
 }
 
 function RemoveClientFromProject($email, $pid){
-    $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT project_assignments FROM clients WHERE username = ?");
-    $stmt->execute([$email]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $result = PullDBValues("project_assignments", "clients", "username", $email)[0] ?? null;
     if($result){
+        $pdo = DBConnect();
         $projectArr = explode(",", $result['project_assignments']);
         if(($key = array_search($pid, $projectArr)) !== false){
             unset($projectArr[$key]);

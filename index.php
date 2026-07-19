@@ -79,41 +79,65 @@ function adminSwitchViewButtonActivation(){
 </nav>
 
      <div class="sidebar-footer">
-         <?php if(IsImpersonating()): ?>
-             <a href="index.php?action=stop_impersonating" class="stop-impersonate-btn">← Stop Impersonating</a>
-         <?php elseif(GetRole() === 'admin' && GetTempRole() === 'admin'): ?>
-             <form method="GET" action="index.php" class="impersonate-form">
-                 <input type="hidden" name="action" value="impersonate_client" />
-                 <label class="sidebar-label">Impersonate Client</label>
-                 <select name="client" class="impersonate-select" onchange="this.form.submit()">
-                     <option value="">— Select —</option>
-                     <?php
-                         $clients = ListAllActiveClients();
-                         foreach($clients as $c){
-                             echo '<option value="' . htmlspecialchars($c['username']) . '">'
-                                  . htmlspecialchars($c['firstname'] . ' ' . $c['lastname'])
-                                  . '</option>';
-                         }
-                     ?>
-                 </select>
-             </form>
-             <form method="GET" action="index.php" class="impersonate-form">
-                 <input type="hidden" name="action" value="impersonate" />
-                 <label class="sidebar-label">Impersonate Artist</label>
-                 <select name="artist" class="impersonate-select" onchange="this.form.submit()">
-                     <option value="">— Select —</option>
-                     <?php
-                        $artists = ListAllActiveArtists();
-                        foreach($artists as $a){
-                            echo '<option value="' . htmlspecialchars($a['username']) . '">'
-                                 . htmlspecialchars(GetArtistNicknameAndLegalName($a))
-                                 . '</option>';
-                        }
+      <?php if(IsImpersonating()): ?>
+          <a href="index.php?action=stop_impersonating" class="stop-impersonate-btn">← Stop Impersonating</a>
+      <?php elseif(GetRole() === 'admin' && GetTempRole() === 'admin'): ?>
+          <form method="GET" action="index.php" class="impersonate-form">
+              <input type="hidden" name="action" value="" id="impersonate-action" />
+              <label class="sidebar-label">Impersonate Account</label>
+              <select name="account" class="impersonate-select" id="impersonate-select" onchange="handleImpersonate(this)">
+                  <option value="">— Select Type —</option>
+                  <optgroup label="Artists">
+                      <?php
+                          $artists = ListAllActiveArtists();
+                          foreach($artists as $a){
+                              echo '<option value="impersonate|' . htmlspecialchars($a['username']) . '">'
+                                   . htmlspecialchars(GetArtistNicknameAndLegalName($a))
+                                   . '</option>';
+                          }
+                      ?>
+                  </optgroup>
+                  <optgroup label="Clients">
+                      <?php
+                          $clients = ListAllActiveClients();
+                          foreach($clients as $c){
+                              echo '<option value="impersonate_client|' . htmlspecialchars($c['username']) . '">'
+                                   . htmlspecialchars($c['firstname'] . ' ' . $c['lastname'])
+                                   . '</option>';
+                          }
+                      ?>
+                  </optgroup>
+                  <optgroup label="Vendors">
+                      <?php
+                          $vendors = ListAllActiveVendors();
+                          foreach($vendors as $v){
+                              $displayName = !empty($v['company_name']) ? $v['company_name'] : $v['vendor_poc_firstname'] . ' ' . $v['vendor_poc_lastname'];
+                              echo '<option value="impersonate_vendor|' . htmlspecialchars($v['username']) . '">'
+                                   . htmlspecialchars($displayName)
+                                   . '</option>';
+                          }
+                      ?>
+                  </optgroup>
+              </select>
+          </form>
+          <script>
+          function handleImpersonate(select) {
+              var val = select.value;
+              if (!val) return;
+              var parts = val.split('|');
+              var action = parts[0];
+              var account = parts[1];
+              if (action === 'impersonate') {
+                  window.location.href = 'index.php?action=impersonate&artist=' + encodeURIComponent(account);
+              } else if (action === 'impersonate_client') {
+                  window.location.href = 'index.php?action=impersonate_client&client=' + encodeURIComponent(account);
+              } else if (action === 'impersonate_vendor') {
+                  window.location.href = 'index.php?action=impersonate_vendor&vendor=' + encodeURIComponent(account);
+              }
+          }
+          </script>
+      <?php endif; ?>
 
-                     ?>
-                 </select>
-             </form>
-         <?php endif; ?>
          <a href="index.php?action=logout">Logout</a>
      </div>
 
