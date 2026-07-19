@@ -33,7 +33,16 @@ elFinder.prototype.commands.ClientLockOverride = function() {
         var filepath = getSimeckLockFilePath(fm, files[0].hash);
         if (!filepath) return -1;
         var norm = normalizeSimeckFilePath(filepath);
-        var lockInfo = fm.cache.lockedPaths && fm.cache.lockedPaths[norm];
+        var lockInfo = null;
+        if (fm.cache.lockedPaths) {
+            for (var cachedPath in fm.cache.lockedPaths) {
+                if (normalizeSimeckFilePath(cachedPath).endsWith(norm) || normalizeSimeckFilePath(cachedPath) === norm) {
+                    lockInfo = fm.cache.lockedPaths[cachedPath];
+                    break;
+                }
+            }
+        }
+
         if (!lockInfo) return -1;
         if (lockInfo.deliverable) return -1;
         return 1;
