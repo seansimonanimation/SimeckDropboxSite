@@ -66,6 +66,7 @@ function PutClientDataInSession($clientData){
     $_SESSION['enjoy_the_view_visibility'] = $clientData['enjoy_the_view_visibility'] ?? 1;
     $_SESSION['tempRole'] = 'client'; // Store the original role in a temporary variable for consistency, even though clients don't have multiple roles.
     $_SESSION['activeModulePath'] = null; // Initialize the active module path in the session
+    if($_SESSION['username'] === 'client') $_SESSION['impersonating'] = true; 
 }
 function PutVendorDataInSession($vendorData){
     $_SESSION['username'] = $vendorData['username'];

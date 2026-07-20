@@ -45,6 +45,9 @@ elFinder.prototype.commands.ClientLockOverride = function() {
 
         if (!lockInfo) return -1;
         if (lockInfo.deliverable) return -1;
-        return 1;
+        if( lockInfo.assetlock && lockInfo.commentlock) return 0;
+        if( lockInfo.assetlock && !lockInfo.commentlock) return -1;
+        
+        return -1;
     };
 };

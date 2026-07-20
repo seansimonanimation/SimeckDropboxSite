@@ -79,7 +79,7 @@ function adminSwitchViewButtonActivation(){
 </nav>
 
      <div class="sidebar-footer">
-      <?php if(IsImpersonating()): ?>
+      <?php if(IsImpersonating() && !empty($_SESSION['_imp_orig_username'])): ?>
           <a href="index.php?action=stop_impersonating" class="stop-impersonate-btn">← Stop Impersonating</a>
       <?php elseif(GetRole() === 'admin' && GetTempRole() === 'admin'): ?>
           <form method="GET" action="index.php" class="impersonate-form">
