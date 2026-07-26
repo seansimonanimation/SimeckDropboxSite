@@ -517,5 +517,78 @@ var Helpers = window.Helpers || {};
         });
         return data;
     };
+// ═══ Universal Drag Attachment ════════════════════════════════════
+
+/**
+ * Attach drag behavior to any floating-island element.
+ * Works with helpers.js-built islands (.island-titlebar),
+ * SpawnFloatingIsland()-built islands (.floating-island__header),
+ * and openPreviewIsland()-built islands (.floating-island__header).
+ * @param {HTMLElement} island - The .floating-island element
+ */
+Helpers.attachDrag = function(island) {
+    if (!island || island._dragAttached) return;
+    island._dragAttached = true;
+
+    // Find the drag handle — try helpers.js style first, then SpawnFloatingIsland style
+    var header = island.querySelector('.island-titlebar') ||
+                 island.querySelector('.floating-island__header');
+    if (!header) return;
+
+    function onStart(e) {
+        if (e.type === 'mousedown' && e.button !== 0) return;
+        if (e.target.closest('.island-close') || e.target.closest('.floating-island__close')) return;
+        e.preventDefault();
+
+        var rect = island.getBoundingClientRect();
+
+        // Convert CSS transform centering to explicit left/top on first drag
+        var computedTransform = getComputedStyle(island).transform;
+        if (computedTransform && computedTransform !== 'none') {
+            island.style.left = rect.left + 'px';
+            island.style.top  = rect.top + 'px';
+            island.style.transform = 'none';
+            // If helpers.js-style marginLeft centering was used, clear it
+            island.style.marginLeft = '0';
+        }
+
+        var pt = e.type === 'touchstart' ? e.touches[0] : e;
+        _dragState = {
+            island:   island,
+            startX:   pt.clientX,
+            startY:   pt.clientY,
+            origX:    parseInt(island.style.left) || rect.left,
+            origY:    parseInt(island.style.top)  || rect.top
+        };
+        island.style.cursor = 'grabbing';
+        document.addEventListener('mousemove', _onDrag);
+        document.addEventListener('mouseup',   _endDrag);
+    }
+
+    header.addEventListener('mousedown',  onStart);
+    header.addEventListener('touchstart', onStart, { passive: false });
+};
+
+// ─── Auto-attach to existing and future islands ───────────────────
+
+// Attach to any islands already in the DOM
+document.querySelectorAll('.floating-island').forEach(Helpers.attachDrag);
+
+// Watch for dynamically added islands (AJAX-loaded, etc.)
+var _dragObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mut) {
+        mut.addedNodes.forEach(function(node) {
+            if (node.nodeType === 1) {
+                if (node.matches && node.matches('.floating-island')) {
+                    Helpers.attachDrag(node);
+                }
+                if (node.querySelectorAll) {
+                    node.querySelectorAll('.floating-island').forEach(Helpers.attachDrag);
+                }
+            }
+        });
+    });
+});
+_dragObserver.observe(document.body, { childList: true, subtree: true });
 
 })();

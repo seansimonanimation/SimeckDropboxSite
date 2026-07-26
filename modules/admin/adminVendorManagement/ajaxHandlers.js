@@ -52,17 +52,18 @@ async function deleteVendorDocument(docId) {
     await refreshContent();
 }
 
-// ── Upload document via AJAX ──
-async function uploadVendorDocument(vendorId, file) {
-    const formData = new FormData();
-    formData.append('uploaded_file', file);
-    formData.append('vendor_id', vendorId);
-    await fetch(window.location.href, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: formData
+// ── Open floating island for vendor document upload ──
+async function openVendorUploadIsland(vendorId) {
+    // Remove any existing upload island
+    document.querySelectorAll('.floating-island').forEach(el => el.remove());
+
+    const resp = await fetch('libraries/endpoints/vendorUploadIslandEndpoint.php?vendor_id=' + encodeURIComponent(vendorId), {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     });
-    await refreshContent();
+    const html = await resp.text();
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper.firstElementChild);
 }
 
 // ── Bind all event listeners ──
@@ -95,23 +96,9 @@ function initVendorPageListeners() {
     document.querySelectorAll('.upload-file-button').forEach(btn => {
         btn.addEventListener('click', function() {
             const vendorId = this.dataset.vendorId;
-            const fileInput = document.getElementById('vendorFileUploadInput');
-            fileInput.dataset.vendorId = vendorId;
-            fileInput.click();
+            openVendorUploadIsland(vendorId);
         });
     });
-
-    const fileInput = document.getElementById('vendorFileUploadInput');
-    if (fileInput) {
-        const newInput = fileInput.cloneNode(true);
-        fileInput.parentNode.replaceChild(newInput, fileInput);
-        newInput.addEventListener('change', function() {
-            if (this.files.length > 0) {
-                uploadVendorDocument(this.dataset.vendorId, this.files[0]);
-            }
-            this.value = '';
-        });
-    }
 
     const createForm = document.getElementById('createVendorForm');
     if (createForm) {

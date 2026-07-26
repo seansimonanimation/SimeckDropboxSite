@@ -9,7 +9,7 @@
  */
 include_once __ROOT__ . '/libraries/session.php';
 include_once __ROOT__ . '/libraries/db.php';
-include_once __ROOT__ . '/libraries/vendorManagement/adminVendorManagementLib.php';
+include_once __ROOT__ . '/libraries/vendorLib.php';
 
 include_once __ROOT__ . '/modules/admin/adminVendorManagement/issets.php';
 ?>
@@ -62,6 +62,5 @@ include_once __ROOT__ . '/modules/admin/adminVendorManagement/issets.php';
             </form>
         </div>
         <?php GenerateVendorCards(); ?>
-        <input type="file" id="vendorFileUploadInput" name="uploaded_file" style="display:none" accept=".pdf,.png,.jpg,.jpeg" />
     </div>
 </div>
