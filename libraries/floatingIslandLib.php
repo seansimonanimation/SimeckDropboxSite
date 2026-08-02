@@ -53,6 +53,7 @@ HTML;
     return $html;
 }
 
+
 // ──────────────────────────────────────────────────────────────────────────
 //  3.  LOAD SEND-TO-DISCORD ISLAND  (form + AJAX)
 // ──────────────────────────────────────────────────────────────────────────
@@ -90,31 +91,31 @@ function LoadSendToDiscordIsland($files, $folderHash = '')
     $uid = 'fi-discord-' . md5(uniqid('', true));
 
     $bodyHtml = <<<ISLANDBODYHTML
-<p><strong>{$fileCount} file(s) selected:</strong></p>
-<ul style="margin: 8px 0 16px 20px; padding: 0;">{$fileListHtml}</ul>
-<label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">
-    Note (optional):
-</label>
-<textarea id="{$uid}-note"
-    style="width:100%;height:72px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"
-    placeholder="Add a message…"></textarea>
-
-<div style="margin:14px 0 10px;">
-    <label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">Channel:</label>
-    <label style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;cursor:pointer;">
-        <input type="radio" name="{$uid}-channel" value="sendToMondayChat" checked>
-        Monday Chat
+    <p><strong>{$fileCount} file(s) selected:</strong></p>
+    <ul style="margin: 8px 0 16px 20px; padding: 0;">{$fileListHtml}</ul>
+    <label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">
+        Note (optional):
     </label>
-    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
-        <input type="radio" name="{$uid}-channel" value="sendToThursdayChat">
-        Thursday Chat
-    </label>
-</div>
-<input type="hidden" id="{$uid}-folderHash" value="{$folderHash}" />
+    <textarea id="{$uid}-note"
+        style="width:100%;height:72px;box-sizing:border-box;padding:10px 12px;border:1px solid var(--color-border-bright);border-radius:var(--radius-sm);background:var(--color-bg-raised);color:var(--color-text);font-family:var(--font-sans);font-size:0.88rem;resize:vertical;"
+        placeholder="Add a message…"></textarea>
 
-<button id="{$uid}-send" style="margin-top:4px;">Send to Discord</button>
-<div id="{$uid}-status" style="margin-top:10px;"></div>
-ISLANDBODYHTML;
+    <div style="margin:14px 0 10px;">
+        <label style="display:block;margin-bottom:4px;font-weight:600;color:var(--color-heading);">Channel:</label>
+        <label style="display:inline-flex;align-items:center;gap:6px;margin-right:20px;cursor:pointer;">
+            <input type="radio" name="{$uid}-channel" value="sendToMondayChat" checked>
+            Monday Chat
+        </label>
+        <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+            <input type="radio" name="{$uid}-channel" value="sendToThursdayChat">
+            Thursday Chat
+        </label>
+    </div>
+    <input type="hidden" id="{$uid}-folderHash" value="{$folderHash}" />
+
+    <button id="{$uid}-send" style="margin-top:4px;">Send to Discord</button>
+    <div id="{$uid}-status" style="margin-top:10px;"></div>
+    ISLANDBODYHTML;
 
     $js = <<<JS
 <script>

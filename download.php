@@ -50,7 +50,8 @@ if (isset($_GET['hash'])) {
     $role = $_SESSION['tempRole'] ?? $_SESSION['role'] ?? 'artist';
     $mode = ($role === 'client') ? 'clientPreview' : 'internal';
     
-    ServeElfinderFile($decodedPath, $mode);
+    // Previews are served inline (rendered in browser), not as downloads
+    ServeElfinderFile($decodedPath, $mode, 'unknown', 'inline');
     exit;
 }
 
@@ -172,8 +173,13 @@ function UserHasAccessToElfinderPath($filepath) {
 
 /**
  * Route to the appropriate serving function based on mode.
+ * 
+ * @param string $filepath     Absolute filesystem path to the file
+ * @param string $mode         Token mode: internal, clientPreview, thumbnail, deliverable
+ * @param string $author       Username who generated the token
+ * @param string $disposition  'attachment' (download) or 'inline' (preview in browser)
  */
-function ServeElfinderFile($filepath, $mode = 'internal', $author = 'unknown') {
+function ServeElfinderFile($filepath, $mode = 'internal', $author = 'unknown', $disposition = 'attachment') {
     if (!UserHasAccessToElfinderPath($filepath)) {
         echo "You do not have permission to access this file.";
         return;
@@ -195,7 +201,7 @@ function ServeElfinderFile($filepath, $mode = 'internal', $author = 'unknown') {
         case 'internal':
         case 'deliverable':
         default:
-            ServeFullFile($realPath);
+            ServeFullFile($realPath, $disposition);
             break;
     }
 }
@@ -277,7 +283,7 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
     $imageTypes = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'];
     
     if (!in_array($ext, $imageTypes)) {
-        ServeFullFile($realPath);
+        ServeFullFile($realPath, 'inline');
         return;
     }
     
@@ -285,7 +291,7 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
     $cacheDir = __ROOT__ . '/files/.watermarked/';
     if (!is_dir($cacheDir)) {
         if (!mkdir($cacheDir, 0777, true) && !is_dir($cacheDir)) {
-            ServeFullFile($realPath);
+            ServeFullFile($realPath, 'inline');
             return;
         }
     }
@@ -306,7 +312,7 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
         }
         
         if (!$srcImage) {
-            ServeFullFile($realPath);
+            ServeFullFile($realPath, 'inline');
             return;
         }
         
@@ -361,7 +367,7 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
         imagedestroy($srcImage);
         
         if (!$saved) {
-            ServeFullFile($realPath);
+            ServeFullFile($realPath, 'inline');
             return;
         }
     }
@@ -379,8 +385,11 @@ function ServeWatermarkedImage($realPath, $maxDimension = 800, $author = 'unknow
 
 /**
  * Serve the full original file.
+ * 
+ * @param string $realPath     Absolute filesystem path to the file
+ * @param string $disposition  'attachment' (triggers download) or 'inline' (renders in browser)
  */
-function ServeFullFile($realPath) {
+function ServeFullFile($realPath, $disposition = 'attachment') {
     $mimeTypes = [
         'png'  => 'image/png',
         'jpg'  => 'image/jpeg',
@@ -394,7 +403,15 @@ function ServeFullFile($realPath) {
         'pdf'  => 'application/pdf',
     ];
     
- $filesize = filesize($realPath);
+    $ext = strtolower(pathinfo($realPath, PATHINFO_EXTENSION));
+    $contentType = $mimeTypes[$ext] ?? 'application/octet-stream';
+    
+    $filesize = filesize($realPath);
+    
+    // Set proper headers so the browser knows what it's receiving
+    header('Content-Type: ' . $contentType);
+    header('Content-Disposition: ' . $disposition . '; filename="' . basename($realPath) . '"');
+    header('Content-Length: ' . $filesize);
     
     // Tell browser we support seeking
     header('Accept-Ranges: bytes');
@@ -440,7 +457,6 @@ function ServeFullFile($realPath) {
     } else {
         // Full file response (fallback)
         header('HTTP/1.1 200 OK');
-        header('Content-Length: ' . $filesize);
         readfile($realPath);
     }
     

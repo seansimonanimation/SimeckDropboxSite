@@ -8,21 +8,8 @@ var Helpers = window.Helpers || {};
 (function() {
     'use strict';
 
-    // ─── Private State ───────────────────────────────────────────────
-
     var _islandIdCounter = 0;
-    var _dragState = null; // { island, startX, startY, origX, origY }
 
-    // ─── Floating Island Engine ──────────────────────────────────────
-
-    /**
-     * Create a floating island DOM element
-     * @param {string} id    - Unique ID (without 'island-' prefix)
-     * @param {string} title - Title bar text
-     * @param {string} content - HTML content for the body
-     * @param {object} [opts] - { width, height, top, left }
-     * @returns {HTMLElement} The island container
-     */
     function _buildIsland(id, title, content, opts) {
         opts = opts || {};
         var island = document.createElement('div');
@@ -33,57 +20,42 @@ var Helpers = window.Helpers || {};
         if (opts.top)  island.style.top  = opts.top;
         if (opts.left) island.style.left = opts.left;
 
-        // Center horizontally if no position given
         if (!opts.left) {
             island.style.left = '50%';
-            island.style.marginLeft = '-' + (parseInt(island.style.width) / 2 || 200) + 'px';
+            island.style.transform = 'translateX(-50%)';
         }
         if (!opts.top) {
             island.style.top = '15%';
         }
 
-        // Title bar
         var titlebar = document.createElement('div');
         titlebar.className = 'island-titlebar';
-
         var titleSpan = document.createElement('span');
         titleSpan.className = 'island-title';
         titleSpan.textContent = title;
-
         var closeBtn = document.createElement('button');
         closeBtn.className = 'island-close';
         closeBtn.innerHTML = '&times;';
         closeBtn.addEventListener('click', function() {
             Helpers.closeIsland(id);
         });
-
         titlebar.appendChild(titleSpan);
         titlebar.appendChild(closeBtn);
 
-        // Make titlebar draggable
-        titlebar.addEventListener('mousedown', function(e) {
-            _startDrag(e, island);
-        });
+        // ← THIS LINE WAS MISSING: attaches drag to the island
+        _attachIslandDrag(island, titlebar);
 
-        // Content area
         var contentDiv = document.createElement('div');
         contentDiv.className = 'island-content';
         contentDiv.innerHTML = content;
-
         island.appendChild(titlebar);
         island.appendChild(contentDiv);
-
-        // Bring to front on click
         island.addEventListener('mousedown', function() {
             _bringToFront(island);
         });
-
         return island;
     }
 
-    /**
-     * Bring an island to the top of the z-index stack
-     */
     function _bringToFront(island) {
         var allIslands = document.querySelectorAll('.floating-island');
         var maxZ = 1000;
@@ -94,56 +66,156 @@ var Helpers = window.Helpers || {};
         island.style.zIndex = maxZ + 1;
     }
 
-    // ─── Drag Implementation ─────────────────────────────────────────
+    // ─── Drag + Resize ──────────────────────────────────────────────
 
-    function _startDrag(e, island) {
-        if (e.target.closest('.island-close')) return;
-        _dragState = {
-            island: island,
-            startX: e.clientX,
-            startY: e.clientY,
-            origX: parseInt(island.style.left) || 0,
-            origY: parseInt(island.style.top)  || 0
-        };
-        island.style.cursor = 'grabbing';
-        document.addEventListener('mousemove', _onDrag);
-        document.addEventListener('mouseup', _endDrag);
-        e.preventDefault();
-    }
+    function _attachIslandDrag(island, header) {
+        if (!header || header._dragAttached) return;
+        header._dragAttached = true;
 
-    function _onDrag(e) {
-        if (!_dragState) return;
-        var dx = e.clientX - _dragState.startX;
-        var dy = e.clientY - _dragState.startY;
-        _dragState.island.style.left = (_dragState.origX + dx) + 'px';
-        _dragState.island.style.top  = (_dragState.origY + dy) + 'px';
-        _dragState.island.style.marginLeft = '0';
-    }
-
-    function _endDrag() {
-        if (_dragState) {
-            _dragState.island.style.cursor = '';
-            _dragState = null;
+        function onStart(e) {
+            if (e.target.closest('.island-close') || e.target.closest('.floating-island__close')) return;
+            e.preventDefault();
+            var rect = island.getBoundingClientRect();
+            var pt = e.type === 'touchstart' ? e.touches[0] : e;
+            island._dragOffsetX = pt.clientX - rect.left;
+            island._dragOffsetY = pt.clientY - rect.top;
+            island.style.cursor = 'grabbing';
+            island.style.transition = 'none';
+            island.classList.add('floating-island--dragging');
         }
-        document.removeEventListener('mousemove', _onDrag);
-        document.removeEventListener('mouseup', _endDrag);
+
+        header.addEventListener('mousedown',  onStart);
+        header.addEventListener('touchstart', onStart, { passive: false });
+    }
+
+    document.addEventListener('mousemove', function(e) {
+        document.querySelectorAll('.floating-island--dragging').forEach(function(island) {
+            island.style.left = (e.clientX - island._dragOffsetX) + 'px';
+            island.style.top  = (e.clientY - island._dragOffsetY) + 'px';
+            island.style.transform = 'none';
+        });
+    });
+
+    document.addEventListener('mouseup', function() {
+        document.querySelectorAll('.floating-island--dragging').forEach(function(island) {
+            island.style.cursor = '';
+            island.style.transition = '';
+            island.classList.remove('floating-island--dragging');
+            delete island._dragOffsetX;
+            delete island._dragOffsetY;
+        });
+    });
+
+    function _attachIslandResize(island, handle) {
+        if (!handle || handle._resizeAttached) return;
+        handle._resizeAttached = true;
+        var resizing = false, startX, startY, startW, startH;
+
+        handle.addEventListener('mousedown', function(e) {
+            resizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startW = island.offsetWidth;
+            startH = island.offsetHeight;
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!resizing) return;
+            island.style.width  = Math.max(300, startW + (e.clientX - startX)) + 'px';
+            island.style.height = Math.max(200, startH + (e.clientY - startY)) + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            resizing = false;
+        });
     }
 
     // ─── Public API ──────────────────────────────────────────────────
 
-    // ═══ AJAX ═══════════════════════════════════════════════════════
+    Helpers.createIsland = function(title, content, opts) {
+        opts = opts || {};
+        var id = opts.id || 'island-' + (++_islandIdCounter);
+        var island = document.createElement('div');
+        island.className = 'floating-island' + (opts.extraClass ? ' ' + opts.extraClass : '');
+        island.id = id;
+        island.style.width  = opts.width  || '600px';
+        island.style.height = opts.height || 'auto';
+        island.style.left   = opts.left   || '50%';
+        island.style.top    = opts.top    || '60px';
+        if (!opts.left) {
+            island.style.transform = 'translateX(-50%)';
+        }
 
-    /**
-     * Perform a GET request and parse JSON response
-     * @param {string} url    - Base URL (e.g. '?action=something')
-     * @param {object} [params] - Query parameters as key/value pairs
-     * @returns {Promise<object>} Resolves with parsed JSON
-     *
-     * @example
-     * Helpers.get('?action=search_client', { query: 'Bob' })
-     *   .then(function(data) {
-     *     if (data.success) { handle 
-     */
+        var header = document.createElement('div');
+        header.className = 'floating-island__header';
+        var titleEl = document.createElement('h3');
+        titleEl.className = 'floating-island__title';
+        titleEl.textContent = title;
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'floating-island__close';
+        closeBtn.innerHTML = '✕';
+        closeBtn.addEventListener('click', function() { island.remove(); });
+        header.appendChild(titleEl);
+        header.appendChild(closeBtn);
+
+        var body = document.createElement('div');
+        body.className = 'floating-island__body';
+        body.innerHTML = content;
+
+        var resizeHandle = document.createElement('div');
+        resizeHandle.className = 'floating-island__resize-handle';
+
+        island.appendChild(header);
+        island.appendChild(body);
+        island.appendChild(resizeHandle);
+
+        _attachIslandDrag(island, header);
+        _attachIslandResize(island, resizeHandle);
+
+        document.body.appendChild(island);
+        _bringToFront(island);
+        return island;
+    };
+
+    Helpers.attachDrag = function(island) {
+        if (!island) return;
+        var header = island.querySelector('.island-titlebar') ||
+                     island.querySelector('.floating-island__header');
+        if (!header) return;
+        var resizeHandle = island.querySelector('.floating-island__resize-handle');
+        _attachIslandDrag(island, header);
+        _attachIslandResize(island, resizeHandle);
+    };
+
+    document.querySelectorAll('.floating-island').forEach(Helpers.attachDrag);
+
+    var _dragObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mut) {
+            mut.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) {
+                    if (node.matches && node.matches('.floating-island')) {
+                        Helpers.attachDrag(node);
+                    }
+                    if (node.querySelectorAll) {
+                        node.querySelectorAll('.floating-island').forEach(Helpers.attachDrag);
+                    }
+                }
+            });
+        });
+    });
+        if (document.body) {
+        _dragObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+        document.addEventListener('DOMContentLoaded', function() {
+            _dragObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    }
+
+
+    // ─── AJAX, Islands, etc. (unchanged from current file) ──────────
+
     Helpers.get = function(url, params) {
         var fullUrl = Helpers.buildUrl(url, params);
         return fetch(fullUrl, {
@@ -159,16 +231,9 @@ var Helpers = window.Helpers || {};
         });
     };
 
-    /**
-     * Perform a POST request with URL-encoded data and parse JSON response
-     * @param {string} url  - Base URL
-     * @param {object|FormData} data - Key/value pairs or FormData
-     * @returns {Promise<object>} Resolves with parsed JSON
-     */
     Helpers.post = function(url, data) {
         var isFormData = (typeof FormData !== 'undefined' && data instanceof FormData);
         var body = isFormData ? data : new URLSearchParams(data || {});
-
         return fetch(url, {
             method: 'POST',
             headers: isFormData ? {} : { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -183,13 +248,7 @@ var Helpers = window.Helpers || {};
             throw err;
         });
     };
-    
-    /**
-     * Perform a POST request and get HTML text response
-     * @param {string} url  - Base URL
-     * @param {object|FormData|URLSearchParams} data - POST body
-     * @returns {Promise<string>} Resolves with response text
-     */
+
     Helpers.postHtml = function(url, data) {
         var isFormData = (typeof FormData !== 'undefined' && data instanceof FormData);
         return fetch(url, {
@@ -202,23 +261,10 @@ var Helpers = window.Helpers || {};
         });
     };
 
-    // ═══ Floating Islands ═══════════════════════════════════════════
-
-    /**
-     * Spawn a floating island notification
-     * @param {string} title   - Island title bar text
-     * @param {string} content - HTML content for the island body
-     * @param {string} [type]  - Style class: 'info', 'success', 'error', 'warning'
-     * @returns {string} The island ID (for use with closeIsland)
-     *
-     * @example
-     * Helpers.alertIsland('Success', 'File uploaded successfully.', 'success');
-     */
     Helpers.alertIsland = function(title, content, type) {
         _islandIdCounter++;
         var id = 'alert-' + _islandIdCounter;
         type = type || 'info';
-
         var styledContent = '<div class="alert-island alert-island--' + type + '">' + content + '</div>';
         var island = _buildIsland(id, title, styledContent, { width: '420px' });
         island.classList.add('floating-island--alert');
@@ -232,78 +278,100 @@ var Helpers = window.Helpers || {};
      * @param {string} url   - Endpoint that returns HTML fragment
      * @param {string} title - Island title bar text
      * @returns {Promise<string>} Resolves with the island ID when loaded
-     *
-     * @example
-     * Helpers.spawnIsland('endpoints/getCommentsIsland.php?file=...', 'Comments');
      */
     Helpers.spawnIsland = function(url, title) {
-    _islandIdCounter++;
-    var id = 'spawned-' + _islandIdCounter;
+        _islandIdCounter++;
+        var id = 'spawned-' + _islandIdCounter;
 
-    var island = _buildIsland(id, title, '<div class="island-loading">Loading...</div>', { width: '500px', height: '400px' });
-    document.body.appendChild(island);
-    _bringToFront(island);
+        var island = _buildIsland(id, title, '<div class="island-loading">Loading...</div>', { width: '500px', height: '400px' });
+        document.body.appendChild(island);
+        _bringToFront(island);
 
-    fetch(url)
-        .then(function(r) { return r.text(); })
-        .then(function(html) {
-            var contentDiv = island.querySelector('.island-content');
+        fetch(url)
+            .then(function(r) { return r.text(); })
+            .then(function(html) {
+                var contentDiv = island.querySelector('.island-content');
 
-            // Detect if the AJAX response already contains a full SpawnFloatingIsland() output
-            if (html.indexOf('class="floating-island"') !== -1) {
-                // Remove the blank loading island
-                if (island.parentNode) island.parentNode.removeChild(island);
+                // Detect if the AJAX response already contains a full SpawnFloatingIsland() output
+                if (html.indexOf('class="floating-island"') !== -1) {
+                    // Remove the blank loading island
+                    if (island.parentNode) island.parentNode.removeChild(island);
 
-                // Parse and append the real island from the response
-                var temp = document.createElement('div');
-                temp.innerHTML = html;
-                var realIsland = temp.querySelector('.floating-island');
-                if (realIsland) {
-                    document.body.appendChild(realIsland);
-                    _bringToFront(realIsland);
+                    // Parse and append the real island from the response
+                    var temp = document.createElement('div');
+                    temp.innerHTML = html;
+                    var realIsland = temp.querySelector('.floating-island');
+                    if (realIsland) {
+                        document.body.appendChild(realIsland);
+                        _bringToFront(realIsland);
 
-                    // Execute scripts inside the real island via DOM insertion
-                    var scripts = realIsland.querySelectorAll('script');
-                    scripts.forEach(function(script) {
-                        var newScript = document.createElement('script');
-                        if (script.src) {
-                            newScript.src = script.src;
-                        } else {
-                            newScript.textContent = script.textContent;
+                        // Add drag behavior using the proven pattern from openPreviewIsland()
+                        var island = realIsland;
+                        var header = island.querySelector('.floating-island__header');
+                        if (header) {
+                            var offsetX = 0, offsetY = 0, dragging = false;
+                            header.addEventListener('mousedown', function(e) {
+                                if (e.target.closest('.floating-island__close')) return;
+                                dragging = true;
+                                var rect = island.getBoundingClientRect();
+                                offsetX = e.clientX - rect.left;
+                                offsetY = e.clientY - rect.top;
+                                island.style.cursor = 'grabbing';
+                                island.style.transition = 'none';
+                                e.preventDefault();
+                            });
+                            document.addEventListener('mousemove', function(e) {
+                                if (!dragging) return;
+                                island.style.left = (e.clientX - offsetX) + 'px';
+                                island.style.top  = (e.clientY - offsetY) + 'px';
+                                island.style.transform = 'none';
+                            });
+                            document.addEventListener('mouseup', function() {
+                                if (!dragging) return;
+                                dragging = false;
+                                island.style.cursor = '';
+                                island.style.transition = '';
+                            });
                         }
-                        document.head.appendChild(newScript);
+
+                        // Execute scripts inside the real island via DOM insertion
+                        var scripts = realIsland.querySelectorAll('script');
+                        scripts.forEach(function(script) {
+                            var newScript = document.createElement('script');
+                            if (script.src) {
+                                newScript.src = script.src;
+                            } else {
+                                newScript.textContent = script.textContent;
+                            }
+                            document.head.appendChild(newScript);
+                        });
+                    }
+                } else {
+                    // Normal path: inject HTML into existing island content
+                    if (contentDiv) contentDiv.innerHTML = html;
+
+                    // Extract and execute any <script> tags from the HTML
+                    // (innerHTML strips scripts, so we re-insert via DOM)
+                    var scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || [];
+                    scriptMatches.forEach(function(scriptTag) {
+                        var code = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/i, '$1');
+                        if (code.trim()) {
+                            var newScript = document.createElement('script');
+                            newScript.innerHTML = code;
+                            contentDiv.appendChild(newScript);
+                        }
                     });
                 }
-            } else {
-                // Normal path: inject HTML into existing island content
-                if (contentDiv) contentDiv.innerHTML = html;
+            })
+            .catch(function(err) {
+                var contentDiv = island.querySelector('.island-content');
+                if (contentDiv) contentDiv.innerHTML = '<p class="island-error">Failed to load content.</p>';
+            });
 
-                // Extract and execute any <script> tags from the HTML
-                // (innerHTML strips scripts, so we re-insert via DOM)
-                var scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || [];
-                scriptMatches.forEach(function(scriptTag) {
-                    var code = scriptTag.replace(/<script[^>]*>([\s\S]*?)<\/script>/i, '$1');
-                    if (code.trim()) {
-                        var newScript = document.createElement('script');
-                        newScript.innerHTML = code;
-                        contentDiv.appendChild(newScript);
-                    }
-                });
-            }
-        })
-        .catch(function(err) {
-            var contentDiv = island.querySelector('.island-content');
-            if (contentDiv) contentDiv.innerHTML = '<p class="island-error">Failed to load content.</p>';
-        });
-
-    return id;
-};
+        return id;
+    };
 
 
-    /**
-     * Close and remove a floating island
-     * @param {string} id - The island ID (without 'island-' prefix)
-     */
     Helpers.closeIsland = function(id) {
         var el = document.getElementById('island-' + id);
         if (el && el.parentNode) {
@@ -311,34 +379,18 @@ var Helpers = window.Helpers || {};
         }
     };
 
-    // ═══ Confirmation Dialog ════════════════════════════════════════
-
-    /**
-     * Show a confirmation dialog as a floating island
-     * @param {string} message - The confirmation question
-     * @returns {Promise<boolean>} Resolves true if confirmed, false if cancelled
-     *
-     * @example
-     * Helpers.confirm('Are you sure you want to delete this?')
-     *   .then(function(confirmed) {
-     *     if (confirmed) { do it 
-     * 
-     */ 
     Helpers.confirm = function(message) {
         _islandIdCounter++;
         var id = 'confirm-' + _islandIdCounter;
-
         var content =
             '<p class="confirm-message">' + message + '</p>' +
             '<div class="confirm-buttons">' +
                 '<button class="confirm-yes module-button module-button--primary" data-action="confirm">Confirm</button> ' +
                 '<button class="confirm-no module-button module-button--secondary" data-action="cancel">Cancel</button>' +
             '</div>';
-
         var island = _buildIsland(id, 'Confirm', content, { width: '380px' });
         document.body.appendChild(island);
         _bringToFront(island);
-
         return new Promise(function(resolve) {
             island.querySelector('.confirm-yes').addEventListener('click', function() {
                 Helpers.closeIsland(id);
@@ -351,23 +403,9 @@ var Helpers = window.Helpers || {};
         });
     };
 
-    // ═══ Loading State ══════════════════════════════════════════════
-
-    /**
-     * Toggle loading state on a button or element
-     * @param {HTMLElement|string} el   - Element or CSS selector
-     * @param {boolean} state           - true = loading, false = done
-     * @param {string} [originalText]   - Text to restore when done (optional)
-     *
-     * @example
-     * Helpers.loading('#submitBtn', true);
-     * // ... after async operation ...
-     * Helpers.loading('#submitBtn', false, 'Submit');
-     */
     Helpers.loading = function(el, state, originalText) {
         if (typeof el === 'string') el = document.querySelector(el);
         if (!el) return;
-
         if (state) {
             el.dataset.originalText = el.innerHTML;
             el.disabled = true;
@@ -377,46 +415,20 @@ var Helpers = window.Helpers || {};
             el.innerHTML = originalText || el.dataset.originalText || el.innerHTML;
         }
     };
-    // ═══ Page Refresh ═══════════════════════════════════════════════
 
-    /**
-     * Reload the current page, removing beforeunload handlers to bypass
-     * any "unsaved changes" prompts.
-     *
-     * @example
-     * Helpers.refresh();
-     */
     Helpers.refresh = function() {
         window.onbeforeunload = null;
         $(window).off('beforeunload');
         location.reload();
     };
-    // ═══ Formatting Utilities ══════════════════════════════════════
 
-    /**
-     * Format bytes into a human-readable string (B, KB, MB, GB, TB)
-     * @param {number} bytes - The byte count
-     * @returns {string} e.g. "1.5 MB"
-     *
-     * @example
-     * Helpers.formatBytes(1048576); // => "1.0 MB"
-     */
     Helpers.formatBytes = function(bytes) {
         if (isNaN(bytes) || bytes === 0) return '0 B';
         var units = ['B', 'KB', 'MB', 'GB', 'TB'];
         var i = Math.floor(Math.log(bytes) / Math.log(1024));
         return (bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0) + ' ' + units[i];
     };
-    // ═══ Clipboard ═══════════════════════════════════════════════════
 
-    /**
-     * Copy text to clipboard with fallback to prompt()
-     * @param {string} text - The text to copy
-     * @param {string} [successMsg] - Optional success message (displayed via alertIsland)
-     *
-     * @example
-     * Helpers.copyToClipboard('https://example.com', 'Link copied!');
-     */
     Helpers.copyToClipboard = function(text, successMsg) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
@@ -429,21 +441,10 @@ var Helpers = window.Helpers || {};
         }
     };
 
-    // ═══ URL Utilities ══════════════════════════════════════════════
-
-    /**
-     * Get parsed URL parameters from the current page
-     * @returns {object} Key/value pairs of URL parameters
-     *
-     * @example
-     * var params = Helpers.urlParams();
-     * // params.projectId => 'C01'
-     */
     Helpers.urlParams = function() {
         var params = {};
         var search = window.location.search.substring(1);
         if (!search) return params;
-
         search.split('&').forEach(function(pair) {
             var parts = pair.split('=');
             if (parts[0]) {
@@ -453,59 +454,26 @@ var Helpers = window.Helpers || {};
         return params;
     };
 
-    /**
-     * Build a URL with query parameters
-     * @param {string} base    - Base URL (e.g. '?action=search' or '/endpoint.php')
-     * @param {object} [params] - Key/value pairs to append
-     * @returns {string} The full URL with query string
-     *
-     * @example
-     * Helpers.buildUrl('?action=filter', { project: 'C01', page: 2 });
-     * // => '?action=filter&project=C01&page=2'
-     */
     Helpers.buildUrl = function(base, params) {
         if (!params) return base;
         var keys = Object.keys(params);
         if (keys.length === 0) return base;
-
         var separator = base.indexOf('?') === -1 ? '?' : '&';
         var qs = keys.map(function(k) {
             return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
         }).join('&');
-
         return base + separator + qs;
     };
 
-    // ═══ DOM Utilities ══════════════════════════════════════════════
-
-    /**
-     * Get all data-* attributes from an element as an object
-     * @param {HTMLElement|string} el - Element or CSS selector
-     * @returns {object} Key/value pairs of data attributes
-     *
-     * @example
-     * var cardData = Helpers.data('#project-card');
-     * // cardData.projectId => 'C01'
-     */
     Helpers.data = function(el) {
         if (typeof el === 'string') el = document.querySelector(el);
         if (!el || !el.dataset) return {};
         return Object.assign({}, el.dataset);
     };
 
-    /**
-     * Serialize a form element to an object
-     * @param {HTMLFormElement|string} form - Form element or CSS selector
-     * @returns {object} Key/value pairs of form fields
-     *
-     * @example
-     * var formData = Helpers.serialize('#myForm');
-     * Helpers.post('?action=save', formData);
-     */
     Helpers.serialize = function(form) {
         if (typeof form === 'string') form = document.querySelector(form);
         if (!form || !form.elements) return {};
-
         var data = {};
         Array.prototype.forEach.call(form.elements, function(field) {
             if (!field.name || field.disabled) return;

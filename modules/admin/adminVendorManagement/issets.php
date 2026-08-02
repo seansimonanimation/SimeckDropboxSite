@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['uploaded_file'])) {
     $stmt->execute([$_POST['vendor_id']]);
     $vendor = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($vendor) {
-        UploadVendorDocument($vendor['username'], $vendor['company_name'], $vendor['vendor_poc_firstname'], $vendor['vendor_poc_lastname'], $_FILES['uploaded_file']);
+        $uploadType = $_POST['upload_type'] ?? '';
+        UploadVendorDocument($vendor['username'], $vendor['company_name'], $vendor['vendor_poc_firstname'], $vendor['vendor_poc_lastname'], $_FILES['uploaded_file'], $uploadType);
     }
 }
