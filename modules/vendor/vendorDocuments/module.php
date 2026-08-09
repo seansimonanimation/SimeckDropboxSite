@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['vendor_doc_file'])) 
 
 
         <!-- ── Document List Card ── -->
-        <div class="module-card module-card--span-full">
+        <div class="module-card module-card--span-4">
             <div class="module-card__header">
                 <h3 class="module-card__title">Your Documents</h3>
             </div>
