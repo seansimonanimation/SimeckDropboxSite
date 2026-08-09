@@ -61,10 +61,28 @@ async function openVendorUploadIsland(vendorId) {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
     });
     const html = await resp.text();
+
+    // innerHTML strips <script> tags, so inject and then re-execute them
     const wrapper = document.createElement('div');
     wrapper.innerHTML = html;
-    document.body.appendChild(wrapper.firstElementChild);
+
+    const island = wrapper.querySelector('.floating-island') || wrapper.firstElementChild;
+    if (!island) return;
+    document.body.appendChild(island);
+
+    // Re-execute any inline scripts (mirrors Helpers.spawnIsland pattern)
+    const scripts = island.querySelectorAll('script');
+    scripts.forEach(function(script) {
+        const newScript = document.createElement('script');
+        if (script.src) {
+            newScript.src = script.src;
+        } else {
+            newScript.textContent = script.textContent;
+        }
+        document.head.appendChild(newScript);
+    });
 }
+
 
 // ── Bind all event listeners ──
 function initVendorPageListeners() {
