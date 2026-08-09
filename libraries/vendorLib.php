@@ -378,6 +378,7 @@ HTML;
 
         fetch('libraries/endpoints/vendorUploadIslandEndpoint.php', {
             method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             body: formData
         })
         .then(function(r) { return r.json(); })
