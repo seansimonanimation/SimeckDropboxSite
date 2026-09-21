@@ -21,6 +21,24 @@ require_once __ROOT__ . '/libraries/elfinderLibs/SimeckVolumeDriver.php';
 require_once __ROOT__ . '/libraries/elfinderLibs/elfinderlib.php';
 require_once __ROOT__ . '/libraries/elfinderLibs/volumeConfig.php';
 
+//secure locations for webhooks
+    $possibleWebhookPaths = [
+        '/var/www/webhooks.php', // typical Linux server location
+        'C:/Users/rsimon_ptaa/Documents/webhooks.php', //school location for Iwerks
+        'C:/Users/randy/Documents/webhooks.php', //home location for Fabio
+        __DIR__ . '/webhooks.php', // default location
+
+    ];
+
+    $dbconfig = null;
+    foreach ($possibleWebhookPaths as $path) {
+        if (file_exists($path)) {
+            include $path;
+            break;
+        }
+    }
+
+
 header('Content-Type: application/json');
 
 $rawFiles = $_POST['files'] ?? '';
@@ -55,8 +73,8 @@ define('DISCORD_MAX_BYTES', 25 * 1024 * 1024); // 25 MB per message
 
 // Map actions to webhook URLs
 $webhookMap = [
-    'sendToMondayChat'   => 'https://discord.com/api/webhooks/1496728418157592756/l0GV6QEbE9TMOwDLFUNlee2l_pC0FE0B3d5qCpgWvnHmDlj-yVsmgxGs01UfBdPnyxMd',
-    'sendToThursdayChat' => 'https://discord.com/api/webhooks/1496728661104136237/YZsWCxb1E4xVd3-c9nFnpQ4oFJmi8ZBiKF9hQJE2VyJqvmoYHJE1z31iC8fXFA_LpASs',
+    'sendToMondayChat'   => MONDAY_WEBHOOK,
+    'sendToThursdayChat' => THURSDAY_WEBHOOK,
 ];
 
 // ---------- Auth check ----------
