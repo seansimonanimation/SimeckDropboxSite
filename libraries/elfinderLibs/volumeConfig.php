@@ -167,6 +167,22 @@ function getArtistFileBrowserOptions(){
         );
     }
 
+    // Persistent_Projects volume (static shared projects folder — last project volume)
+    $roots[] = array(
+        'driver'        => 'SimeckVolume',
+        'alias'        => "Persistent Projects",
+        'path' => __ROOT__ . '/files/Projects/Persistent_Projects',
+        'URL'  => '/files/Projects/Persistent_Projects/',
+        'trashHash'     => 't1_Lw',
+        'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+        'accessControl' => 'access',
+        'dotFiles' => false,
+        'tmpLink'            => true,
+        'uploadTempPath'     => __ROOT__ . '/files/Projects/Persistent_Projects/.tmp/',
+        'tmbPath' => __ROOT__ . '/files/.tmb',
+        'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+    );
+
     //Resources volume
     $roots[] = array(
         'driver'        => 'SimeckVolume',
