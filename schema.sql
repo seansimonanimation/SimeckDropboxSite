@@ -27,13 +27,14 @@ CREATE TABLE IF NOT EXISTS `artistdocuments` (
   `uploaded_by` varchar(20) DEFAULT NULL,
   `upload_time` datetime DEFAULT NULL,
   KEY `uploadID` (`uploadID`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artistdocuments: ~3 rows (approximately)
 INSERT IGNORE INTO `artistdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
 	('artist', 1, '/files/Corporate/ArtistDocuments/User, Artist/br.png', 'admin', '2026-05-13 08:45:10'),
 	('admin', 6, '/files/Corporate/ArtistDocuments/User, Admin/br.png', 'admin', '2026-05-14 14:39:38'),
-	('rsimon', 11, '/files/Corporate/ArtistDocuments/Simon, Randy/Randy K-1.pdf', 'admin', '2026-05-24 22:27:51');
+	('rsimon', 11, '/files/Corporate/ArtistDocuments/Simon, Randy/Randy K-1.pdf', 'admin', '2026-05-24 22:27:51'),
+	('admin', 12, '/files/Corporate/ArtistDocuments/User, Admin/00884400999368_UPC-A_SST1.png', 'admin', '2026-08-09 22:36:51');
 
 -- Dumping structure for table simeckdb.artists
 CREATE TABLE IF NOT EXISTS `artists` (
@@ -58,13 +59,14 @@ CREATE TABLE IF NOT EXISTS `artists` (
   `bgvid_visibility` int unsigned DEFAULT '1',
   `enjoy_the_view_visibility` int unsigned DEFAULT '1',
   KEY `userID` (`userID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.artists: ~3 rows (approximately)
 INSERT IGNORE INTO `artists` (`username`, `firstname`, `lastname`, `nickname`, `password`, `userID`, `active`, `role`, `secondary_roles`, `project_assignments`, `theme`, `timezone`, `availability`, `availability_this_week`, `log_rows_per_page`, `phone_country_code`, `phone_number`, `receive_texts`, `bgvid_visibility`, `enjoy_the_view_visibility`) VALUES
-	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', '', 'C01,C03,C05,P01', 'dark-boo', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, '1', '4806950059', 0, 1, 1),
+	('admin', 'Admin', 'User', 'Ran-Dizzle', '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 1, 1, 'admin', '', 'C03,C05', 'dark-boo', 'America/Phoenix', '0|0|15728640|15728640|15728640|0|4398045462528', '0|0|15728640|15728640|15728640|0|4394018930688', 50, '1', '4806950059', 0, 1, 1),
 	('artist', 'Artist', 'User', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 2, 1, 'artist', '', ',P00,C05,C03', 'dark-boo', 'UTC', '0|17179607040|268173312|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1, 1),
-	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 3, 1, 'artist', '', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1, 1);
+	('rsimon', 'Randy', 'Simon', NULL, '$2a$12$rSzqF0RxkfAFejcj87Y3t.KtZvw5LygSKVaQ5/DHbn/p6MlvdYcoi', 3, 1, 'artist', '', ',P00,P01,C05,C03', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1, 1),
+	('fbar', 'Foo', 'Bar', NULL, '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEOD2Uaxr5Xy', 4, 1, 'artist', '', NULL, 'dark-boo', NULL, '0|0|0|0|0|0|0', '0|0|0|0|0|0|0', 50, '1', NULL, 0, 1, 1);
 
 -- Dumping structure for table simeckdb.clientdocuments
 CREATE TABLE IF NOT EXISTS `clientdocuments` (
@@ -74,11 +76,12 @@ CREATE TABLE IF NOT EXISTS `clientdocuments` (
   `uploaded_by` varchar(20) DEFAULT NULL,
   `upload_time` datetime DEFAULT NULL,
   KEY `uploadID` (`uploadID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.clientdocuments: ~0 rows (approximately)
 INSERT IGNORE INTO `clientdocuments` (`owner`, `uploadID`, `filepath`, `uploaded_by`, `upload_time`) VALUES
-	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
+	('client', 1, '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07'),
+	('client', 2, '/files/Corporate/ClientDocuments/User, Client/00884400999368_UPC-A_SST1.png', 'admin', '2026-08-09 22:36:58');
 
 -- Dumping structure for table simeckdb.clients
 CREATE TABLE IF NOT EXISTS `clients` (
@@ -174,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `lockedfiles` (
   KEY `lockid` (`lockid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.lockedfiles: ~9 rows (approximately)
+-- Dumping data for table simeckdb.lockedfiles: ~10 rows (approximately)
 INSERT IGNORE INTO `lockedfiles` (`lockid`, `filepath`, `locktime`, `assetlock`, `commentlock`, `deliverable`) VALUES
 	(4, '/files/Projects/clientProjects/C01_SetSail/clientUpload/simeck-logopng.png', '2026-05-27 15:54:53', 1, 1, 0),
 	(6, '/files/Projects/clientProjects/C01_SetSail/clientUpload/garfina.jpg', '2026-05-27 16:27:05', 1, 1, 1),
@@ -198,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `impersonated_by` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Dumping data for table simeckdb.logs: ~227 rows (approximately)
+-- Dumping data for table simeckdb.logs: ~324 rows (approximately)
 INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `extra_data`, `project_target`, `impersonated_by`) VALUES
 	('na', '2026-05-11 14:52:00', 'nothing', '0.0.0.0', NULL, 'system', NULL),
 	('admin', '2026-06-03 12:16:33', 'Started impersonation', '127.0.0.1', 'admin started impersonating artist \'rsimon\'.', 'System', NULL),
@@ -513,7 +516,17 @@ INSERT IGNORE INTO `logs` (`username`, `time`, `user_action`, `ip_address`, `ext
 	('admin', '2026-07-19 12:41:44', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
 	('client', '2026-07-19 12:43:36', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
 	('admin', '2026-07-19 12:43:38', 'Started impersonation', '127.0.0.1', 'admin started impersonating client \'client\'.', 'System', NULL),
-	('client', '2026-07-19 12:43:40', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin');
+	('client', '2026-07-19 12:43:40', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'client\'.', 'System', 'admin'),
+	('admin', '2026-07-26 14:04:08', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('NiceFunnyGames', '2026-07-26 14:05:57', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'NiceFunnyGames\'.', 'System', 'admin'),
+	('admin', '2026-07-26 14:30:05', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('NiceFunnyGames', '2026-07-26 14:30:13', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'NiceFunnyGames\'.', 'System', 'admin'),
+	('admin', '2026-08-09 15:47:38', 'Vendor document uploaded', '127.0.0.1', 'Document () uploaded for vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('admin', '2026-08-09 15:56:35', 'Vendor document uploaded', '127.0.0.1', 'Document (receipt) uploaded for vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('admin', '2026-08-09 15:57:46', 'Vendor document uploaded', '127.0.0.1', 'Document (receipt) uploaded for vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('admin', '2026-08-09 15:57:58', 'Vendor document uploaded', '127.0.0.1', 'Document (contract) uploaded for vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('admin', '2026-08-09 15:58:05', 'Started impersonation', '127.0.0.1', 'admin started impersonating vendor \'NiceFunnyGames\'.', 'System', NULL),
+	('NiceFunnyGames', '2026-08-09 15:58:43', 'Stopped impersonation', '127.0.0.1', 'admin stopped impersonating. Reverted back from \'NiceFunnyGames\'.', 'System', 'admin');
 
 -- Dumping structure for table simeckdb.projects
 CREATE TABLE IF NOT EXISTS `projects` (
@@ -526,16 +539,17 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `type` varchar(10) DEFAULT NULL COMMENT 'internal or client',
   `description` varchar(500) DEFAULT NULL COMMENT 'A short project description',
   `leader` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT 'Who is the project lead?',
-  `size_on_disk` int DEFAULT NULL
+  `size_on_disk` int DEFAULT NULL COMMENT 'Hopefully auto-calculated.',
+  `security_level` varchar(20) NOT NULL DEFAULT 'standard' COMMENT 'standard or restricted — controls whether unassigned artists can browse the project'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.projects: ~5 rows (approximately)
-INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`, `leader`, `size_on_disk`) VALUES
-	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 300768245),
-	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.', 'admin', 20189575),
-	('P01', 'C City', 1, '/files/Projects/internal/P01_C City', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.', 'admin', 1345373),
-	('C02', 'Client Project 02', 1, '/files/Projects/clientProjects/C02_Client_Project_02', '/files/Projects/clientProjects/archive/C02_Client_Project_02.zip', 0, 'client', 'derp!', 'client', 1301522),
-	('P02', 'test1', 1, '/files/Projects/internal/P02_test1', '/files/Projects/internal/archive/P02_test1.zip', 0, 'internal', 'test1', NULL, 0);
+INSERT IGNORE INTO `projects` (`pid`, `project_name`, `active`, `active_path`, `inactive_zip_path`, `transitioning`, `type`, `description`, `leader`, `size_on_disk`, `security_level`) VALUES
+	('C01', 'Set Sail', 1, '/files/Projects/clientProjects/C01_SetSail', '/files/Projects/clientProjects/archive/C01_SetSail.zip', 0, 'client', 'A simple sample client project', 'client', 320459671, 'standard'),
+	('P00', 'Shaolin Monk', 1, '/files/Projects/internal/P00_ShaolinMonk', '/files/Projects/internal/archive/P00_ShaolinMonk.zip', 0, 'internal', 'Simeck\'s first project.', 'admin', 20189575, 'standard'),
+	('P01', 'C City', 1, '/files/Projects/internal/P01_C City', '/files/Projects/internal/archive/P01_CCity.zip', 0, 'internal', 'A tragic tale set in a dying world.', 'admin', 1345373, 'standard'),
+	('C02', 'Client Project 02', 1, '/files/Projects/clientProjects/C02_Client_Project_02', '/files/Projects/clientProjects/archive/C02_Client_Project_02.zip', 0, 'client', 'derp!', 'client', 1949968, 'standard'),
+	('P02', 'test1', 1, '/files/Projects/internal/P02_test1', '/files/Projects/internal/archive/P02_test1.zip', 0, 'internal', 'test1', NULL, 0, 'restricted');
 
 -- Dumping structure for table simeckdb.secondary_roles
 CREATE TABLE IF NOT EXISTS `secondary_roles` (
@@ -617,11 +631,13 @@ CREATE TABLE IF NOT EXISTS `vendordocuments` (
   `uploaded_by` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `upload_time` datetime DEFAULT (now()),
   KEY `uploadID` (`uploadID`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table simeckdb.vendordocuments: ~0 rows (approximately)
+-- Dumping data for table simeckdb.vendordocuments: ~3 rows (approximately)
 INSERT IGNORE INTO `vendordocuments` (`owner`, `uploadID`, `upload_type`, `filepath`, `uploaded_by`, `upload_time`) VALUES
-	('client', 1, '', '/files/Corporate/ClientDocuments/User, Client/Butters.png', 'admin', '2026-05-28 21:43:07');
+	('NiceFunnyGames', 3, 'receipt', '/files/Corporate/VendorDocuments/Nice Funny Games/00884400999368_UPC-A_SST1.png', 'admin', '2026-08-09 22:56:35'),
+	('NiceFunnyGames', 4, 'receipt', '/files/Corporate/VendorDocuments/Nice Funny Games/Payment reciept 0002.pdf', 'admin', '2026-08-09 22:57:46'),
+	('NiceFunnyGames', 5, 'contract', '/files/Corporate/VendorDocuments/Nice Funny Games/CastleBackground.png', 'admin', '2026-08-09 22:57:58');
 
 -- Dumping structure for table simeckdb.vendors
 CREATE TABLE IF NOT EXISTS `vendors` (
@@ -642,12 +658,13 @@ CREATE TABLE IF NOT EXISTS `vendors` (
   `receive_texts` int unsigned DEFAULT '0',
   `bgvid_visibility` int DEFAULT '0',
   `enjoy_the_view_visibility` int unsigned DEFAULT '1',
+  `secondary_role` varchar(100) DEFAULT NULL,
   KEY `vendor_id` (`vendor_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table simeckdb.vendors: ~1 rows (approximately)
-INSERT IGNORE INTO `vendors` (`vendor_id`, `username`, `company_name`, `vendor_poc_firstname`, `vendor_poc_lastname`, `password`, `project_assignments`, `active`, `point_of_contact`, `theme`, `timezone`, `availability`, `phone_country_code`, `phone_number`, `receive_texts`, `bgvid_visibility`, `enjoy_the_view_visibility`) VALUES
-	(1, 'NiceFunnyGames', 'Nice Funny Games', 'Ivan', 'Unknown', '$2a$12$kZyA0/Fch25QUavNdPXkQ.m1JAKkjXNLhXFf3Ln3IIMlzqYMTrNl6', 'P00', 1, 'admin', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', 1, NULL, 0, 1, 1);
+INSERT IGNORE INTO `vendors` (`vendor_id`, `username`, `company_name`, `vendor_poc_firstname`, `vendor_poc_lastname`, `password`, `project_assignments`, `active`, `point_of_contact`, `theme`, `timezone`, `availability`, `phone_country_code`, `phone_number`, `receive_texts`, `bgvid_visibility`, `enjoy_the_view_visibility`, `secondary_role`) VALUES
+	(1, 'NiceFunnyGames', 'Nice Funny Games', 'Ivan', 'Unknown', '$2a$12$kZyA0/Fch25QUavNdPXkQ.m1JAKkjXNLhXFf3Ln3IIMlzqYMTrNl6', 'P00', 1, 'admin', 'dark-boo', 'UTC', '0|0|0|0|0|0|0', 1, NULL, 0, 1, 1, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

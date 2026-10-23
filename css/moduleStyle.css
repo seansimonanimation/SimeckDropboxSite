@@ -914,3 +914,55 @@ body:not(.bgvid-active) .module {
 .module-table tr:hover td {
     background: var(--color-surface-hover, rgba(255,255,255,0.03));
 }
+.module-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-bg-raised, #e0e0e0);
+    border: 1px solid var(--color-border, #ccc);
+    border-radius: 6px;
+    padding: 2px;
+    height: 28px;
+    width: 130px;
+    margin-top: 4px;
+}
+
+.module-toggle input {
+    display: none;
+}
+
+.module-toggle__option {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    color: var(--color-text-muted, #666);
+    transition: color 0.2s;
+    white-space: nowrap;
+}
+
+.module-toggle__option--active {
+    color: var(--color-text, #fff);
+    font-weight: 600;
+}
+
+.module-toggle__slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: var(--color-primary, #007bff);
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+    z-index: 1;
+    transform: translateX(0%);
+}
+
+/* Slide pill to the right when "Restricted" (2nd radio) is selected */
+.module-toggle input:nth-of-type(2):checked ~ .module-toggle__slider {
+    transform: translateX(100%);
+}

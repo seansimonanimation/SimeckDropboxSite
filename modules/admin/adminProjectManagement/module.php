@@ -70,7 +70,10 @@ document.addEventListener('click', function(e) {
     // Sync the hidden radio buttons
     const value = toggleOption.dataset.value;
     const radio = toggle.querySelector('input[value="' + value + '"]');
-    if (radio) radio.checked = true;
+    if (radio) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 });
 // ── Project Lead Dropdown: Immediate Save ──
 document.addEventListener('change', function(e) {
@@ -111,6 +114,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// ── Project Security Level: Immediate Save ──
+document.addEventListener('change', function(e) {
+    const toggle = e.target.closest('.module-toggle');
+    if (!toggle) return;
+    const id = toggle.id;
+    if (!id || !id.startsWith('securityToggle-')) return;
+
+    const pid = id.replace('securityToggle-', '');
+    const value = toggle.querySelector('input:checked').value;
+
+    Helpers.post('/modules/admin/adminProjectManagement/endpoint.php', {
+        action: 'update_security_level',
+        pid: pid,
+        level: value
+    }).then(function(data) {
+        if (data.success) {
+            toggle.style.borderColor = '#4caf50';
+            setTimeout(function() { toggle.style.borderColor = ''; }, 1500);
+        } else {
+            console.error('Failed to update project security level:', data.error);
+        }
+    }).catch(function(err) {
+        console.error('Error updating project security level:', err);
+    });
+});
+
 
 </script>
 

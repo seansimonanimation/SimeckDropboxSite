@@ -15,6 +15,8 @@ function GenerateProjectCards(){
         $sizeBytes = $project['size_on_disk'] ?? 0;
         $sizeMB = $sizeBytes ? round($sizeBytes / 1048576, 2) . ' MB' : 'Calculating...';
 
+        $securityLevel = ($project['security_level'] == 'standard') ? 0 : 1;
+
         echo '<div class="module-card module-card--span-4" data-pid="' . htmlspecialchars($pid) . '">';
         // Row 1: Project Title
         echo '<div class="proj-card__title-row">';
@@ -52,6 +54,20 @@ function GenerateProjectCards(){
         echo '<span class="proj-card__col-label">Size On Disk</span>';
         echo '<span class="proj-card__col-value proj-card__size" data-pid="' . htmlspecialchars($pid) . '">' . $sizeMB . '</span>';
         echo '</div>';
+
+        // Column 6: Security Level Toggle
+        echo '<div class="proj-card__col">';
+        echo '<span class="proj-card__col-label\">Security Level</span>';
+        echo '<div class="module-toggle" id="securityToggle-' . htmlspecialchars($pid) . '">';
+        $secLevel = $project['security_level'] ?? 'standard';
+        echo '<input type="radio" name="security_level_' . htmlspecialchars($pid) . '" id="secStandard-' . htmlspecialchars($pid) . '" value="standard" ' . ($secLevel === 'standard' ? 'checked' : '') . ' hidden>';
+        echo '<input type="radio" name="security_level_' . htmlspecialchars($pid) . '" id="secRestricted-' . htmlspecialchars($pid) . '" value="restricted" ' . ($secLevel === 'restricted' ? 'checked' : '') . ' hidden>';
+        echo '<label for="secStandard-' . htmlspecialchars($pid) . '" class="module-toggle__option' . ($secLevel === 'standard' ? ' module-toggle__option--active' : '') . '" data-value="standard">Standard</label>';
+        echo '<label for="secRestricted-' . htmlspecialchars($pid) . '" class="module-toggle__option' . ($secLevel === 'restricted' ? ' module-toggle__option--active' : '') . '" data-value="restricted">Restricted</label>';
+        echo '<div class="module-toggle__slider"></div>';
+        echo '</div>';
+        echo '</div>';
+
 
         echo '</div>'; // end data-row
         echo '</div>'; // end card
@@ -466,4 +482,17 @@ function DisplayArtistProject($pid){
         echo '<p><strong>Type:</strong> ' . htmlspecialchars($project['type']) . '</p>';
         // Add more project details as needed
     }
+}
+function UpdateProjectSecurityLevel($pid, $level) {
+    $pdo = DBConnect();
+    $allowedLevels = ['standard', 'restricted'];
+    if (!in_array($level, $allowedLevels)) {
+        return false;
+    }
+    $stmt = $pdo->prepare("UPDATE projects SET security_level = ? WHERE pid = ?");
+    $result = $stmt->execute([$level, $pid]);
+    if ($result) {
+        LogSimeckAction('Project security level updated', "Project with PID {$pid} security level set to {$level}.", $pid);
+    }
+    return $result;
 }

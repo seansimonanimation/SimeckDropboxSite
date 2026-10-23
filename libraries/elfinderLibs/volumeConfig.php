@@ -94,87 +94,110 @@ function getAdminFileBrowserOptions(){
     return $connectorOptions;
 }
 
-
 function getArtistFileBrowserOptions(){
     ConnectorSetup();
-    $connectorOptions = array(
-        'roots' => array(
-            //Personal Dropbox volume
-            array(
-                'driver'        => 'SimeckVolume',
-                'alias'        => "My Dropbox",
-                'path' => AttachOrCreateDropbox(),
-                'URL'  => DetermineMyDropboxURL(),
-                'trashHash'     => 't1_Lw',
-                'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access',
-                'dotFiles' => false,
-                'tmpLink'            => true,   // Enable instant merging
-                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
-                'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
-            ),
-            //Everyone's Dropboxes volume
-            array(
-                'driver'        => 'SimeckVolume',
-                'alias'        => "Everyone's Dropboxes",
-                'path' => __ROOT__ . '/files/Dropboxes',
-                'URL'  => '/files/Dropboxes/',
-                'trashHash'     => 't1_Lw',
-                'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access',
-                'dotFiles' => false,
-                'tmpLink'            => true,   // Enable instant merging
-                'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
-                'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
-            ),
-            //Project volume
-            array(
-                'driver'        => 'SimeckVolume',
-                'path' => __ROOT__ . '/files/Projects',
-                'URL'  => '/files/Projects/',
-                'trashHash'     => 't1_Lw',
-                'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access',
-                'dotFiles' => false,
-                'tmpLink'            => true,   // Enable instant merging
-                'uploadTempPath'     => __ROOT__ . '/files/Projects/.tmp/',
-                'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
-            ),
-            //Resources volume
-            array(
-                'driver'        => 'SimeckVolume',
-                'alias'        => "Studio Resources",
-                'path' => __ROOT__ . '/files/Resources',
-                'URL'  => '/files/Resources/',
-                'trashHash'     => 't1_Lw',
-                'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access',
-                'dotFiles' => false,
-                'tmpLink'            => true,   // Enable instant merging
-                'uploadTempPath'     => __ROOT__ . '/files/Resources/.tmp/',
-                'tmbPath' => __ROOT__ . '/files/.tmb',
-                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
-            ),
-            // Trash volume
-            array(
-                'id'            => '1',
-                'driver'        => 'Trash',
-                'path'   => __ROOT__ . '/files/.trash/',
-                'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
-                'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
-                'accessControl' => 'access',
-                'dotFiles' => false,
-                'tmbPath' => __ROOT__ . '/files/.tmb',
+    $roots = array();
 
-            )
-        )
+    //Personal Dropbox volume
+    $roots[] = array(
+        'driver'        => 'SimeckVolume',
+        'alias'        => "My Dropbox",
+        'path' => AttachOrCreateDropbox(),
+        'URL'  => DetermineMyDropboxURL(),
+        'trashHash'     => 't1_Lw',
+        'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+        'accessControl' => 'access',
+        'dotFiles' => false,
+        'tmpLink'            => true,
+        'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
+        'tmbPath' => __ROOT__ . '/files/.tmb',
+        'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
     );
 
-    return $connectorOptions;
+    //Everyone's Dropboxes volume
+    $roots[] = array(
+        'driver'        => 'SimeckVolume',
+        'alias'        => "Everyone's Dropboxes",
+        'path' => __ROOT__ . '/files/Dropboxes',
+        'URL'  => '/files/Dropboxes/',
+        'trashHash'     => 't1_Lw',
+        'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+        'accessControl' => 'access',
+        'dotFiles' => false,
+        'tmpLink'            => true,
+        'uploadTempPath'     => __ROOT__ . '/files/Dropboxes/.tmp/',
+        'tmbPath' => __ROOT__ . '/files/.tmb',
+        'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+    );
+
+    //Project volumes — filtered by security level and artist assignment
+    $artistAssignments = GetArtistProjectAssignments();
+    $projectQuery = "SELECT pid, project_name, active_path, security_level FROM projects WHERE active = 1 AND transitioning = 0";
+    $stmt = $GLOBALS['db']->prepare($projectQuery);
+    $stmt->execute();
+    $allProjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($allProjects as $project) {
+        $securityLevel = $project['security_level'] ?? 'standard';
+        $isAssigned = in_array($project['pid'], $artistAssignments, true);
+
+        // Restricted projects: only show if artist is assigned
+        if ($securityLevel === 'restricted' && !$isAssigned) {
+            continue;
+        }
+
+        $projectPath = __ROOT__ . rtrim($project['active_path'], '/');
+        if (!is_dir($projectPath)) {
+            mkdir($projectPath, 0777, true);
+        }
+
+        $roots[] = array(
+            'driver'        => 'SimeckVolume',
+            'alias'        => $project['project_name'],
+            'path' => $projectPath,
+            'URL'  => rtrim($project['active_path'], '/') . '/',
+            'trashHash'     => 't1_Lw',
+            'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+            'accessControl' => 'access',
+            'dotFiles' => false,
+            'tmpLink'            => true,
+            'uploadTempPath'     => __ROOT__ . '/files/Projects/.tmp/',
+            'tmbPath' => __ROOT__ . '/files/.tmb',
+            'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+        );
+    }
+
+    //Resources volume
+    $roots[] = array(
+        'driver'        => 'SimeckVolume',
+        'alias'        => "Studio Resources",
+        'path' => __ROOT__ . '/files/Resources',
+        'URL'  => '/files/Resources/',
+        'trashHash'     => 't1_Lw',
+        'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+        'accessControl' => 'access',
+        'dotFiles' => false,
+        'tmpLink'            => true,
+        'uploadTempPath'     => __ROOT__ . '/files/Resources/.tmp/',
+        'tmbPath' => __ROOT__ . '/files/.tmb',
+        'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+    );
+
+    // Trash volume
+    $roots[] = array(
+        'id'            => '1',
+        'driver'        => 'Trash',
+        'path'   => __ROOT__ . '/files/.trash/',
+        'tmbURL' => '/libraries/elfinderLibs/endpoints/serveTmb.php?file=',
+        'winHashFix'    => DIRECTORY_SEPARATOR !== '/',
+        'accessControl' => 'access',
+        'dotFiles' => false,
+        'tmbPath' => __ROOT__ . '/files/.tmb',
+    );
+
+    return array('roots' => $roots);
 }
+
 
 
 function getClientFileBrowserOptions(){
@@ -237,6 +260,20 @@ function GetClientProjectAssignments(){
     }
     return explode(',', $result['project_assignments']);
 }
+
+function GetArtistProjectAssignments(){
+    $assignments = [];
+    $query = "SELECT project_assignments FROM artists WHERE username = ?";
+    $stmt = $GLOBALS['db']->prepare($query);
+    $stmt->execute([$_SESSION['username']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (empty($result['project_assignments'])) {
+        return [];
+    }
+    return array_filter(array_map('trim', explode(',', $result['project_assignments'])));
+}
+
 function getVendorFileBrowserOptions(){
     ConnectorSetup();
     $vendorAssignments = GetVendorProjectAssignments();

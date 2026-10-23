@@ -84,7 +84,32 @@ function access($attr, $path, $data, $volume, $isDir, $relpath) {
         }
         return $attr == 'read' ? true : null;
     }
-    
+        // ── Restricted project enforcement (artist role only) ──
+    $normalized = NormalizeFilePath($path);
+    if ($normalized && strpos($normalized, '/files/Projects') === 0) {
+        $rel = ltrim($normalized, '/files/Projects/');
+        $parts = explode('/', $rel);
+        $firstSegment = $parts[0] ?? '';
+        $pidMatch = [];
+        if (preg_match('/^([CP]\d{2})_/', $firstSegment, $pidMatch)) {
+            $projectPid = $pidMatch[1];
+            $stmt = $GLOBALS['db']->prepare("SELECT security_level FROM projects WHERE pid = ?");
+            $stmt->execute([$projectPid]);
+            $proj = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($proj && $proj['security_level'] === 'restricted') {
+                $role = $_SESSION['role'] ?? '';
+                if ($role === 'artist') {
+                    $assignments = GetArtistProjectAssignments();
+                    if (!in_array($projectPid, $assignments, true)) {
+                        return false; // elFinder shows native access-denied error
+                    }
+                } elseif ($role !== 'admin') {
+                    return false;
+                }
+            }
+        }
+    }
+
     // ── File locking enforcement (only on write, for files, under /files/Projects) ──
     if ($attr === 'write' && !$isDir) {
         $normalized = NormalizeFilePath($path);
