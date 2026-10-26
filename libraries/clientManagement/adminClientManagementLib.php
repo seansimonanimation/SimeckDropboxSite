@@ -291,3 +291,29 @@ function RemoveClientFromProject($email, $pid){
     }
     RefreshPortal();
 }
+
+/**
+ * Client-facing document list (full page)
+ */
+function DisplayClientDocumentsClient($email){
+    $documents = SelectClientDocuments($email);
+    if(empty($documents)){
+        return '<p>No documents uploaded yet.</p>';
+    }
+    $html = '<table class="module-table" style="width:100%; border-collapse: collapse;">';
+    $html .= '<thead><tr>';
+    $html .= '<th>Document</th>';
+    $html .= '<th>Uploaded By</th>';
+    $html .= '<th>Date</th>';
+    $html .= '</tr></thead><tbody>';
+    foreach($documents as $doc){
+        $b64 = Generateb64EncodedDownloadLink($email, $doc['uploadID']);
+        $html .= '<tr>';
+        $html .= '<td><a href="download.php?download=' . urlencode($b64) . '">' . htmlspecialchars(basename($doc['filepath'])) . '</a></td>';
+        $html .= '<td>' . htmlspecialchars($doc['uploaded_by'] ?? '—') . '</td>';
+        $html .= '<td>' . htmlspecialchars(date('M j, Y g:i A', strtotime($doc['upload_time']))) . '</td>';
+        $html .= '</tr>';
+    }
+    $html .= '</tbody></table>';
+    return $html;
+}
