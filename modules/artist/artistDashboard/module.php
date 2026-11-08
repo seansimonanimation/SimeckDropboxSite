@@ -77,8 +77,8 @@ if($_SESSION['password'] == '$2a$12$b71ierxJ8hDzzupwl48SG.vkbb6An4rjsXDyMflBUnEO
             <div class="module-toggle" id="calcModeToggle">
                 <input type="radio" name="calc_mode" id="calcModeArtist" value="artist" checked hidden>
                 <input type="radio" name="calc_mode" id="calcModeTz" value="timezone" hidden>
-                <label for="calcModeArtist" class="module-toggle__option module-toggle__option--active" data-value="artist">Compare with Artist</label>
-                <label for="calcModeTz" class="module-toggle__option" data-value="timezone">Compare with Timezone</label>
+                <label for="calcModeArtist" class="module-toggle__option module-toggle__option--active" data-value="artist">Artist</label>
+                <label for="calcModeTz" class="module-toggle__option" data-value="timezone">Timezone</label>
                 <div class="module-toggle__slider"></div>
             </div>
 
