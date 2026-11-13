@@ -452,7 +452,7 @@ doRotate(e) {
      * Handle wheel zoom.
      */
     onWheel(e) {
-        if (e.ctrlKey || e.metaKey) {
+        if (!e.ctrlKey || !e.metaKey) {
             e.preventDefault();
             const delta = e.deltaY > 0 ? -0.05 : 0.05;
             const newZoom = Math.max(0.1, Math.min(5, this.state.zoom + delta));
