@@ -6,6 +6,7 @@ if(!defined('__ROOT__')) {
 }
 include_once (__DIR__ . '/session.php');
 include_once (__DIR__ . '/db.php');
+include_once (__DIR__ . '/artistmanagementlib.php');
 
 
 function DisplayChangelog(){
@@ -56,4 +57,62 @@ function GetNASUsage(){
     $freeFormatted   = FormatBytes($free);
 
     return "{$usedFormatted} / {$totalFormatted} ({$percent}% used, {$freeFormatted} free)";
+}
+/**
+ * Returns ['total' => int, 'active' => int] for the projects assigned to a client.
+ * $projectAssignments is a comma-separated list of pids (as stored on the client row/session).
+ */
+function GetClientProjectStats($projectAssignments = null){
+    if ($projectAssignments === null) {
+        $projectAssignments = $_SESSION['project_assignments'] ?? '';
+    }
+    $pids = array_filter(array_map('trim', explode(',', $projectAssignments)));
+    if (empty($pids)) {
+        return ['total' => 0, 'active' => 0];
+    }
+    $pdo = DBConnect();
+    $placeholders = implode(',', array_fill(0, count($pids), '?'));
+    $sql = "SELECT COUNT(*) as total, SUM(active = 1) as active FROM projects WHERE pid IN ($placeholders)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(array_values($pids));
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return [
+        'total'  => (int)($row['total'] ?? 0),
+        'active' => (int)($row['active'] ?? 0),
+    ];
+}
+
+/**
+ * Gathers point-of-contact display data for the client dashboard PoC card.
+ * Returns ['name', 'timezone', 'available_now', 'availability_html'] or null.
+ */
+function GetClientPointOfContactCardData($pocUsername){
+    if ($pocUsername === '' || $pocUsername === null) {
+        return null;
+    }
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare(
+        "SELECT firstname, lastname, availability, availability_this_week, timezone
+         FROM artists WHERE username = ? AND active = 1"
+    );
+    $stmt->execute([$pocUsername]);
+    $artist = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$artist) {
+        return null;
+    }
+    $name = trim((string)($artist['firstname'] ?? '') . ' ' . (string)($artist['lastname'] ?? ''));
+    if ($name === '') {
+        $name = $pocUsername;
+    }
+    $tz = $artist['timezone'] ?? 'UTC';
+    $effectiveAv = GetEffectiveAvailability(
+        $artist['availability'] ?? '0|0|0|0|0|0|0',
+        $artist['availability_this_week'] ?? '0|0|0|0|0|0|0'
+    );
+    return [
+        'name'             => $name,
+        'timezone'         => $tz,
+        'available_now'    => IsArtistAvailableNow($effectiveAv, $tz),
+        'availability_html'=> DisplayArtistAvailability($effectiveAv, $tz),
+    ];
 }
