@@ -1,4 +1,4 @@
-11/12/26 - Version 0.13.0 - Bugfixes, Portfolio Editor fixes, Added support for NDA-enabled projects.<br />
+11/12/26 - Version 0.14.0 - Bugfixes, Portfolio Editor fixes, Added support for NDA-enabled projects.<br />
 7/18/26 - Version 0.13.0 - Preview panel fixes, Added Vendor functionality.<br />
 7/8/26 - Version 0.12.0 - Bugfixes, Portfolio Editor, Leveraged CDNs for some libraries <br />
 6/26/26 - Version 0.11.0 - Moving backgrounds, themed scroll bars, Secondary roles, timeclock shift notes, began adding portfolio editor, added admin powers.<br />
