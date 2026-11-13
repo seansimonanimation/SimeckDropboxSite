@@ -966,3 +966,27 @@ body:not(.bgvid-active) .module {
 .module-toggle input:nth-of-type(2):checked ~ .module-toggle__slider {
     transform: translateX(100%);
 }
+/* ─── Client Dashboard: welcome card spans columns 2 and 3 of the 4-col grid ─── */
+.module-card--welcome {
+  grid-column: 2 / 4;
+}
+
+/* Dashboard notice boxes (default-password warning, etc.) */
+.dc-notice {
+  padding: 10px 14px;
+  margin: 14px 0;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  border: 1px solid;
+}
+.dc-notice--warning {
+  background: rgba(243, 156, 18, 0.15);
+  border-color: rgba(243, 156, 18, 0.45);
+  color: var(--color-text, #000);
+}
+.dc-notice a {
+  color: inherit;
+  text-decoration: underline;
+  font-weight: 600;
+}
