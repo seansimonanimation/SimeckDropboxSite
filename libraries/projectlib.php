@@ -18,18 +18,24 @@ function GenerateProjectCards(){
         $securityLevel = ($project['security_level'] == 'standard') ? 0 : 1;
 
         echo '<div class="module-card module-card--span-4" data-pid="' . htmlspecialchars($pid) . '">';
-        // Row 1: Project Title
+        // Row 1: Editable Project Title + Codename
         echo '<div class="proj-card__title-row">';
-        echo '<h2 class="proj-card__title">' . htmlspecialchars($project['project_name']) . '</h2>';
+        echo '<input type="text" class="proj-card__editable proj-card__title-input" data-pid="' . htmlspecialchars($pid) . '" value="' . htmlspecialchars($project['project_name']) . '" placeholder="Project Name">';
+        echo '<input type="text" class="proj-card__editable proj-card__codename" data-pid="' . htmlspecialchars($pid) . '" value="' . htmlspecialchars($project['codename'] ?? '') . '" placeholder="Codename">';
         echo '</div>';
+
         // Row 2: Data Columns
         echo '<div class="proj-card__data-row">';
 
-        // Column 1: Project Type
+        // Column 1: Project Type (dropdown)
         echo '<div class="proj-card__col">';
         echo '<span class="proj-card__col-label">Type</span>';
-        echo '<span class="proj-card__col-value">' . htmlspecialchars(ucfirst($type)) . '</span>';
+        echo '<select class="proj-card__dropdown proj-type-select" data-pid="' . htmlspecialchars($pid) . '">';
+        echo '<option value="internal"' . ($type === 'internal' ? ' selected' : '') . '>Internal</option>';
+        echo '<option value="client"' . ($type === 'client' ? ' selected' : '') . '>Client Project</option>';
+        echo '</select>';
         echo '</div>';
+
 
         // Column 2: Project ID
         echo '<div class="proj-card__col">';
@@ -137,7 +143,7 @@ function GetAssignedProjectOptionList(){
 
 function GetAssignedClientProjectOptionList(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN clients c ON FIND_IN_SET(p.pid, c.project_assignments) WHERE c.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name, p.codename FROM projects p JOIN clients c ON FIND_IN_SET(p.pid, c.project_assignments) WHERE c.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -154,18 +160,27 @@ function GetAssignedArtistProjectOptionList(){
 function GetAssignedArtistProjectOptionListHTML(){
     $projects = GetAssignedArtistProjectOptionList();
     foreach ($projects as $p) {
-        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+        $label = htmlspecialchars($p['project_name']);
+        if (!empty($p['codename'])) {
+            $label = 'Codename ' . htmlspecialchars($p['codename']);
+        }
+        echo '<option value="'.$p['pid'].'" >'.$label.'</option>';
     }
 }
 function GetAssignedClientProjectOptionListHTML(){
     $projects = GetAssignedClientProjectOptionList();
     foreach ($projects as $p) {
-        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+        $label = htmlspecialchars($p['project_name']);
+        if (!empty($p['codename'])) {
+            $label = 'Codename ' . htmlspecialchars($p['codename']);
+        }
+        echo '<option value="'.$p['pid'].'" >'.$label.'</option>';
     }
 }
+
 function GetAssignedVendorProjectOptionList(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN vendors v ON FIND_IN_SET(p.pid, v.project_assignments) WHERE v.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name, p.codename FROM projects p JOIN vendors v ON FIND_IN_SET(p.pid, v.project_assignments) WHERE v.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -173,7 +188,11 @@ function GetAssignedVendorProjectOptionList(){
 function GetAssignedVendorProjectOptionListHTML(){
     $projects = GetAssignedVendorProjectOptionList();
     foreach ($projects as $p) {
-        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+        $label = htmlspecialchars($p['project_name']);
+        if (!empty($p['codename'])) {
+            $label = 'Codename ' . htmlspecialchars($p['codename']);
+        }
+        echo '<option value="'.$p['pid'].'" >'.$label.'</option>';
     }
 }
 
@@ -321,11 +340,13 @@ function DisplayProjectTeamMembers($artists, $lead){
             echo '⭐';
         }
         $isAdmin = ($_SESSION['role'] === 'admin');
+        $isClient = ($_SESSION['role'] === 'client');
         $displayName = GetArtistNicknameOrLegalFallback($artist);
         echo htmlspecialchars($displayName . ' (' . $artist['username'] . ')');
-        if(($isAdmin || $lead === $_SESSION['username']) && $artist['username'] !== $_SESSION['username']){
+        if((($isAdmin || $lead === $_SESSION['username']) && !$isClient) && $artist['username'] !== $_SESSION['username']){
             echo ' <button onclick="removeTeamMember(\''.$artist['username'].'\')">❌</button>';
         }
+
         echo '</p>';
     }
 }
@@ -495,4 +516,46 @@ function UpdateProjectSecurityLevel($pid, $level) {
         LogSimeckAction('Project security level updated', "Project with PID {$pid} security level set to {$level}.", $pid);
     }
     return $result;
+}
+function UpdateProjectName($pid, $name) {
+    $pdo = DBConnect();
+    $stmt = $pdo->prepare("UPDATE projects SET project_name = ? WHERE pid = ?");
+    $result = $stmt->execute([$name, $pid]);
+    if ($result) {
+        LogSimeckAction('Project name updated', "Project with PID {$pid} name set to '{$name}'.", $pid);
+    }
+    return $result;
+}
+
+function UpdateProjectCodename($pid, $codename) {
+    $pdo = DBConnect();
+    // An empty codename means "no codename" — store as NULL
+    $value = $codename === '' ? null : $codename;
+    $stmt = $pdo->prepare("UPDATE projects SET codename = ? WHERE pid = ?");
+    $result = $stmt->execute([$value, $pid]);
+    if ($result) {
+        LogSimeckAction('Project codename updated', "Project with PID {$pid} codename set to '" . ($codename === '' ? '(none)' : $codename) . "'.", $pid);
+    }
+    return $result;
+}
+
+function UpdateProjectType($pid, $type) {
+    $pdo = DBConnect();
+    $allowedTypes = ['internal', 'client'];
+    if (!in_array($type, $allowedTypes)) {
+        return false;
+    }
+    $stmt = $pdo->prepare("UPDATE projects SET type = ? WHERE pid = ?");
+    $result = $stmt->execute([$type, $pid]);
+    if ($result) {
+        LogSimeckAction('Project type updated', "Project with PID {$pid} type set to {$type}.", $pid);
+    }
+    return $result;
+}
+function GetProjectDisplayName($project) {
+    $name = htmlspecialchars($project['project_name']);
+    if (!empty($project['codename'])) {
+        $name .= ' <span class="project-codename-badge">Codename ' . htmlspecialchars($project['codename']) . '</span>';
+    }
+    return $name;
 }

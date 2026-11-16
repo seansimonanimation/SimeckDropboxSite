@@ -139,6 +139,89 @@ document.addEventListener('change', function(e) {
         console.error('Error updating project security level:', err);
     });
 });
+// ── Project Name: Immediate Save ──
+document.addEventListener('change', function(e) {
+    const input = e.target.closest('.proj-card__title-input');
+    if (!input) return;
+
+    const pid = input.dataset.pid;
+    const newName = input.value.trim();
+
+    if (newName === '') {
+        input.style.borderColor = '#ef5350';
+        setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        return;
+    }
+
+    Helpers.post('/modules/admin/adminProjectManagement/endpoint.php', {
+        action: 'update_name',
+        pid: pid,
+        name: newName
+    }).then(function(data) {
+        if (data.success) {
+            input.style.borderColor = '#4caf50';
+            setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        } else {
+            console.error('Failed to update project name:', data.error);
+            input.style.borderColor = '#ef5350';
+            setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        }
+    }).catch(function(err) {
+        console.error('Error updating project name:', err);
+    });
+});
+
+// ── Project Codename: Immediate Save ──
+document.addEventListener('change', function(e) {
+    const input = e.target.closest('.proj-card__codename');
+    if (!input) return;
+
+    const pid = input.dataset.pid;
+    const newCodename = input.value.trim();
+
+    Helpers.post('/modules/admin/adminProjectManagement/endpoint.php', {
+        action: 'update_codename',
+        pid: pid,
+        codename: newCodename
+    }).then(function(data) {
+        if (data.success) {
+            input.style.borderColor = '#4caf50';
+            setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        } else {
+            console.error('Failed to update project codename:', data.error);
+            input.style.borderColor = '#ef5350';
+            setTimeout(function() { input.style.borderColor = ''; }, 1500);
+        }
+    }).catch(function(err) {
+        console.error('Error updating project codename:', err);
+    });
+});
+
+// ── Project Type Dropdown: Immediate Save ──
+document.addEventListener('change', function(e) {
+    const select = e.target.closest('.proj-type-select');
+    if (!select) return;
+
+    const pid = select.dataset.pid;
+    const newType = select.value;
+
+    Helpers.post('/modules/admin/adminProjectManagement/endpoint.php', {
+        action: 'update_type',
+        pid: pid,
+        type: newType
+    }).then(function(data) {
+        if (data.success) {
+            select.style.borderColor = '#4caf50';
+            setTimeout(function() { select.style.borderColor = ''; }, 1500);
+        } else {
+            console.error('Failed to update project type:', data.error);
+            select.style.borderColor = '#ef5350';
+            setTimeout(function() { select.style.borderColor = ''; }, 1500);
+        }
+    }).catch(function(err) {
+        console.error('Error updating project type:', err);
+    });
+});
 
 
 </script>
@@ -163,8 +246,8 @@ document.addEventListener('change', function(e) {
             <div class="module-toggle" id="projectTypeToggle">
                 <input type="radio" name="project_type" id="typeClient" value="client" checked hidden>
                 <input type="radio" name="project_type" id="typeInternal" value="internal" hidden>
-                <label for="typeClient" class="module-toggle__option module-toggle__option--active" data-value="client">Client Project</label>
-                <label for="typeInternal" class="module-toggle__option" data-value="internal">Internal Project</label>
+                <label for="typeClient" class="module-toggle__option module-toggle__option--active" data-value="client">Client</label>
+                <label for="typeInternal" class="module-toggle__option" data-value="internal">Internal</label>
                 <div class="module-toggle__slider"></div>
             </div>
 
