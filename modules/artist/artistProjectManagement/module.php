@@ -52,7 +52,7 @@ if(isset($_POST['See_Project'])){
     </div>
     <div class="module-grid">
         <div class="module-card module-card--placeholder"></div>
-        <div class="module-card module-card--span-2"><Center><h1>Current Project</h1><h3> <?php echo $CurrentProjectData['project']['project_name']; ?></h3> </Center></div>
+        <div class="module-card module-card--span-2"><Center><h1>Current Project</h1><h3> <?php echo GetProjectDisplayName($CurrentProjectData['project']); ?></h3> </Center></div>
         <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-1">
             <div class="module-card__header">

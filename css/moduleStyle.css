@@ -990,3 +990,45 @@ body:not(.bgvid-active) .module {
   text-decoration: underline;
   font-weight: 600;
 }
+/* ── Editable Project Title / Codename inputs ── */
+.proj-card__title-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.proj-card__title-row .proj-card__editable {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-bright, #ccc);
+  border-radius: 6px;
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font-size: 1rem;
+  min-height: auto;
+  box-sizing: border-box;
+}
+
+.proj-card__title-row .proj-card__title-input {
+  font-weight: 600;
+}
+
+.proj-card__title-row .proj-card__codename {
+  max-width: 180px;
+  font-weight: 500;
+}
+/* ── Project Codename Badge ── */
+.project-codename-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--color-bg-raised, #e8e8e8);
+  color: var(--color-text-muted, #6c7280);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  vertical-align: middle;
+  white-space: nowrap;
+}

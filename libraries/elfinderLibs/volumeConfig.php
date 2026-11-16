@@ -132,7 +132,7 @@ function getArtistFileBrowserOptions(){
 
     //Project volumes — filtered by security level and artist assignment
     $artistAssignments = GetArtistProjectAssignments();
-    $projectQuery = "SELECT pid, project_name, active_path, security_level FROM projects WHERE active = 1 AND transitioning = 0";
+    $projectQuery = "SELECT pid, project_name, active_path, security_level, codename FROM projects WHERE active = 1 AND transitioning = 0";
     $stmt = $GLOBALS['db']->prepare($projectQuery);
     $stmt->execute();
     $allProjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -151,9 +151,13 @@ function getArtistFileBrowserOptions(){
             mkdir($projectPath, 0777, true);
         }
 
+        $alias = $project['project_name'];
+        if (!empty($project['codename'])) {
+            $alias = 'Codename ' . $project['codename'];
+        }
         $roots[] = array(
             'driver'        => 'SimeckVolume',
-            'alias'        => $project['project_name'],
+            'alias'        => $alias,
             'path' => $projectPath,
             'URL'  => rtrim($project['active_path'], '/') . '/',
             'trashHash'     => 't1_Lw',
@@ -225,7 +229,7 @@ function getClientFileBrowserOptions(){
     }
     
     $placeholders = implode(',', array_fill(0, count($clientassignments), '?'));
-    $projectQuery = "SELECT pid, project_name, active_path FROM projects WHERE pid IN ($placeholders)";
+    $projectQuery = "SELECT pid, project_name, active_path, codename FROM projects WHERE pid IN ($placeholders)";
 
     $stmt = $GLOBALS['db']->prepare($projectQuery);
     $stmt->execute($clientassignments);
@@ -243,9 +247,13 @@ function getClientFileBrowserOptions(){
             mkdir($clientUploadPath, 0777, true);
             @mkdir($clientUploadPath . '.tmb', 0777, true);
         }
+        $alias = $project['project_name'];
+        if (!empty($project['codename'])) {
+            $alias = 'Codename ' . $project['codename'];
+        }
         $roots[] = array(
             'driver'        => 'SimeckVolume',
-            'alias'        => $project['project_name'],
+            'alias'        => $alias,
             'path' => __ROOT__ . rtrim($project['active_path'], '/') . '/clientUpload/',
             'URL'  => rtrim($project['active_path'], '/') . '/clientUpload/',
             'trashHash'     => 't1_Lw',
@@ -299,7 +307,7 @@ function getVendorFileBrowserOptions(){
     }
     
     $placeholders = implode(',', array_fill(0, count($vendorAssignments), '?'));
-    $projectQuery = "SELECT pid, project_name, active_path FROM projects WHERE pid IN ($placeholders)";
+    $projectQuery = "SELECT pid, project_name, active_path, codename FROM projects WHERE pid IN ($placeholders)";
 
     $stmt = $GLOBALS['db']->prepare($projectQuery);
     $stmt->execute($vendorAssignments);
@@ -317,9 +325,13 @@ function getVendorFileBrowserOptions(){
             mkdir($vendorUploadPath, 0777, true);
             @mkdir($vendorUploadPath . '.tmb', 0777, true);
         }
+        $alias = $project['project_name'];
+        if (!empty($project['codename'])) {
+            $alias = 'Codename ' . $project['codename'];
+        }
         $roots[] = array(
             'driver'        => 'SimeckVolume',
-            'alias'        => $project['project_name'],
+            'alias'        => $alias,
             'path' => __ROOT__ . rtrim($project['active_path'], '/') . '/vendorUpload/',
             'URL'  => rtrim($project['active_path'], '/') . '/vendorUpload/',
             'trashHash'     => 't1_Lw',

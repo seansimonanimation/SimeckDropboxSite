@@ -50,7 +50,15 @@ if(isset($_POST['See_Project'])){
     </div>
     <div class="module-grid">
         <div class="module-card module-card--placeholder"></div>
-        <div class="module-card module-card--span-2"><Center><h1>Current Project</h1><h3> <?php echo $CurrentProjectData['project']['project_name']; ?></h3> </Center></div>
+        <div class="module-card module-card--span-2"><Center><h1>Current Project</h1><h3> 
+            <?php 
+            echo $CurrentProjectData['project']['project_name']; 
+            echo "<br />";
+            if (!empty($CurrentProjectData['project']['codename'])) {
+                echo '<span class="project-codename-badge">Codename ' . htmlspecialchars($CurrentProjectData['project']['codename']) . '</span>';
+            }
+            
+            ?></h3> </Center></div>
         <div class="module-card module-card--placeholder"></div>
         <div class="module-card module-card--span-1">
             <div class="module-card__header">
