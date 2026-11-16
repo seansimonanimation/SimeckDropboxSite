@@ -130,13 +130,18 @@ function GetAllProjects(){
 
 function GetAssignedProjectOptionList(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name, p.codename FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
     $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($projects as $p) {
-        echo '<option value="'.$p['pid'].'" >'.htmlspecialchars($p['project_name']).'</option>';
+        $label = htmlspecialchars($p['project_name']);
+        if (!empty($p['codename'])) {
+            $label = 'Codename ' . htmlspecialchars($p['codename']);
+        }
+        echo '<option value="'.$p['pid'].'" >'.$label.'</option>';
     }
 }
+
 
 
 
@@ -150,10 +155,11 @@ function GetAssignedClientProjectOptionList(){
 
 function GetAssignedArtistProjectOptionList(){
     $pdo = DBConnect();
-    $stmt = $pdo->prepare("SELECT p.pid, p.project_name FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
+    $stmt = $pdo->prepare("SELECT p.pid, p.project_name, p.codename FROM projects p JOIN artists a ON FIND_IN_SET(p.pid, a.project_assignments) WHERE a.username = ? AND p.active = 1 AND p.transitioning = 0");
     $stmt->execute([$_SESSION['username']]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 
 
