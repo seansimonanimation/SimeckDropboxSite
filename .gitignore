@@ -6,3 +6,4 @@ composer.json
 .clinerules
 composer.lock
 libraries/node/node_modules/
+portfolioData/
